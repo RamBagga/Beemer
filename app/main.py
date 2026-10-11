@@ -3,7 +3,7 @@ import streamlit as st
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 # absolute path: page_icon is resolved against the working directory, which differs between hosts
-st.set_page_config(page_title="Beemer · Precision research for India tech", page_icon=os.path.join(HERE, "static", "beemer-logo.svg"), layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Beemer · Precision research for India tech", page_icon=os.path.join(HERE, "static", "beemer-logo.svg"), layout="wide", initial_sidebar_state="expanded")
 import beemer as B
 
 B.setup("Beemer")

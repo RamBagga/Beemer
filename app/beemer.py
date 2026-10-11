@@ -156,39 +156,37 @@ h3 {{ font-size:1.25rem !important; margin-top:1.4rem !important; }}
 .bm-stripe {{ height:2px; background:{STRIPE}; border-radius:2px; margin:4px 0 14px; width:64px; }}
 [data-testid="stSidebarHeader"] img {{ height:1.6rem !important; max-width:180px; }}
 /* top bar + burger drawer */
-header[data-testid="stHeader"] {{ background:{rgba(C['bg'], .82)}; backdrop-filter:saturate(160%) blur(14px); -webkit-backdrop-filter:saturate(160%) blur(14px);
-  border-bottom:1px solid {C['line']}; }}
+header[data-testid="stHeader"] {{ background:{rgba(C['bg'], .96)}; border-bottom:1px solid {C['line']}; }}
 [data-testid="stHeaderLogo"] {{ height:1.25rem !important; margin-left:4px; }}
 /* Streamlit's own toggles stay in the DOM (our burger drives them) but are hidden */
 [data-testid="stExpandSidebarButton"], [data-testid="stSidebarCollapseButton"] {{ position:absolute !important; width:1px !important; height:1px !important;
   opacity:0 !important; pointer-events:none !important; overflow:hidden; }}
 [data-testid="stHeaderLogo"] {{ margin-left:52px !important; }}
 [data-testid="stSidebarHeader"] {{ padding-left:68px !important; }}
-/* drawer: fixed width, overlays content, animates transform only */
+/* drawer: pure client-side. Our burger toggles html.bm-open; Streamlit's sidebar state is never touched (no rerun, no network). */
 section[data-testid="stSidebar"] {{ position:fixed !important; top:0; left:0; height:100vh !important; z-index:1000010 !important;
-  width:300px !important; min-width:300px !important; max-width:300px !important;
-  background:{C['sidebar']} !important; border-right:1px solid {C['line']}; will-change:transform; backface-visibility:hidden;
-  box-shadow:0 24px 64px -12px {rgba('#0A1022', .35)};
-  transition:transform .3s cubic-bezier(0.22,1,0.36,1) !important; }}
-section[data-testid="stSidebar"][aria-expanded="false"] {{ transform:translate3d(-310px,0,0) !important; box-shadow:none; }}
-section[data-testid="stSidebar"][aria-expanded="true"] {{ transform:translate3d(0,0,0) !important; }}
-[data-testid="stAppViewContainer"]::after {{ content:""; position:fixed; inset:0; z-index:1000005; pointer-events:none; opacity:0;
-  background:{rgba('#0A1022', .30 if theme_type() == 'light' else .55)}; backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
-  transition:opacity .3s cubic-bezier(0.22,1,0.36,1); will-change:opacity; }}
-[data-testid="stAppViewContainer"]:has(section[data-testid="stSidebar"][aria-expanded="true"])::after {{ opacity:1; }}
+  width:300px !important; min-width:300px !important; max-width:300px !important; visibility:visible !important;
+  background:{C['sidebar']} !important; border-right:1px solid {C['line']}; box-shadow:0 24px 64px -12px {rgba('#0A1022', .35)};
+  transform:translate3d(-312px,0,0) !important; will-change:transform; backface-visibility:hidden; contain:layout paint;
+  transition:transform .2s cubic-bezier(0.22,1,0.36,1) !important; }}
+html.bm-open section[data-testid="stSidebar"] {{ transform:translate3d(0,0,0) !important; }}
+section[data-testid="stSidebar"] > div {{ width:300px !important; }}
+#bm-scrim {{ position:fixed; inset:0; z-index:1000005; background:{rgba('#0A1022', .32 if theme_type() == 'light' else .6)};
+  opacity:0; pointer-events:none; will-change:opacity; transition:opacity .2s cubic-bezier(0.22,1,0.36,1); }}
+html.bm-open #bm-scrim {{ opacity:1; pointer-events:auto; }}
 /* burger: lives on <body>, above the drawer, morphs to an X */
 #bm-burger {{ position:fixed; top:11px; left:14px; z-index:1000020; width:38px; height:38px; border-radius:10px; cursor:pointer; padding:0;
   border:1px solid {C['line']}; background:{C['surface']}; transition:border-color .2s, background-color .2s; -webkit-tap-highlight-color:transparent; }}
 #bm-burger:hover {{ border-color:{C['blue']}; }}
 #bm-burger:focus-visible {{ outline:2px solid {C['blue']}; outline-offset:2px; }}
 #bm-burger i {{ position:absolute; left:11px; width:16px; height:1.5px; border-radius:2px; background:{C['text']};
-  transition:transform .3s cubic-bezier(0.22,1,0.36,1), opacity .2s; will-change:transform; }}
+  transition:transform .2s cubic-bezier(0.22,1,0.36,1), opacity .15s; will-change:transform; }}
 #bm-burger i:nth-child(1) {{ top:13px; }} #bm-burger i:nth-child(2) {{ top:18px; }} #bm-burger i:nth-child(3) {{ top:23px; }}
 #bm-burger.open i:nth-child(1) {{ transform:translateY(5px) rotate(45deg); }}
 #bm-burger.open i:nth-child(2) {{ opacity:0; transform:scaleX(.3); }}
 #bm-burger.open i:nth-child(3) {{ transform:translateY(-5px) rotate(-45deg); }}
 @media (prefers-reduced-motion: reduce) {{
-  section[data-testid="stSidebar"], #bm-burger i, [data-testid="stAppViewContainer"]::after {{ transition:none !important; }} }}
+  section[data-testid="stSidebar"], #bm-burger i, #bm-scrim {{ transition:none !important; }} }}
 [data-testid="stSidebarResizeHandle"] {{ display:none !important; }}
 [data-testid="stSidebarNavLink"] {{ border-radius:8px; padding:8px 12px; margin:1px 0; }}
 [data-testid="stSidebarNavLink"] span {{ font:500 .98rem 'Inter Tight', Inter, sans-serif !important; letter-spacing:-.005em; }}
@@ -252,29 +250,20 @@ _THEME_JS = """
     return false;
   };
   if (ensure()) return;
-  // burger drawer: one persistent button on the page body drives Streamlit's own sidebar toggles
-  const sbEl = () => document.querySelector('section[data-testid="stSidebar"]');
-  const isOpen = () => { const sb = sbEl(); return !!sb && sb.getAttribute('aria-expanded') === 'true'; };
-  const press = sel => { const b = document.querySelector(sel); if (b) b.click(); };
-  const setOpen = want => { if (want === isOpen()) return;
-    if (want) press('[data-testid="stExpandSidebarButton"]');
-    else press('[data-testid="stSidebarCollapseButton"] button, button[data-testid="stSidebarCollapseButton"]'); };
-  let bb = document.getElementById('bm-burger');
-  if (!bb) {
-    bb = document.createElement('button'); bb.id = 'bm-burger'; bb.type = 'button';
-    bb.setAttribute('aria-label', 'Menu'); bb.setAttribute('aria-expanded', 'x');
+  // burger drawer: pure client-side class toggle on the root element; elements live on the page body and survive reruns
+  const htmlEl = document.documentElement;
+  const setOpen = o => { htmlEl.classList.toggle('bm-open', o); const b = document.getElementById('bm-burger');
+    if (b) { b.classList.toggle('open', o); b.setAttribute('aria-expanded', o ? 'true' : 'false'); } };
+  if (!document.getElementById('bm-scrim')) {
+    const sc = document.createElement('div'); sc.id = 'bm-scrim'; sc.addEventListener('click', () => setOpen(false)); document.body.appendChild(sc); }
+  if (!document.getElementById('bm-burger')) {
+    const bb = document.createElement('button'); bb.id = 'bm-burger'; bb.type = 'button';
+    bb.setAttribute('aria-label', 'Menu'); bb.setAttribute('aria-expanded', 'false');
     for (let i = 0; i !== 3; i++) bb.appendChild(document.createElement('i'));
-    bb.addEventListener('click', e => { e.stopPropagation(); setOpen(!isOpen()); });
-    document.body.appendChild(bb);
-  }
-  const sync = () => { const b = document.getElementById('bm-burger'); if (!b) return; const v = isOpen() ? 'true' : 'false';
-    if (b.getAttribute('aria-expanded') === v) return; b.classList.toggle('open', v === 'true'); b.setAttribute('aria-expanded', v); };
-  sync();
+    bb.addEventListener('click', () => setOpen(!htmlEl.classList.contains('bm-open')));
+    document.body.appendChild(bb); }
   if (!window.__bmDrawer) { window.__bmDrawer = true;
-    new MutationObserver(ms => { if (ms.some(m => m.target.id !== 'bm-burger')) sync(); })
-      .observe(document.body, { subtree: true, attributes: true, attributeFilter: ['aria-expanded'] });
-    document.addEventListener('click', e => { if (!isOpen() || e.target.closest('#bm-burger')) return;
-      if (!sbEl().contains(e.target) || e.target.closest('[data-testid="stSidebarNavLink"]')) setTimeout(() => setOpen(false), 60); }, true);
+    document.addEventListener('click', e => { if (htmlEl.classList.contains('bm-open') && e.target.closest('[data-testid="stSidebarNavLink"]')) setOpen(false); }, true);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
   }
   sessionStorage.removeItem('bm-theme-reloaded');
