@@ -13,7 +13,11 @@ PIDF="logs/streamlit.pid"; PORTF="logs/streamlit.port"
 
 running() { [ -f "$PIDF" ] && kill -0 "$(cat "$PIDF")" 2>/dev/null; }
 stop() {
-  if running; then kill "$(cat "$PIDF")" 2>/dev/null || true; echo "✓ stopped"; fi
+  if running; then
+    P="$(cat "$PIDF")"; kill "$P" 2>/dev/null || true
+    for _ in $(seq 1 20); do kill -0 "$P" 2>/dev/null || break; sleep 0.5; done   # wait so the port is free again
+    echo "✓ stopped"
+  fi
   rm -f "$PIDF" "$PORTF"
 }
 port_busy() { (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null; }
@@ -53,13 +57,14 @@ fi
 stop >/dev/null
 PORT="${PORT:-8501}"
 while port_busy "$PORT"; do PORT=$((PORT+1)); done
-cd app
-if [ "$FG" = 1 ]; then echo "$PORT" > "../$PORTF"; exec ../.venv/bin/streamlit run main.py --server.port "$PORT"; fi
+# run from the repo root (same as Streamlit Community Cloud / Docker) so .streamlit/config.toml is picked up;
+# bind to localhost only — hosts bind 0.0.0.0 themselves
+ST_ARGS=(run app/main.py --server.port "$PORT" --server.address "${ADDRESS:-127.0.0.1}")
+if [ "$FG" = 1 ]; then echo "$PORT" > "$PORTF"; exec .venv/bin/streamlit "${ST_ARGS[@]}"; fi
 # detach into its own session so it survives the terminal / parent process exiting (macOS has no `setsid` binary)
-nohup ../.venv/bin/python -c 'import os,sys; os.setsid(); os.execv(sys.argv[1], sys.argv[1:])' \
-  ../.venv/bin/streamlit run main.py --server.port "$PORT" > ../logs/streamlit.log 2>&1 < /dev/null &
-echo $! > "../$PIDF"; echo "$PORT" > "../$PORTF"
-cd ..
+nohup .venv/bin/python -c 'import os,sys; os.setsid(); os.execv(sys.argv[1], sys.argv[1:])' \
+  .venv/bin/streamlit "${ST_ARGS[@]}" > logs/streamlit.log 2>&1 < /dev/null &
+echo $! > "$PIDF"; echo "$PORT" > "$PORTF"
 for i in $(seq 1 45); do curl -sf "http://localhost:$PORT/_stcore/health" >/dev/null 2>&1 && break; sleep 1; done
 if curl -sf "http://localhost:$PORT/_stcore/health" >/dev/null 2>&1; then
   echo "✓ BEEMER is running → http://localhost:$PORT   (logs: logs/streamlit.log · stop: ./start.sh --stop)"

@@ -1,8 +1,9 @@
+# Repo-root config: Streamlit Community Cloud only reads .streamlit/config.toml at the repo root,
+# and every launcher (start.sh, Docker, Render, Makefile) runs `streamlit run app/main.py` from the root.
+# Port/address are passed on the command line (PORT env on hosts; 127.0.0.1 locally via start.sh).
 [server]
 headless = true
-port = 8501
-address = "127.0.0.1"
-enableStaticServing = true
+enableStaticServing = true   # serves app/static at /app/static
 
 [browser]
 gatherUsageStats = false
