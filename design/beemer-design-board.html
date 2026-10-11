@@ -1,0 +1,87 @@
+<!doctype html><html><head><meta charset="utf-8"><title>BEEMER Design Board v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090D;color:#E8ECF3;font-family:Inter,system-ui,sans-serif}
+.wrap{width:1440px;margin:0 auto;padding:44px}
+h1,h2,h3{font-family:'Inter Tight',Inter,sans-serif;margin:0;font-weight:600}
+.k{font:600 11px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#8B95A7}
+h2{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#8B95A7;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:#0E121A;border:1px solid #1F2733;border-radius:12px;padding:22px}
+.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}
+.stripe{height:3px;background:linear-gradient(90deg,#6CC4FF 0 33%,#2A4BD7 33% 66%,#F0303F 66%);border-radius:3px}
+.hero{background:linear-gradient(120deg,#0E121A,#07090D 60%);border:1px solid #1F2733;border-radius:14px;padding:40px 44px;margin-bottom:18px;position:relative;overflow:hidden}
+.hero h1{font-size:52px;letter-spacing:-.02em;line-height:1.05;margin:22px 0 12px}
+.hero p{color:#8B95A7;font-size:18px;margin:0}
+.sw{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}.s{height:64px;border-radius:8px;border:1px solid #1F2733}
+.sl{font:500 11px 'JetBrains Mono';color:#8B95A7;margin-top:6px}.sl b{display:block;color:#E8ECF3;font:600 13px 'Inter Tight'}
+.pill{display:inline-block;padding:5px 12px;border-radius:999px;font:600 12px 'Inter Tight';letter-spacing:.08em;margin:4px 6px 4px 0}
+.kpi .v{font:600 32px 'Inter Tight';font-variant-numeric:tabular-nums;margin:6px 0 4px}.kpi .e{color:#8B95A7;font-size:13px}
+.call{background:#141A24;border-left:2px solid #1F8FFF;border-radius:8px;padding:14px 16px;font-size:14px;color:#C9D1DE}
+.rail{height:4px;background:#1F2733;border-radius:4px;margin:8px 0}.rail i{display:block;height:4px;border-radius:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;color:#8B95A7;font:600 11px 'JetBrains Mono';letter-spacing:.12em;text-transform:uppercase;padding:8px;border-bottom:1px solid #1F2733}td{padding:9px 8px;border-bottom:1px solid #1F2733}
+.mono{font-family:'JetBrains Mono',monospace;color:#6CC4FF}
+.small{color:#8B95A7;font-size:13px;line-height:1.5}
+</style></head><body><div class="wrap">
+<div class="hero"><div class="stripe" style="position:absolute;top:0;left:0;right:0;border-radius:0"></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" width="300" height="64">
+  <polygon points="4,50 12,50 19,34 11,34" fill="#6CC4FF"/>
+  <polygon points="16,50 24,50 34,24 26,24" fill="#2A4BD7"/>
+  <polygon points="28,50 36,50 49,14 41,14" fill="#F0303F"/>
+  <text x="62" y="46" font-family="'Inter Tight', 'Inter', Arial, sans-serif" font-size="32" font-weight="600" letter-spacing="9" fill="#E8ECF3">BEEMER</text>
+</svg></div><div class="k">Design board v2 · India tech edition</div></div>
+<h1>Precision research for<br>India's tech stocks.</h1><p>Buffett-grade fundamentals, engineered for first-time investors. Read the business, not the buzz.</p>
+<div style="position:absolute;right:60px;bottom:30px;transform:scale(2.2);transform-origin:bottom right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#141A24"/><stop offset="1" stop-color="#07090D"/></linearGradient></defs>
+  <rect x="1" y="1" width="62" height="62" rx="12" fill="url(#g)" stroke="#2A3342" stroke-width="1.2"/>
+  <polygon points="14,48 21,48 27,34 20,34" fill="#6CC4FF"/>
+  <polygon points="25,48 32,48 41,25 34,25" fill="#2A4BD7"/>
+  <polygon points="36,48 43,48 54,16 47,16" fill="#F0303F"/>
+</svg></div></div>
+<div class="grid">
+<div class="card s2"><h2>Brand story</h2><p style="margin:0;line-height:1.6">India's tech sector is where many first-time investors start — usually via hype. Buffett avoided tech he didn't understand. <b>Beemer makes it understandable</b>: 60+ listed Indian IT, SaaS, AI, internet, fintech and electronics-design companies run through one calm, precise instrument cluster — returns on capital, debt, profit consistency, moat, cash and price — each reading explained in a sentence.</p>
+<p class="small" style="margin-top:12px"><b style="color:#E8ECF3">Personality:</b> a performance engineer who's also a great teacher — confident, exact, understated. Never hype.</p></div>
+<div class="card s2"><h2>Mood</h2><p style="margin:0;line-height:1.6">Premium German performance-car interiors and EV dashboards: carbon-dark surfaces, hairline precision, a single electric accent, instrument-cluster read-outs, gauges that sweep, a tri-stripe signature used sparingly.</p>
+<p class="small" style="margin-top:12px">Inspiration only — no BMW logos, roundels, model names, fonts or M-stripe colours. Beemer's tri-stripe is its own Ice / Cobalt / Signal Red palette on slanted bars.</p></div>
+<div class="card s4"><h2>Colour</h2><div class="sw">
+<div><div class="s" style="background:#07090D"></div><div class="sl"><b>Carbon</b>#07090D</div></div>
+<div><div class="s" style="background:#0E121A"></div><div class="sl"><b>Graphite</b>#0E121A</div></div>
+<div><div class="s" style="background:#141A24"></div><div class="sl"><b>Gunmetal</b>#141A24</div></div>
+<div><div class="s" style="background:#1F2733"></div><div class="sl"><b>Hairline</b>#1F2733</div></div>
+<div><div class="s" style="background:#E8ECF3"></div><div class="sl"><b>Frost</b>#E8ECF3</div></div>
+<div><div class="s" style="background:#8B95A7"></div><div class="sl"><b>Titanium</b>#8B95A7</div></div>
+<div><div class="s" style="background:#1F8FFF"></div><div class="sl"><b>Electric Blue</b>#1F8FFF</div></div>
+<div><div class="s" style="background:#6CC4FF"></div><div class="sl"><b>Ice</b>#6CC4FF</div></div>
+<div><div class="s" style="background:#2A4BD7"></div><div class="sl"><b>Cobalt</b>#2A4BD7</div></div>
+<div><div class="s" style="background:#F0303F"></div><div class="sl"><b>Signal Red</b>#F0303F</div></div>
+<div><div class="s" style="background:#34D399"></div><div class="sl"><b>Volt Green</b>#34D399</div></div>
+<div><div class="s" style="background:#F5B83D"></div><div class="sl"><b>Amber</b>#F5B83D</div></div>
+<div><div class="s" style="background:#FF4D5E"></div><div class="sl"><b>Ember</b>#FF4D5E</div></div>
+<div><div class="s" style="background:#8B7CF6"></div><div class="sl"><b>Violet</b>#8B7CF6</div></div>
+<div><div class="s" style="background:#5B6577"></div><div class="sl"><b>Slate Dim</b>#5B6577</div></div>
+<div><div class="stripe" style="height:64px;border-radius:8px"></div><div class="sl"><b>Tri-stripe</b>signature, ≤1 per view</div></div>
+</div></div>
+<div class="card"><h2>Type</h2><div style="font:600 34px 'Inter Tight';letter-spacing:-.02em">Inter Tight</div><div class="small">Display · 600 · −0.02em</div>
+<div style="font:400 17px Inter;margin-top:12px">Inter — body copy that stays readable.</div>
+<div class="k" style="margin-top:12px;color:#6CC4FF">JetBrains Mono · TCS · 15:45 IST</div>
+<div style="font:600 30px 'Inter Tight';margin-top:10px;font-variant-numeric:tabular-nums">₹1,23,456.78</div></div>
+<div class="card kpi"><h2>Instrument tiles</h2><div class="k">ROE · 10Y median</div><div class="v" style="color:#34D399">38.4%</div><div class="e">Profit for every ₹100 owners put in. Buffett wants 15%+ for years.</div>
+<div class="k" style="margin-top:14px">Listed</div><div class="v">2024</div><div class="e">Too young for 10-year tests — read with care.</div></div>
+<div class="card"><h2>Score gauge</h2>
+<svg viewBox="0 0 200 170" width="100%"><path d="M40 150 A80 80 0 1 1 160 150" stroke="#1F2733" stroke-width="10" fill="none" stroke-linecap="round"/>
+<path d="M40 150 A80 80 0 1 1 172 98" stroke="#34D399" stroke-width="10" fill="none" stroke-linecap="round"/>
+<text x="100" y="105" text-anchor="middle" font-family="Inter Tight" font-weight="600" font-size="46" fill="#E8ECF3">82</text>
+<text x="100" y="130" text-anchor="middle" font-family="JetBrains Mono" font-size="11" letter-spacing="2" fill="#8B95A7">BUFFETT SCORE</text></svg>
+<span class="pill" style="color:#34D399;border:1px solid #34D399;background:rgba(52,211,153,.12)">82 · STRONG</span><span class="pill" style="color:#1F8FFF;border:1px solid #1F8FFF;background:rgba(31,143,255,.12)">67 · GOOD</span><span class="pill" style="color:#F5B83D;border:1px solid #F5B83D;background:rgba(245,184,61,.12)">51 · MIXED</span><span class="pill" style="color:#FF4D5E;border:1px solid #FF4D5E;background:rgba(255,77,94,.12)">22 · WEAK</span></div>
+<div class="card"><h2>Checklist row</h2>
+<div style="display:flex;gap:10px"><span>✅</span><div><b style="font-family:'Inter Tight'">⚙️ High, consistent ROE</b> <span class="small">18/20</span><div class="rail"><i style="width:90%;background:#34D399"></i></div><div class="small">ROE above 15% in 10 of 10 years.</div></div></div>
+<div style="display:flex;gap:10px;margin-top:12px"><span>⚠️</span><div><b style="font-family:'Inter Tight'">🏷️ Sensible price</b> <span class="small">6/15</span><div class="rail"><i style="width:40%;background:#F5B83D"></i></div><div class="small">"Price is what you pay, value is what you get."</div></div></div></div>
+<div class="card s2"><h2>Table</h2><table><tr><th>Company</th><th>Sub-sector</th><th>Score</th><th>ROE 10y</th><th>Listed</th></tr>
+<tr><td>Example Software <span class="mono">EXSW</span></td><td>☁️ SaaS</td><td><div class="rail" style="width:120px"><i style="width:82%;background:#1F8FFF"></i></div></td><td>31%</td><td class="mono">2002</td></tr>
+<tr><td>Sample Platforms <span class="mono">SMPL</span></td><td>📱 Internet</td><td><div class="rail" style="width:120px"><i style="width:28%;background:#1F8FFF"></i></div></td><td>−4%</td><td class="mono">2024</td></tr></table></div>
+<div class="card"><h2>Chart</h2><svg width="100%" height="120" viewBox="0 0 300 120"><g stroke="#1A212C"><line x1="0" y1="25" x2="300" y2="25"/><line x1="0" y1="60" x2="300" y2="60"/><line x1="0" y1="95" x2="300" y2="95"/></g><path d="M0 100 L30 92 L60 95 L90 75 L120 66 L150 80 L180 50 L210 45 L240 30 L270 26 L300 14 L300 120 L0 120Z" fill="#1F8FFF" opacity=".12"/><path d="M0 100 L30 92 L60 95 L90 75 L120 66 L150 80 L180 50 L210 45 L240 30 L270 26 L300 14" stroke="#1F8FFF" stroke-width="2" fill="none"/><path d="M0 104 L60 98 L120 90 L180 82 L240 70 L300 62" stroke="#8B95A7" stroke-width="1.4" fill="none" stroke-dasharray="4 4"/></svg><div class="small">Hairline grid · electric primary · dotted benchmark · caption under every chart.</div></div>
+<div class="card"><h2>Callout</h2><div class="call">💡 <b>In plain English:</b> held for 10 years, the Nifty IT index never lost money in our data — held for 1 year, it often did.</div></div>
+<div class="card s2"><h2>Voice</h2><table><tr><th>Do</th><th>Don't</th></tr><tr><td>"Listed in 2024 — too young for 10-year tests."</td><td>"🚀 Next multibagger AI stock!"</td></tr><tr><td>"ROE: profit earned for every ₹100 owners put in."</td><td>"ROE = NI / avg SE (TTM)."</td></tr><tr><td>"This is a rough estimate. Treat it as a sanity check."</td><td>"Target ₹4,200. Buy now."</td></tr></table></div>
+<div class="card s2"><h2>Icons & pages</h2><div style="font-size:15px;line-height:2">⚙️ Quality · 🛡️ Debt · 📈 Growth · 🏰 Moat · 💵 Cash · 🏷️ Price<br>🖥️ IT services · 🛰️ ER&amp;D · ☁️ SaaS · 🤖 AI &amp; data · 📱 Internet · 💳 Fintech · 🔌 Electronics</div>
+<div class="small" style="margin-top:10px"><b style="color:#E8ECF3">Cockpit</b> → <b style="color:#E8ECF3">Screener</b> → <b style="color:#E8ECF3">Company</b> → <b style="color:#E8ECF3">Academy</b>. Beemer is educational, not investment advice.</div></div>
+</div></div></body></html>
