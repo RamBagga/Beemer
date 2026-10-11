@@ -61,14 +61,13 @@ def _ist(ts):
 def _bt_note(belt, bt):
     b = (bt or {}).get(belt) or {}
     if belt == "short" and "hit_rate_3m" in b:
-        return (f"Track record (price-only version, monthly, {b['from']}–{b['to']}): the top 5 beat the median stock over the next 3 months in "
-                f"<b>{b['hit_rate_3m']*100:.0f}%</b> of months (median edge {b['median_excess_3m']*100:+.1f} pts); over 1 month it was close to a coin flip "
-                f"({b['hit_rate_1m']*100:.0f}%). Momentum is a tailwind, not a guarantee.")
+        return (f"Since {b['from'][-4:]}: beat the median stock over 3 months in <b>{b['hit_rate_3m']*100:.0f}%</b> of months "
+                f"(median {b['median_excess_3m']*100:+.1f} pts). Over 1 month, {b['hit_rate_1m']*100:.0f}%.")
     if belt == "volatile" and "after_down_1m_excess" in b:
-        return (f"Track record ({b['from']}–{b['to']}): in the month after a big <i>down</i> week, these stocks did {b['after_down_1m_excess']*100:+.1f} pts vs the median stock "
-                f"(median); after a big <i>up</i> week, {b['after_up_1m_excess']*100:+.1f} pts. Sharp moves often partly reverse — chasing them is risky.")
+        return (f"Since {b['from'][-4:]}: next month vs median, {b['after_down_1m_excess']*100:+.1f} pts after sharp falls, "
+                f"{b['after_up_1m_excess']*100:+.1f} pts after sharp rises. Sharp moves often partly reverse.")
     if belt == "long":
-        return "Not backtested: the score uses today's fundamentals, so testing it on old prices would quietly use future information. Judge it in years, not weeks."
+        return "Not backtested. Today's fundamentals can't be applied to past prices without hindsight."
     return ""
 
 
@@ -79,7 +78,7 @@ def css():
 .bmp-wrap {{ margin: 4px 0 6px; }}
 .bmp-head {{ display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:10px; }}
 .bmp-head .ttl {{ font:600 1.35rem 'Inter Tight',Inter,sans-serif; color:{C['text']}; letter-spacing:-.01em; }}
-.bmp-head .ttl span {{ color:{C['muted']}; font-weight:500; font-size:1rem; }}
+.bmp-head .ttl span {{ color:{C['muted']}; font-weight:500; font-size:.95rem; margin-left:8px; }}
 .bmp-head .upd {{ font:500 .7rem 'JetBrains Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:{C['muted']}; text-align:right; }}
 .bmp-head .upd b {{ color:{C['ice']}; font-weight:500; }}
 .bmp-disc {{ font-size:.78rem; color:{C['dim']}; margin:-4px 0 12px; line-height:1.45; }}
@@ -170,9 +169,9 @@ JS = r"""
     const dropped = changed && prev.length ? prev.filter(s => !cur.includes(s)) : [];
     try { W.localStorage.setItem(key, JSON.stringify({run: cfg.run, syms: cur})); } catch(e) {}
     tpl.forEach(el => { if (entered.includes(el.dataset.sym) && !el.querySelector('.new')) {
-      const t = document.createElement('span'); t.className = 'new'; t.textContent = 'NEW ON BELT'; el.prepend(t); } });
+      const t = document.createElement('span'); t.className = 'new'; t.textContent = 'NEW'; el.prepend(t); } });
     const chg = stage.parentElement.querySelector('.bmp-chg');
-    if (chg && (entered.length || dropped.length)) chg.innerHTML = '<span class="in">▲ ' + entered.length + ' joined</span> · <span class="out">▼ ' + dropped.length + ' left</span> since last update';
+    if (chg && (entered.length || dropped.length)) chg.innerHTML = '<span class="in">' + entered.length + ' in</span> · <span class="out">' + dropped.length + ' out</span>';
     // ring of cards long enough to fill the stage seamlessly
     const cw = tpl[0].offsetWidth || cfg.cw, gap = cfg.gap, step = cw + gap;
     const sw = stage.clientWidth || 1200;
@@ -190,8 +189,8 @@ JS = r"""
       const g = document.createElement('div');
       g.className = 'bmp-card ghost';
       g.style.setProperty('--cacc', '#FF4D5E');
-      g.innerHTML = '<span class="new">LEFT THE BELT</span><div class="r1"><span class="tk">' + s + '</span></div><div class="nm">' + (cfg.names[s] || '') + '</div>' +
-                    '<div class="why">No longer meets this belt\'s rules after the latest data run.</div>';
+      g.innerHTML = '<span class="new">EXITED</span><div class="r1"><span class="tk">' + s + '</span></div><div class="nm">' + (cfg.names[s] || '') + '</div>' +
+                    '<div class="why">No longer meets the rules.</div>';
       lane.appendChild(g);
       const startX = cfg.dir < 0 ? sw * 0.42 - j * step * 0.35 : sw * 0.58 - cw + j * step * 0.35;
       ghosts.push({el: g, x0: startX, t0: 500 + j * 700});
@@ -281,7 +280,7 @@ def _card(r, belt, new, compact):
         stxt += f' · BUFFETT {bs:.0f}'
     spark = _spark_svg(json.loads(r["spark"]) if isinstance(r["spark"], str) else r["spark"], cacc, 70 if compact else 92, 22 if compact else 28)
     why = html.escape(r["reason"])
-    newtag = '<span class="new">NEW ON BELT</span>' if new else ""
+    newtag = '<span class="new">NEW</span>' if new else ""
     body = (f'{newtag}<div class="r1"><span class="tk">{html.escape(r["symbol"])}</span>'
             f'<span class="sc" style="color:{scol};border-color:{scol};background:{scol}1F">SIGNAL {sc:.0f}</span></div>'
             f'<div class="nm">{html.escape(str(r["name"]))}</div>'
@@ -290,7 +289,7 @@ def _card(r, belt, new, compact):
     if not compact:
         body += f'<div class="why">{why}</div>'
     return (f'<a class="bmp-card" data-sym="{html.escape(r["symbol"])}" href="company?symbol={html.escape(r["symbol"])}" target="_self" '
-            f'title="{html.escape(r["name"])} — {why}. Click to open the company page." style="--cacc:{cacc}">{body}</a>')
+            f'title="{html.escape(r["name"])}. {why}." style="--cacc:{cacc}">{body}</a>')
 
 
 def _belt_html(belt, items, meta, names, compact, n):
@@ -305,7 +304,7 @@ def _belt_html(belt, items, meta, names, compact, n):
     cfg_json = json.dumps(cfg).replace("</", "<\\/")
     elig = (meta.get("eligible") or {}).get(belt)
     note = "" if compact else f'<div class="bmp-note">{_bt_note(belt, meta.get("backtest"))}</div>'
-    eltxt = f" · {elig} of {(meta.get('eligible') or {}).get('universe', '')} qualify" if elig is not None else ""
+    eltxt = f" {elig}/{(meta.get('eligible') or {}).get('universe', '')} qualify." if elig is not None else ""
     return (f'<div class="bmp-belt{" compact" if compact else ""}" style="--acc:{accent(belt)};--cw:{cw}px;--chh:{chh}px;--sh:{sh}px;--spot:{spot}px">'
             f'<div class="bmp-bh"><div><span class="k">Belt {n:02d} · {info["horizon"]}</span><span class="t">{info["title"]}</span><span class="bmp-chg"></span></div>'
             f'<div class="b">{info["blurb"]}{eltxt}</div></div>'
@@ -325,14 +324,13 @@ def render(compact=False):
     names = dict(zip(m.symbol, m.name)) if not m.empty else {}
     upd = _ist(meta.get("generated_at"))
     asof = pd.Timestamp(meta.get("as_of")).strftime("%d %b %Y") if meta.get("as_of") else "–"
-    head = (f'<div class="bmp-head"><div class="ttl">Beemer Picks <span>— data signals, not recommendations</span></div>'
-            f'<div class="upd">Updated <b>{upd}</b><br>prices as of {asof} · refreshes every trading day</div></div>')
-    disc = ('<div class="bmp-disc">Picked automatically by fixed, published rules from public price and financial data — not advice, not predictions, '
-            'and not a reason to buy or sell. Click a card for the full story; see <i>Academy → How Beemer Picks work</i> for the rules.</div>')
+    head = (f'<div class="bmp-head"><div class="ttl">Beemer Picks <span>Data signals, not recommendations.</span></div>'
+            f'<div class="upd">Updated <b>{upd}</b><br>Prices {asof} · Daily refresh</div></div>')
+    disc = '<div class="bmp-disc">Fixed rules. Top five per belt. Select a card for the company. Rules in Academy.</div>'
     belts = "".join(_belt_html(b, pk[pk.belt == b].sort_values("rank"), meta, names, compact, i)
                     for i, b in enumerate(["short", "long", "volatile"], 1) if (pk.belt == b).any())
     if compact:
-        head = (f'<div class="bmp-head"><div class="ttl" style="font-size:1.05rem">Beemer Picks <span>— data signals, not recommendations</span></div>'
+        head = (f'<div class="bmp-head"><div class="ttl" style="font-size:1.05rem">Beemer Picks <span>Data signals, not recommendations.</span></div>'
                 f'<div class="upd">Updated <b>{upd}</b></div></div>')
         disc = ""
     st.html(css() + f'<div class="bmp-wrap">{head}{disc}{belts}</div>' + JS, unsafe_allow_javascript=True)
