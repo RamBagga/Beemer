@@ -33,7 +33,10 @@ cd Beemer
 ```
 Then open **http://localhost:8501**.
 
-The first run creates a virtual environment, installs dependencies and downloads all market data. That takes about 8 to 10 minutes. After that, the app starts in seconds.
+The first run creates a virtual environment, installs dependencies and downloads the latest data snapshot that GitHub Actions publishes every weekday, which takes about a minute. If no snapshot is available, it builds the data from scratch instead (8 to 10 minutes). After that, the app starts in seconds.
+
+### Deploy it (free)
+Beemer is set up to deploy to **Streamlit Community Cloud**: sign in at [share.streamlit.io](https://share.streamlit.io) with GitHub, choose repo `RamBagga/Beemer`, branch `main`, main file `app/main.py`, Python 3.12, then click Deploy. Render (`render.yaml`) and Docker (`Dockerfile`) configs are included too. See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the comparison of free hosts, how data reaches the cloud, and the licensing caveats.
 
 ### 3. Everyday commands
 | Command | What it does |
@@ -44,6 +47,7 @@ The first run creates a virtual environment, installs dependencies and downloads
 | `./start.sh --stop` | Stop the app |
 | `./start.sh --cron` | Install the weekday auto-refresh (3:45 PM and 6:30 PM IST) |
 | `.venv/bin/python update_data.py` | Refresh data manually right now |
+| `make help` | Every other task: `make test` (render all pages), `make publish` (upload data for the cloud), `make docker-build` … |
 
 ### 4. Troubleshooting
 - **Port 8501 is busy:** `start.sh` automatically uses the next free port. Run `./start.sh --status` to see which one.
@@ -123,16 +127,19 @@ analytics.py             metrics, price cleaning, Buffett Score
 app/main.py              Streamlit entry (navigation)
 app/beemer.py            design system: CSS, Plotly template, components, copy
 app/views/*.py           Cockpit, Screener, Company, Academy
-app/.streamlit/config.toml  dark theme
+.streamlit/config.toml   dark theme (repo root, as Streamlit Cloud requires)
+bootstrap.py             downloads the published data snapshot on fresh hosts
+Dockerfile · render.yaml · Procfile · Makefile · .env.example   deployment configs
+.github/workflows/       update-data.yml (weekday data refresh → data-latest release) · ci.yml
 design/                  design board (md/html/png), logo & wordmark SVGs
-scripts/                 cron wrapper + installer, check_pages.py (headless render check + screenshots), shot.py
+scripts/                 cron wrapper + installer, publish_data.sh, smoke_test.py, healthcheck.sh, check_pages.py (headless render check + screenshots), shot.py
 requirements-dev.txt     playwright + pillow for the screenshot scripts
 data/universe_tech.csv   curated universe
 ```
 
 ## Roadmap
 - Licensed data feeds for a commercial launch
-- Public deployment
+- Public deployment (configs ready, see DEPLOYMENT.md)
 - Bigger universe (Nifty 500), watchlists and alerts
 
 ## License
