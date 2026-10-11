@@ -47,13 +47,11 @@ class _Tokens(dict):
 
 
 C = _Tokens()
-SUB_ICON = {"IT services": "🖥️", "Engineering & design R&D": "🛰️", "SaaS & software products": "☁️", "AI & data": "🤖",
-            "Internet & consumer tech": "📱", "Fintech": "💳", "Electronics & semicon design": "🔌"}
+SUB_ICON = {}   # retired: no emoji in the UI (see design board, tone of voice)
 LOGO = open(os.path.join(os.path.dirname(__file__), "static", "beemer-logo.svg")).read()
 WORDMARK = open(os.path.join(os.path.dirname(__file__), "static", "beemer-wordmark.svg")).read()
-DISCLAIMER = ("BEEMER is an educational tool, not investment advice, and is not registered with SEBI as an investment adviser or research analyst. "
-              "Data comes from public sources (Yahoo Finance prices, NSE index data, screener.in public company pages) and may contain errors or delays. "
-              "Past returns don't promise future ones. Do your own research or consult a SEBI-registered adviser before investing.")
+DISCLAIMER = ("For education only. Not investment advice. Beemer is not SEBI-registered. "
+              "Public data from Yahoo Finance, NSE and screener.in; it may be delayed or wrong. Past returns guarantee nothing.")
 
 # ---------------- Plotly template ----------------
 def _template(P):
@@ -100,7 +98,7 @@ h3 {{ font-size:1.25rem !important; margin-top:1.4rem !important; }}
 .bm-badge {{ display:inline-block; padding:4px 12px; border-radius:999px; font:600 .78rem 'Inter Tight', sans-serif; letter-spacing:.08em; text-transform:uppercase; vertical-align:middle; }}
 .bm-check {{ display:flex; gap:12px; padding:13px 0; border-bottom:1px solid {C['line']}; }}
 .bm-check:last-child {{ border-bottom:none; }}
-.bm-check .ic {{ font-size:1.1rem; line-height:1.5; }}
+.bm-check .ic {{ font:600 .6rem 'JetBrains Mono', monospace; letter-spacing:.12em; padding:3px 7px; border-radius:4px; height:max-content; margin-top:2px; min-width:46px; text-align:center; }}
 .bm-check .t {{ font-family:'Inter Tight', sans-serif; font-weight:600; color:{C['text']}; }}
 .bm-check .d {{ font-size:.9rem; color:{C['body']}; margin:3px 0; }}
 .bm-check .w {{ font-size:.82rem; color:{C['muted']}; }}
@@ -195,7 +193,7 @@ def theme_switch():
   background:transparent; color:{C['muted']}; }}
 .bm-theme button.on {{ background:{C['text']}; color:{C['surface']}; }}
 .bm-theme button:not(.on):hover {{ color:{C['text']}; }}
-</style><div class="bm-theme">{pill("Light", "☀ Studio", cur == "light")}{pill("Dark", "☾ Night", cur == "dark")}</div>"""
+</style><div class="bm-theme">{pill("Light", "Studio", cur == "light")}{pill("Dark", "Night", cur == "dark")}</div>"""
             + _THEME_JS.replace("__CUR__", cur), unsafe_allow_javascript=True)
 
 
@@ -204,15 +202,14 @@ def sidebar_footer():
     with st.sidebar:
         st.divider()
         if not m.empty:
-            st.caption(f"📅 Prices up to **{m['last_date'].max()}** · {len(m)} Indian tech companies")
-        st.caption("Educational only — not investment advice.")
+            st.caption(f"Data to {pd.Timestamp(m['last_date'].max()):%d %b %Y} · {len(m)} companies")
 
 
 
 def footer():
     m = load_metrics()
-    fresh = f" Prices as of {m['last_date'].max()}." if not m.empty else ""
-    st.markdown(f'<div class="bm-foot">⚖️ {DISCLAIMER}{fresh}</div>'
+    fresh = f" Prices as of {pd.Timestamp(m['last_date'].max()):%d %b %Y}." if not m.empty else ""
+    st.markdown(f'<div class="bm-foot">{DISCLAIMER}{fresh}</div>'
                 '<div class="bm-made">Made with ❤️ by baggak8s</div>', unsafe_allow_html=True)
 
 
@@ -232,7 +229,8 @@ def callout(html):
 
 
 def caption(text):
-    st.markdown(f'<div class="bm-caption">🔎 <b>What you\'re looking at:</b> {text}</div>', unsafe_allow_html=True)
+    text = text[:1].upper() + text[1:] if text else text
+    st.markdown(f'<div class="bm-caption">{text}</div>', unsafe_allow_html=True)
 
 
 def score_color(s):
@@ -327,26 +325,26 @@ def load_fund(sym, industry, price):
 
 # ---------------- explanations (plain English) ----------------
 EXPLAIN = {
-    "cagr": ("Yearly growth rate (CAGR)", "The steady yearly return that would turn the starting price into today's price. It smooths out the ups and downs.", "Buffett thinks in decades, so the 10- and 20-year numbers matter far more than last year's."),
-    "max_drawdown": ("Worst fall (max drawdown)", "The biggest drop from a peak to a later low. It shows how much pain an owner had to sit through.", "Buffett says you should only own a stock if you're comfortable seeing it fall 50% without panicking."),
-    "volatility": ("Volatility (3 years)", "How wildly the price swings in a typical year. Higher = a bumpier ride.", "Buffett treats volatility as an opportunity, not a risk — real risk is losing money permanently."),
-    "pe": ("P/E ratio", "How many rupees you pay for every ₹1 of yearly profit. P/E 20 = you pay 20 years of today's profit.", "A wonderful business at a fair price beats a fair business at a wonderful price — but price still matters."),
-    "pb": ("Price to book (P/B)", "Price compared with the accounting net worth per share. Banks are often judged on this.", "A high P/B is fine if the company earns a high return on that book value."),
-    "roe": ("Return on equity (ROE)", "Profit earned for every ₹100 of shareholders' money in the business.", "Buffett's favourite quality test: 15%+ year after year, without heavy debt."),
-    "roce": ("Return on capital employed (ROCE)", "Profit (before interest and tax) for every ₹100 of all capital used — owners' plus lenders'.", "Shows whether the business itself is good, regardless of how it is financed."),
-    "de": ("Debt to equity", "Borrowed money for every ₹1 of owners' money. Under 0.5 is comfortable.", "Buffett avoids companies that need lots of debt — debt turns bad years into disasters."),
-    "dy": ("Dividend yield", "Yearly dividend as a % of today's price — cash paid to you just for owning it.", "Good businesses that can't reinvest all their profit return it to owners."),
-    "fcf": ("Free cash flow (FCF)", "Cash left after running and investing in the business. This is money that could be paid to owners.", "Buffett values a business by the cash it can hand out over its life."),
-    "opm": ("Operating margin", "Out of every ₹100 of sales, how much is left as operating profit.", "High margins that stay high for years hint at a moat — pricing power competitors can't break."),
-    "growth": ("Sales & profit growth", "How fast revenue and profit have compounded per year.", "Steady, predictable growth is easier to value — Buffett prefers boring and consistent."),
-    "iv": ("Intrinsic value (rough)", "Our simple estimate of what the business is worth today, based on its future earnings and dividends, discounted at 12% a year.", "Buffett buys only when price is well below value — the 'margin of safety'."),
-    "mos": ("Margin of safety", "How far below our rough value estimate the price is. Positive = cushion; negative = priced above the estimate.", "Your protection against being wrong. Buffett's mentor Ben Graham called it the central idea of investing."),
+    "cagr": ("CAGR", "The steady yearly rate that turns the start price into today's.", "Judge in decades, not years."),
+    "max_drawdown": ("Max drawdown", "The deepest fall from a peak.", "Own it only if you could sit through a 50% fall."),
+    "volatility": ("Volatility, 3 yrs", "How hard the price swings in a typical year.", "Swings are noise. Permanent loss is risk."),
+    "pe": ("P/E", "Price paid per ₹1 of yearly profit.", "A fair price for a great business beats a great price for a fair one."),
+    "pb": ("P/B", "Price against book value per share.", "High P/B is fine when returns on that book are high."),
+    "roe": ("ROE", "Profit per ₹100 of shareholders' capital.", "15%+, year after year, without heavy debt."),
+    "roce": ("ROCE", "Operating profit per ₹100 of all capital, debt included.", "Tests the business, not its financing."),
+    "de": ("Debt / equity", "Borrowings per ₹1 of shareholders' capital.", "Under 0.5 is comfortable."),
+    "dy": ("Dividend yield", "Yearly dividend as a share of price.", "Cash returned when growth can't use it all."),
+    "fcf": ("Free cash flow", "Cash left after running and investing in the business.", "A business is worth the cash it can return."),
+    "opm": ("Operating margin", "Operating profit per ₹100 of sales.", "High and steady for years suggests a moat."),
+    "growth": ("Growth", "Yearly compounding of sales and profit.", "Steady beats spectacular."),
+    "iv": ("Value estimate", "Future earnings and dividends, discounted at 12% a year.", "Pay well below value."),
+    "mos": ("Margin of safety", "Gap between price and value estimate. Positive is a cushion.", "Protection against being wrong."),
 }
 
 
 def explain_md(key):
     t, what, why = EXPLAIN[key]
-    return f"**{t}** — {what} *Why Buffett cares:* {why}"
+    return f"**{t}.** {what} {why}"
 
 
 def short_inr(v):
@@ -374,4 +372,4 @@ def log_axis(fig, lo, hi, row=None, col=None, prefix="₹"):
 
 def explain_html(key):
     t, what, why = EXPLAIN[key]
-    return f"<b>{t}</b> — {what} <i>Why Buffett cares:</i> {why}"
+    return f"<b>{t}.</b> {what} {why}"
