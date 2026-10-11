@@ -12,7 +12,23 @@ import beemer as B
 from beemer import C
 import picks as P
 
-ACCENT = {"short": C["ice"], "long": C["green"], "volatile": C["amber"]}
+def accent(belt):
+    return {"short": C["ice"], "long": C["green"], "volatile": C["amber"]}[belt]
+
+
+# conveyor hardware per theme: light = brushed aluminium belt under a studio spotlight; dark = graphite belt at night
+HW = {
+    "light": dict(stage="linear-gradient(180deg,#FFFFFF,#EEF2F7)", slat_a="#AEB8C6", slat_b="#D9DFE7",
+                  surf_shadow="inset 0 1px 0 rgba(255,255,255,.9), inset 0 -6px 12px rgba(15,23,42,.10), 0 10px 18px -6px rgba(15,23,42,.25)",
+                  roller="radial-gradient(circle at 35% 30%, #FFFFFF, #CBD3DE 55%, #8E99AA)", roller_shadow="0 4px 10px rgba(15,23,42,.25)",
+                  card="linear-gradient(160deg,#FFFFFF,#F6F8FB 70%)", card_shadow="0 10px 22px -10px rgba(15,23,42,.30), 0 2px 4px rgba(15,23,42,.05)",
+                  beam=14, pool=22, light=True),
+    "dark": dict(stage="linear-gradient(180deg,#0E121A,#07090D)", slat_a="#1B2331", slat_b="#0F141D",
+                 surf_shadow="inset 0 1px 0 rgba(255,255,255,.06), inset 0 -8px 14px rgba(0,0,0,.6), 0 10px 18px rgba(0,0,0,.55)",
+                 roller="radial-gradient(circle at 35% 30%, #3A4558, #141A24 60%, #07090D)", roller_shadow="0 4px 10px rgba(0,0,0,.6)",
+                 card="linear-gradient(160deg,#141A24,#0E121A 70%)", card_shadow="0 10px 18px rgba(0,0,0,.45)",
+                 beam=16, pool=30, light=False),
+}
 SPEED = {"short": 34, "long": 26, "volatile": 46}            # px / second
 DIRECTION = {"short": -1, "long": -1, "volatile": 1}       # -1 = right→left
 
@@ -56,7 +72,9 @@ def _bt_note(belt, bt):
     return ""
 
 
-CSS = f"""
+def css():
+    H = HW[B.theme_type()]
+    return f"""
 <style>
 .bmp-wrap {{ margin: 4px 0 6px; }}
 .bmp-head {{ display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:10px; }}
@@ -65,7 +83,7 @@ CSS = f"""
 .bmp-head .upd {{ font:500 .7rem 'JetBrains Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:{C['muted']}; text-align:right; }}
 .bmp-head .upd b {{ color:{C['ice']}; font-weight:500; }}
 .bmp-disc {{ font-size:.78rem; color:{C['dim']}; margin:-4px 0 12px; line-height:1.45; }}
-.bmp-belt {{ position:relative; background:linear-gradient(180deg,{C['surface']},{C['bg']}); border:1px solid {C['line']}; border-radius:14px; margin-bottom:12px; overflow:hidden; }}
+.bmp-belt {{ position:relative; background:{H['stage']}; box-shadow:{C['shadow']}; border:1px solid {C['line']}; border-radius:14px; margin-bottom:12px; overflow:hidden; }}
 .bmp-belt:before {{ content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--acc); opacity:.8; }}
 .bmp-bh {{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:12px 18px 0 20px; flex-wrap:wrap; }}
 .bmp-bh .k {{ font:500 .66rem 'JetBrains Mono',monospace; letter-spacing:.16em; text-transform:uppercase; color:var(--acc); }}
@@ -74,30 +92,30 @@ CSS = f"""
 .bmp-stage {{ position:relative; height:var(--sh); overflow:hidden; cursor:default; }}
 /* spotlight: beam from above + pool of light on the belt */
 .bmp-beam {{ position:absolute; left:50%; top:-10px; width:var(--spot); height:calc(var(--sh) + 10px); transform:translateX(-50%); pointer-events:none;
-  background:radial-gradient(ellipse 60% 85% at 50% 0%, color-mix(in srgb, var(--acc) 16%, transparent), transparent 75%);
+  background:radial-gradient(ellipse 60% 85% at 50% 0%, color-mix(in srgb, var(--acc) {H['beam']}%, transparent), transparent 75%);
   clip-path:polygon(38% 0,62% 0,100% 100%,0 100%); }}
 .bmp-pool {{ position:absolute; left:50%; bottom:8px; width:calc(var(--spot) * 1.05); height:46px; transform:translateX(-50%); pointer-events:none; z-index:1;
-  background:radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--acc) 30%, transparent), transparent 70%); filter:blur(6px); }}
+  background:radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--acc) {H['pool']}%, transparent), transparent 70%); filter:blur(6px); }}
 .bmp-tick {{ position:absolute; left:50%; top:6px; transform:translateX(-50%); font:500 .58rem 'JetBrains Mono',monospace; letter-spacing:.2em; color:var(--acc); opacity:.55; pointer-events:none; }}
 /* conveyor */
 .bmp-conv {{ position:absolute; left:22px; right:22px; bottom:12px; height:30px; perspective:520px; z-index:0; }}
 .bmp-surf {{ position:absolute; inset:0; transform:rotateX(58deg); transform-origin:50% 100%; border-radius:4px;
-  background:repeating-linear-gradient(90deg, #1B2331 0 2px, #0F141D 2px 26px); background-size:26px 100%;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), inset 0 -8px 14px rgba(0,0,0,.6), 0 10px 18px rgba(0,0,0,.55); }}
+  background:repeating-linear-gradient(90deg, {H['slat_a']} 0 2px, {H['slat_b']} 2px 26px); background-size:26px 100%;
+  box-shadow:{H['surf_shadow']}; }}
 .bmp-rail {{ position:absolute; left:16px; right:16px; bottom:10px; height:3px; border-radius:2px; z-index:0;
   background:linear-gradient(90deg, transparent, {C['line']} 8%, {C['line']} 92%, transparent); }}
 .bmp-rail:after {{ content:""; position:absolute; left:calc(50% - var(--spot)/2); width:var(--spot); top:0; height:3px; background:linear-gradient(90deg,transparent,var(--acc),transparent); opacity:.65; }}
 .bmp-roll {{ position:absolute; bottom:6px; width:34px; height:34px; border-radius:50%; z-index:2;
-  background:radial-gradient(circle at 35% 30%, #3A4558, #141A24 60%, #07090D); border:1px solid {C['line']}; box-shadow:0 4px 10px rgba(0,0,0,.6); }}
+  background:{H['roller']}; border:1px solid {C['line']}; box-shadow:{H['roller_shadow']}; }}
 .bmp-roll i {{ position:absolute; inset:5px; border-radius:50%; border:1px dashed rgba(139,149,167,.45); }}
 .bmp-roll.l {{ left:6px; }} .bmp-roll.r {{ right:6px; }}
 .bmp-fade {{ position:absolute; top:0; bottom:0; width:70px; z-index:3; pointer-events:none; }}
-.bmp-fade.l {{ left:0; background:linear-gradient(90deg,{C['bg']},transparent); }}
-.bmp-fade.r {{ right:0; background:linear-gradient(270deg,{C['bg']},transparent); }}
+.bmp-fade.l {{ left:0; background:linear-gradient(90deg,{C['raised'] if H['light'] else C['bg']},transparent); }}
+.bmp-fade.r {{ right:0; background:linear-gradient(270deg,{C['raised'] if H['light'] else C['bg']},transparent); }}
 /* cards (luggage) */
 .bmp-card {{ position:absolute; left:0; bottom:30px; width:var(--cw); height:var(--chh); box-sizing:border-box; z-index:2; will-change:transform,opacity,filter;
-  background:linear-gradient(160deg,{C['raised']},{C['surface']} 70%); border:1px solid {C['line']}; border-radius:12px; padding:10px 12px;
-  text-decoration:none !important; color:{C['text']} !important; display:block; box-shadow:0 10px 18px rgba(0,0,0,.45);
+  background:{H['card']}; border:1px solid {C['line']}; border-radius:12px; padding:10px 12px;
+  text-decoration:none !important; color:{C['text']} !important; display:block; box-shadow:{H['card_shadow']};
   transform-origin:50% 100%; }}
 .bmp-card:before {{ content:""; position:absolute; inset:-1px; border-radius:12px; pointer-events:none; opacity:var(--p,0);
   border:1px solid var(--cacc); box-shadow:0 0 26px -4px var(--cacc), inset 0 0 18px -10px var(--cacc); }}
@@ -111,10 +129,10 @@ CSS = f"""
 .bmp-card .ch {{ font:500 .72rem 'JetBrains Mono',monospace; }}
 .bmp-card .st {{ font:500 .6rem 'JetBrains Mono',monospace; letter-spacing:.1em; color:{C['dim']}; margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
 .bmp-card .st b {{ font-weight:500; }}
-.bmp-card .why {{ font-size:.7rem; line-height:1.35; color:#C9D1DE; margin-top:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }}
+.bmp-card .why {{ font-size:.7rem; line-height:1.35; color:{C['body']}; margin-top:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }}
 .bmp-card .new {{ position:absolute; top:-8px; left:10px; font:600 .55rem 'JetBrains Mono',monospace; letter-spacing:.14em; padding:2px 6px; border-radius:4px;
   background:var(--cacc); color:{C['bg']}; }}
-.bmp-card.ghost {{ filter:grayscale(1) brightness(.6); z-index:1; }}
+.bmp-card.ghost {{ filter:grayscale(1) {'' if H['light'] else 'brightness(.6)'}; z-index:1; }}
 .bmp-card.ghost .new {{ background:{C['ember']}; }}
 .bmp-card img.spk {{ display:block; }}
 .bmp-chg {{ font:500 .62rem 'JetBrains Mono',monospace; letter-spacing:.12em; color:{C['muted']}; margin-left:12px; }}
@@ -207,8 +225,9 @@ JS = r"""
         const dy = (1 - e) * (c.isNew ? -90 : -36);
         const sc = (cfg.compact ? 0.94 + 0.08 * pe : 0.9 + 0.13 * pe);
         c.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + (dy - pe * (cfg.compact ? 3 : 8)).toFixed(1) + 'px,0) scale(' + sc.toFixed(3) + ')';
-        c.el.style.opacity = (Math.max(0, Math.min(1, e))).toFixed(3);
-        c.el.style.filter = 'brightness(' + (0.58 + 0.5 * pe).toFixed(3) + ') saturate(' + (0.65 + 0.35 * pe).toFixed(3) + ')';
+        c.el.style.opacity = (Math.max(0, Math.min(1, e)) * (cfg.light ? 0.55 + 0.45 * pe : 1)).toFixed(3);
+        c.el.style.filter = cfg.light ? 'saturate(' + (0.35 + 0.65 * pe).toFixed(3) + ') contrast(' + (0.86 + 0.14 * pe).toFixed(3) + ')'
+                                      : 'brightness(' + (0.58 + 0.5 * pe).toFixed(3) + ') saturate(' + (0.65 + 0.35 * pe).toFixed(3) + ')';
         c.el.style.setProperty('--p', pe.toFixed(3));
         c.el.style.zIndex = 2 + Math.round(pe * 10);
       });
@@ -251,7 +270,7 @@ def _spark_svg(vals, col, w=92, h=28):
 
 def _card(r, belt, new, compact):
     up = (r.get("direction") == "up") if belt == "volatile" else True
-    cacc = (C["green"] if up else C["ember"]) if belt == "volatile" else ACCENT[belt]
+    cacc = (C["green"] if up else C["ember"]) if belt == "volatile" else accent(belt)
     ch = r.get("chg_1d")
     chtxt = f'<span class="ch" style="color:{C["green"] if (ch or 0) >= 0 else C["ember"]}">{"▲" if (ch or 0) >= 0 else "▼"} {abs(ch or 0)*100:.2f}%</span>' if ch is not None and pd.notna(ch) else ""
     sc = r["score"]; scol = B.score_color(sc)
@@ -278,16 +297,16 @@ def _belt_html(belt, items, meta, names, compact, n):
     info = P.BELTS[belt]
     ch = (meta.get("changes") or {}).get(belt) or {}
     entered = set(ch.get("entered") or [])
-    cw, chh, sh, spot = (214, 116, 172, 300) if compact else (268, 156, 222, 380)
+    cw, chh, sh, spot = (214, 124, 182, 300) if compact else (268, 156, 222, 380)
     cards = "".join(_card(r, belt, r["symbol"] in entered, compact) for r in items.to_dict("records"))
     cfg = {"belt": belt, "run": meta.get("generated_at", ""), "items": list(items.symbol), "previous": ch.get("previous") or [],
            "names": {s: names.get(s, "") for s in (ch.get("previous") or [])}, "speed": SPEED[belt] * (0.85 if compact else 1),
-           "dir": DIRECTION[belt], "gap": 18 if compact else 26, "spot": spot, "cw": cw, "compact": compact}
+           "dir": DIRECTION[belt], "light": HW[B.theme_type()]["light"], "gap": 18 if compact else 26, "spot": spot, "cw": cw, "compact": compact}
     cfg_json = json.dumps(cfg).replace("</", "<\\/")
     elig = (meta.get("eligible") or {}).get(belt)
     note = "" if compact else f'<div class="bmp-note">{_bt_note(belt, meta.get("backtest"))}</div>'
     eltxt = f" · {elig} of {(meta.get('eligible') or {}).get('universe', '')} qualify" if elig is not None else ""
-    return (f'<div class="bmp-belt{" compact" if compact else ""}" style="--acc:{ACCENT[belt]};--cw:{cw}px;--chh:{chh}px;--sh:{sh}px;--spot:{spot}px">'
+    return (f'<div class="bmp-belt{" compact" if compact else ""}" style="--acc:{accent(belt)};--cw:{cw}px;--chh:{chh}px;--sh:{sh}px;--spot:{spot}px">'
             f'<div class="bmp-bh"><div><span class="k">Belt {n:02d} · {info["horizon"]}</span><span class="t">{info["title"]}</span><span class="bmp-chg"></span></div>'
             f'<div class="b">{info["blurb"]}{eltxt}</div></div>'
             f'<div class="bmp-stage"><div class="bmp-beam"></div><div class="bmp-tick">SPOTLIGHT</div>'
@@ -316,4 +335,4 @@ def render(compact=False):
         head = (f'<div class="bmp-head"><div class="ttl" style="font-size:1.05rem">Beemer Picks <span>— data signals, not recommendations</span></div>'
                 f'<div class="upd">Updated <b>{upd}</b></div></div>')
         disc = ""
-    st.html(CSS + f'<div class="bmp-wrap">{head}{disc}{belts}</div>' + JS, unsafe_allow_javascript=True)
+    st.html(css() + f'<div class="bmp-wrap">{head}{disc}{belts}</div>' + JS, unsafe_allow_javascript=True)
