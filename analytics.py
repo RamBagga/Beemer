@@ -375,23 +375,23 @@ def buffett_score(m):
     if m.get("roe_years_checked"):
         frac = m["roe_years_above_15"] / m["roe_years_checked"]
         pts = 14 * frac + 6 * (_lin(m.get("roe_median_10y"), 0.12, 0.25) or 0)
-        subs.append(dict(key="roe", icon="⚙️", name="High, consistent return on equity", max=20, pts=pts,
-            detail=f"ROE above 15% in {m['roe_years_above_15']} of the last {m['roe_years_checked']} years; median {m['roe_median_10y']*100:.0f}%.",
-            why="ROE is the profit a company earns on every ₹100 its owners have put in. Buffett looks for 15%+ year after year — proof the business is genuinely good, not lucky."))
+        subs.append(dict(key="roe", icon="", name="Return on equity", max=20, pts=pts,
+            detail=f"Above 15% in {m['roe_years_above_15']} of {m['roe_years_checked']} years. Median {m['roe_median_10y']*100:.0f}%.",
+            why="Profit per ₹100 of owners' capital. Buffett wants 15%+, year after year."))
     # 2 Debt (15) / ROA for lenders
     if m.get("is_financial"):
         if m.get("roa_median_5y") is not None:
             r = m["roa_median_5y"]
             pts = 15 * (_lin(r, 0.005, 0.02) or 0)
-            subs.append(dict(key="debt", icon="🛡️", name="Balance-sheet strength (return on assets, for lenders)", max=15, pts=pts,
-                detail=f"Median return on assets over 5 years: {r*100:.2f}%. (Borrowing is a lender's raw material, so we judge how well it uses its assets instead of debt/equity.)",
-                why="For a bank or NBFC, debt is normal. What matters is earning a healthy return on the huge pile of assets without taking reckless risks — 1.5%+ ROA is excellent for an Indian lender."))
+            subs.append(dict(key="debt", icon="", name="Balance sheet (lender)", max=15, pts=pts,
+                detail=f"5-year median return on assets {r*100:.2f}%.",
+                why="For lenders, debt is inventory. Return on assets is the test. 1.5%+ is excellent."))
     elif m.get("debt_to_equity") is not None:
         de = m["debt_to_equity"]
         pts = 15 * (1 - (_lin(de, 0.1, 1.5) or 0))
-        subs.append(dict(key="debt", icon="🛡️", name="Low debt", max=15, pts=pts,
-            detail=f"Debt-to-equity is {de:.2f} (₹{de:.2f} borrowed for every ₹1 of owners' money).",
-            why="Debt magnifies bad years. Buffett prefers businesses that can fund themselves, so a recession or rate hike can't sink them. Under 0.5 is comfortable; near zero is ideal."))
+        subs.append(dict(key="debt", icon="", name="Debt", max=15, pts=pts,
+            detail=f"Debt-to-equity {de:.2f}.",
+            why="Debt magnifies bad years. Under 0.5 is comfortable. Near zero is ideal."))
     # 3 Earnings consistency/growth (20)
     if m.get("profit_years_checked"):
         frac = m["profit_up_years"] / m["profit_years_checked"]
@@ -399,28 +399,29 @@ def buffett_score(m):
         pts = 10 * frac + 10 * (_lin(g, 0.0, 0.15) or 0) - 2 * m.get("loss_years_10y", 0)
         pts = max(pts, 0)
         gtxt = f"{g*100:.1f}% a year" if g is not None else "n/a"
-        subs.append(dict(key="growth", icon="📈", name="Steady earnings growth", max=20, pts=pts,
-            detail=f"Profit grew in {m['profit_up_years']} of the last {m['profit_years_checked']} years; long-run profit growth {gtxt}; loss years: {m.get('loss_years_10y',0)}.",
-            why="Buffett wants earnings he can predict. A company whose profits rise most years is easier to value and less likely to surprise you badly."))
+        ly = m.get('loss_years_10y', 0)
+        subs.append(dict(key="growth", icon="", name="Earnings consistency", max=20, pts=pts,
+            detail=f"Profit up in {m['profit_up_years']} of {m['profit_years_checked']} years. Long-run growth {gtxt}. {'No loss years.' if not ly else f'{ly} loss years.'}",
+            why="Predictable earnings are easier to value, and rarely surprise badly."))
     # 4 Moat proxy: margins level + stability (15)
     if m.get("opm_median_10y") is not None:
         lvl = _lin(m["opm_median_10y"], 0.08, 0.25) or 0
         stab = 1 - (_lin(m.get("opm_cv"), 0.1, 0.5) or 0) if m.get("opm_cv") is not None else 0.5
         rc = m.get("roce_median_10y")
-        rct = f" Median ROCE {rc*100:.0f}%." if rc is not None else ""
+        rct = f" ROCE {rc*100:.0f}%." if rc is not None else ""
         pts = 8 * lvl + 7 * stab
-        subs.append(dict(key="moat", icon="🏰", name="Durable advantage (moat) — high, stable margins", max=15, pts=pts,
-            detail=f"Median operating margin {m['opm_median_10y']*100:.0f}% over 10 years, latest {m['opm_latest']*100:.0f}%; margin swings are {'small' if stab>0.6 else 'moderate' if stab>0.3 else 'large'}.{rct}",
-            why="If competitors can't push a company's margins down for a decade, it probably has a 'moat' — a brand, network, licence or cost edge. Moats protect profits over the long run."))
+        subs.append(dict(key="moat", icon="", name="Moat", max=15, pts=pts,
+            detail=f"Operating margin {m['opm_median_10y']*100:.0f}% (10-yr median), {m['opm_latest']*100:.0f}% latest. {'Stable' if stab>0.6 else 'Moderate swings' if stab>0.3 else 'Volatile'}.{rct}",
+            why="Margins that hold for a decade signal pricing power competitors can't break."))
     # 5 FCF (15) — not applicable for financials
     if not m.get("is_financial") and m.get("fcf_years_checked"):
         frac = m["fcf_positive_years"] / m["fcf_years_checked"]
         conv = m.get("fcf_conversion_10y")
         pts = 10 * frac + 5 * (_lin(conv, 0.3, 0.9) or 0)
-        ctxt = f"; turned {conv*100:.0f}% of reported profit into free cash" if conv is not None else ""
-        subs.append(dict(key="fcf", icon="💵", name="Real cash generation (free cash flow)", max=15, pts=pts,
-            detail=f"Free cash flow positive in {m['fcf_positive_years']} of {m['fcf_years_checked']} years{ctxt}.",
-            why="Profit is an opinion, cash is a fact. Free cash flow is what's left after the business pays for its upkeep and growth — the money that can be returned to owners."))
+        ctxt = f" {conv*100:.0f}% of profit converted to cash." if conv is not None else ""
+        subs.append(dict(key="fcf", icon="", name="Cash generation", max=15, pts=pts,
+            detail=f"Free cash flow positive in {m['fcf_positive_years']} of {m['fcf_years_checked']} years.{ctxt}",
+            why="Profit is an opinion. Cash is a fact."))
     # 6 Valuation (15)
     if m.get("pe") is not None or m.get("margin_of_safety") is not None:
         pv = m.get("pe_vs_history"); mos = m.get("margin_of_safety")
@@ -428,22 +429,22 @@ def buffett_score(m):
         b = 7 * (_lin(mos, -0.5, 0.3) or 0) if mos is not None else 0
         parts = []
         if m.get("pe"): parts.append(f"P/E {m['pe']:.1f}")
-        if pv is not None: parts.append(f"{abs(pv)*100:.0f}% {'below' if pv<0 else 'above'} its own 10-year median ({m['pe_median_10y']:.1f})")
+        if pv is not None: parts.append(f"{abs(pv)*100:.0f}% {'below' if pv<0 else 'above'} its 10-yr median of {m['pe_median_10y']:.1f}")
         if mos is not None:
-            if mos > 0: mtxt = f"margin of safety {mos*100:.0f}%"
-            elif mos > -1: mtxt = f"priced {-mos*100:.0f}% above the estimate"
-            else: mtxt = f"price is {1-mos:.1f}× the estimate"
-            parts.append(f"rough intrinsic value ₹{m['intrinsic_value']:,.0f} vs price ₹{m['price']:,.0f} ({mtxt})")
-        if m.get("eps_distorted"): parts.append("note: recent reported profit includes large one-off items (e.g. a demerger or exceptional gain), so we use the P/E on underlying earnings and the history comparison is less reliable")
-        subs.append(dict(key="value", icon="🏷️", name="Sensible price (valuation & margin of safety)", max=15, pts=a + b,
+            if mos > 0: mtxt = f"{mos*100:.0f}% margin of safety"
+            elif mos > -1: mtxt = f"{-mos*100:.0f}% above estimate"
+            else: mtxt = f"{1-mos:.1f}× estimate"
+            parts.append(f"value estimate ₹{m['intrinsic_value']:,.0f}, {mtxt}")
+        if m.get("eps_distorted"): parts.append("recent profit includes one-offs, so history is less comparable")
+        subs.append(dict(key="value", icon="", name="Price", max=15, pts=a + b,
             detail="; ".join(parts) + ".",
-            why="\"Price is what you pay, value is what you get.\" Even a great business is a poor investment if you overpay. Buffett wants a cushion — a margin of safety — between price and value."))
+            why="Price is what you pay. Value is what you get. Buffett wants a margin of safety."))
     if not subs:
         return None, subs
     tot = sum(s["pts"] for s in subs); mx = sum(s["max"] for s in subs)
     for s in subs:
         f = s["pts"] / s["max"]
-        s["status"] = "✅" if f >= 0.7 else ("⚠️" if f >= 0.4 else "❌")
+        s["status"] = "pass" if f >= 0.7 else ("watch" if f >= 0.4 else "fail")
     return round(100 * tot / mx, 1), subs
 
 

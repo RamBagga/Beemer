@@ -42,12 +42,12 @@ IST = ZoneInfo("Asia/Kolkata")
 RULES_VERSION = "1.0"
 TOP_N = 5
 BELTS = {
-    "short": {"title": "Short-term momentum", "horizon": "1–3 months",
-              "blurb": "Beating Nifty IT lately, with trend, volume and results behind the move."},
-    "long": {"title": "Long-term compounders", "horizon": "5 years +",
-             "blurb": "Buffett-style quality — high, steady returns on capital at a sensible price."},
-    "volatile": {"title": "Volatile movers", "horizon": "last 1–5 days",
-                 "blurb": "The biggest unusual moves this week, up and down. Movement ≠ opportunity."},
+    "short": {"title": "Momentum", "horizon": "1–3 months",
+              "blurb": "Outpacing Nifty IT, with trend and results behind it."},
+    "long": {"title": "Compounders", "horizon": "5 years +",
+             "blurb": "Quality businesses at sensible prices."},
+    "volatile": {"title": "Movers", "horizon": "Last 5 days",
+                 "blurb": "The largest unusual moves, up and down."},
 }
 W_SHORT = {"rs3": .35, "rs1": .15, "trend": .20, "volsurge": .10, "results": .20}
 W_LONG = {"buffett": .40, "roe_consistency": .15, "roce": .15, "valuation": .15, "growth": .15}
@@ -194,40 +194,39 @@ def _p(x, d=1):
 
 
 def reason_short(r):
-    bits = [f"beat Nifty IT by {r.rs3*100:.0f} pts over 3 months"]
+    bits = [f"+{r.rs3*100:.0f} pts vs Nifty IT, 3M"]
     if r.close > r.dma50 and pd.notna(r.dma200) and r.dma50 > r.dma200:
-        bits.append("above its 50- & 200-day averages")
+        bits.append("Above 50- and 200-day averages")
     elif r.close > r.dma50:
-        bits.append("back above its 50-day average")
+        bits.append("Above 50-day average")
+    q = pd.Timestamp(r.qtr).strftime("%b-%y") + " qtr" if pd.notna(r.get("qtr")) else ""
     if pd.notna(r.get("profit_yoy")) and r.profit_yoy > 0.1:
-        bits.append(f"{r.qtr} profit {_p(r.profit_yoy, 0)} YoY")
+        bits.append(f"{q} profit {_p(r.profit_yoy, 0)}")
     elif pd.notna(r.get("sales_yoy")) and r.sales_yoy > 0.1:
-        bits.append(f"{r.qtr} sales {_p(r.sales_yoy, 0)} YoY")
+        bits.append(f"{q} sales {_p(r.sales_yoy, 0)}")
     if pd.notna(r.volsurge) and r.volsurge > 1.3:
-        bits.append(f"volume {r.volsurge:.1f}× normal")
-    s = "; ".join(bits[:3])
-    return s[0].upper() + s[1:]
+        bits.append(f"Volume {r.volsurge:.1f}×")
+    return " · ".join(bits[:3])
 
 
 def reason_long(r, m):
     bits = [f"Buffett Score {m.buffett_score:.0f}"]
     if m.get("roe_years_checked"):
-        bits.append(f"ROE > 15% in {int(m.roe_years_above_15)} of {int(m.roe_years_checked)} yrs")
+        bits.append(f"ROE 15%+ in {int(m.roe_years_above_15)}/{int(m.roe_years_checked)} yrs")
     pv = m.get("pe_vs_history")
     if pv is not None and not pd.isna(pv):
-        bits.append(f"P/E {abs(pv)*100:.0f}% {'below' if pv < 0 else 'above'} its 10-yr norm")
+        bits.append(f"P/E {abs(pv)*100:.0f}% {'below' if pv < 0 else 'above'} 10-yr median")
     elif r.g is not None and not pd.isna(r.g):
-        bits.append(f"profit {_p(r.g, 0)}/yr over 5 yrs")
-    return "; ".join(bits)
+        bits.append(f"Profit {_p(r.g, 0)}/yr, 5 yrs")
+    return " · ".join(bits)
 
 
 def reason_vol(r):
-    d = "Up" if r.r5 > 0 else "Down"
-    s = f"{d} {abs(r.r5)*100:.1f}% in 5 days — {abs(r.z5):.1f}× its normal weekly swing"
+    s = f"{_p(r.r5)} in 5 days · {abs(r.z5):.1f}× normal swing"
     if pd.notna(r.volx) and r.volx > 1.5:
-        s += f"; volume {r.volx:.1f}× usual"
+        s += f" · Volume {r.volx:.1f}×"
     elif abs(r.z1) > 2:
-        s += f"; {_p(r.r1)} on the last day"
+        s += f" · {_p(r.r1)} last session"
     return s
 
 
