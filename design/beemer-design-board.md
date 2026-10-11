@@ -28,7 +28,43 @@ shown honestly, with how long they've been listed and how far they are from Buff
 - **Wordmark** (`beemer-wordmark.svg`): BEEMER in Inter Tight SemiBold, all caps, wide tracking (+0.28em), led by the tri-bar mark.
 - Clear space = height of the tallest bar. Min size 20px (mark) / 110px (wordmark). Never recolour the bars, never add gradients/glows to the mark.
 
-## 3. Colour palette (dark-first)
+## 3. Colour palettes — Studio (light, default) and Night drive (dark)
+
+Beemer opens in **Studio**: a bright, precise light theme that feels like a car-configurator showroom, with porcelain floors,
+brushed-silver surfaces, crisp ink type and one electric-blue accent. **Night drive** is the original dark cockpit; viewers switch
+with the ☀ Studio / ☾ Night pills in the sidebar, and the choice is remembered per browser. Tokens live in `app/beemer.py` (`PALETTES`)
+and `.streamlit/config.toml`; never hard-code a hex in a view.
+
+### 3a. Studio (light, default)
+| Role | Name | Hex |
+|---|---|---|
+| App background | Porcelain | `#F4F6F9` |
+| Cards / surfaces | Paper | `#FFFFFF` |
+| Raised surface / inputs / table header | Mist | `#EEF2F7` |
+| Sidebar | Brushed Silver | `#EDF0F4` |
+| Hairlines / borders | Silver | `#DDE3EB` |
+| Chart gridlines | Frost Line | `#E9EDF2` |
+| Primary text / headings | Ink | `#0B1220` |
+| Body copy | Graphite | `#2B3444` |
+| Secondary text | Steel | `#5B6577` |
+| Tertiary / disclaimers | Pewter | `#8A94A6` |
+| Primary accent, focus, main series | Electric Blue | `#1F8FFF` (same as dark) |
+| Accent text, tickers, links | Deep Ice | `#0A72D1` (Ice darkened for AA contrast on white) |
+| Positive | Volt Green (deep) | `#0E9F6E` |
+| Caution / neutral score | Amber (deep) | `#B7791F` |
+| Negative | Ember (deep) | `#E0364A` |
+| Tertiary series | Violet (deep) | `#6D5AE6` |
+| Neutral bars (e.g. sales) | Steel Blue Tint | `#BFD3EE` |
+
+- **Elevation:** light needs depth, so cards, hero and lessons get one soft two-layer shadow:
+  `0 1px 2px rgba(15,23,42,.04), 0 12px 28px -16px rgba(15,23,42,.22)`. No other shadows.
+- **Hero:** Paper → Mist diagonal gradient (`#FFFFFF → #F3F6FA → #E8EDF4`), with the tri-stripe hairline along the top edge.
+- **Picks belts:** the conveyor is a brushed-aluminium belt (slats `#AEB8C6` / `#D9DFE7`) with polished-silver rollers under a soft
+  studio spotlight. Cards are white; outside the spotlight they fade and desaturate rather than darken.
+- **Wordmark:** `beemer-wordmark-light.svg` uses Ink text. The tri-bar mark and its graphite tile are unchanged.
+- **Brand tri-stripe is theme-independent:** Ice `#6CC4FF` · Cobalt `#2A4BD7` · Signal Red `#F0303F`.
+
+### 3b. Night drive (dark)
 | Role | Name | Hex |
 |---|---|---|
 | App background | Carbon | `#07090D` |
@@ -58,7 +94,7 @@ Accent discipline: ≤10% of any screen is coloured; colour = meaning.
 - **KPI numerals:** Inter Tight 600, 30px, tabular figures.
 
 ## 5. Chart styling (Plotly template `beemer`)
-- Transparent background on Carbon; horizontal gridlines only in `#1A212C`; no axis lines; ticks in Titanium 12px.
+- Transparent background (Porcelain in Studio, Carbon in Night drive); horizontal gridlines only (`#E9EDF2` light / `#1A212C` dark); no axis lines; ticks in Steel / Titanium 12px. Two Plotly templates: `beemer_light` (default) and `beemer_dark`.
 - Colorway: Electric Blue, Ice, Amber, Volt Green, Violet, Ember.
 - 1.6–2px lines; area fills ≤12% opacity; drawdown (underwater) charts in Ember at 22%.
 - Benchmark lines dotted Titanium. Log scale for long price histories with 1-2-5 ₹ ticks (₹1k, ₹1 L, ₹1 Cr).
@@ -67,7 +103,7 @@ Accent discipline: ≤10% of any screen is coloured; colour = meaning.
 
 ## 6. Components
 - **Cards:** Graphite, 1px Hairline, 12px radius, 18–20px padding, no drop shadows; optional 2px top tri-stripe for hero/feature cards.
-- **Hero / header bar:** Carbon→Graphite gradient, tri-stripe hairline along the top edge, kicker in caps mono.
+- **Hero / header bar:** Paper→Mist gradient with a soft shadow in Studio (Graphite→Carbon in Night drive), tri-stripe hairline along the top edge, kicker in caps mono.
 - **KPI tiles (instrument cluster):** caps label → big tabular numeral (coloured only when it carries meaning) → one-line explanation.
 - **Score gauge:** 270° thin-arc gauge (iDrive-style) with numeric read-out in the centre; also compact pill badges (`82 · STRONG`) with 1px coloured outline + 12% tint.
 - **Checklist rows:** status glyph · test name · thin progress rail (4px) · finding · "Why Buffett cares".
