@@ -46,8 +46,14 @@ fi
 
 # 2. data
 if [ ! -f data/metrics.parquet ]; then
-  echo "→ first run: downloading prices + fundamentals (≈8–10 min, polite rate limits)…"
-  .venv/bin/python update_data.py
+  # fastest: the snapshot published by GitHub Actions (seconds); otherwise build it here (≈8–10 min)
+  echo "→ first run: fetching the latest published data snapshot…"
+  if BEEMER_BOOTSTRAP_FALLBACK=none .venv/bin/python bootstrap.py --download-only; then
+    rm -f data/.published_manifest.json   # from now on this copy is local: updated by ./start.sh --cron / update_data.py
+  else
+    echo "→ no snapshot available: downloading prices + fundamentals (≈8–10 min, polite rate limits)…"
+    .venv/bin/python update_data.py
+  fi
 fi
 
 # 3. optional schedule
