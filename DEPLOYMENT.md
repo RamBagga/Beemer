@@ -126,8 +126,13 @@ Local run, without Docker:
 
 ```bash
 ./start-new.sh
+./start-new.sh --status
+./start-new.sh --stop
 # API  http://127.0.0.1:8080/swagger-ui.html
 # App  http://127.0.0.1:5173
+# logs: logs/api.log  logs/web.log
 ```
 
-Needs Java 21, Maven, Node 22 and Python 3.12. `make api-test` runs the Java tests. `make web-build` builds the frontend. CI for this stack is `.github/workflows/spring-react.yml` (backend tests, frontend build, Playwright smoke). The existing `.github/workflows/ci.yml` still covers Streamlit.
+The script detaches both processes (same idea as `start.sh`), so closing the terminal does not stop them. It builds `backend/target/beemer-api-1.0.0.jar` when sources changed and runs `java -jar`. If `java` on PATH is older than 21, it uses Homebrew `openjdk@21` or `/usr/libexec/java_home -v 21`, and exits with a clear message when no JDK 21 is installed. When `data/market.db` has no `company_metrics` table, `bootstrap.py` fills it from `metrics.parquet` before the API starts.
+
+Needs Java 21, Maven (only to build the jar), Node 22 and Python 3.12. `make api-test` runs the Java tests. `make web-build` builds the frontend. CI for this stack is `.github/workflows/spring-react.yml` (backend tests, frontend build, Playwright smoke). The existing `.github/workflows/ci.yml` still covers Streamlit.

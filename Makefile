@@ -45,7 +45,7 @@ api:             ## Spring Boot API on :8080 (new stack)
 	cd backend && mvn -q -DskipTests spring-boot:run
 web:             ## React dev server on :5173 (new stack)
 	cd frontend && npm run dev -- --host 127.0.0.1 --port 5173
-new:             ## API + React together
+new:             ## API + React in the background (start-new.sh)
 	./start-new.sh
 api-test:        ## Java unit tests against Python golden files
 	cd backend && mvn -B test
