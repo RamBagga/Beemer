@@ -162,7 +162,30 @@ def ensure_data(force=False, allow_pipeline=True):
                 else:
                     status["source"] = "missing"
         status["version"] = (_read_json(MANIFEST) or {}).get("generated_at", status["source"])
+        _maybe_export_metrics()
         return status
+
+
+def _maybe_export_metrics():
+    """Fill company_metrics from metrics.parquet when a published snapshot predates that table.
+
+    The Java API reads this table over JDBC. Streamlit is unchanged. Failures are logged, not fatal.
+    """
+    if not (os.path.exists(DB) and os.path.exists(METRICS)):
+        return
+    try:
+        con = sqlite3.connect(DB)
+        try:
+            n = con.execute("SELECT COUNT(*) FROM company_metrics").fetchone()[0]
+        except sqlite3.OperationalError:
+            n = 0
+        if n == 0:
+            import analytics
+            wrote = analytics.export_metrics_sqlite(con, parquet_path=METRICS)
+            log.info("exported %s company_metrics rows for the Java API", wrote)
+        con.close()
+    except Exception as e:
+        log.warning("company_metrics export skipped: %s", e)
 
 
 def main():

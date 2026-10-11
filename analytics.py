@@ -453,6 +453,56 @@ def score_label(s):
     return "Strong" if s >= 75 else "Good" if s >= 60 else "Mixed" if s >= 40 else "Weak"
 
 
+def _json_cell(v):
+    """Scalar safe for JSON. NaN / NA become null so JDBC clients can store the row."""
+    if v is None or v is pd.NA:
+        return None
+    try:
+        if pd.isna(v):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if isinstance(v, (np.floating, float)):
+        v = float(v)
+        return None if math.isnan(v) or math.isinf(v) else v
+    if isinstance(v, (np.integer,)):
+        return int(v)
+    if isinstance(v, (np.bool_,)):
+        return bool(v)
+    if isinstance(v, pd.Timestamp):
+        return v.isoformat()
+    return v
+
+
+def export_metrics_sqlite(con, frame=None, parquet_path=None):
+    """Denormalise metrics into SQLite so the Java API can use JDBC only.
+
+    Streamlit keeps reading ``metrics.parquet``. This table is additive and is
+    rebuilt whenever the pipeline writes metrics (or when bootstrap fills a
+    snapshot that predates the table).
+    """
+    if frame is None:
+        if not parquet_path:
+            raise ValueError("frame or parquet_path is required")
+        frame = pd.read_parquet(parquet_path)
+    con.execute("DROP TABLE IF EXISTS company_metrics")
+    con.execute("""CREATE TABLE company_metrics(
+        symbol TEXT PRIMARY KEY, name TEXT, subsector TEXT, theme TEXT, industry TEXT,
+        buffett_score REAL, score_label TEXT, payload TEXT)""")
+    n = 0
+    for rec in frame.to_dict(orient="records"):
+        clean = {k: _json_cell(v) for k, v in rec.items()}
+        con.execute(
+            "INSERT INTO company_metrics VALUES (?,?,?,?,?,?,?,?)",
+            (clean.get("symbol"), clean.get("name"), clean.get("subsector"), clean.get("theme"),
+             clean.get("industry"), clean.get("buffett_score"), clean.get("score_label"),
+             json.dumps(clean, allow_nan=False)),
+        )
+        n += 1
+    con.commit()
+    return n
+
+
 def build_metrics(con, syms):
     uni = pd.read_sql("SELECT * FROM universe", con).set_index("symbol")
     rows = []

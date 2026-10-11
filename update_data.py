@@ -243,9 +243,10 @@ def main():
     if not (a.skip_fund or a.prices_only):
         update_fundamentals(con, syms, force=a.force_fund)
     sys.path.insert(0, BASE)
-    from analytics import build_metrics
+    from analytics import build_metrics, export_metrics_sqlite
     m = build_metrics(con, syms)
     m.to_parquet(os.path.join(DATA, "metrics.parquet"))
+    export_metrics_sqlite(con, frame=m)
     con.execute("INSERT INTO runs VALUES (?,?,?)", (dt.datetime.now().isoformat(), "metrics", str(len(m))))
     con.commit()
     log.info("done: metrics for %d stocks", len(m))
