@@ -503,12 +503,15 @@ def export_metrics_sqlite(con, frame=None, parquet_path=None):
     return n
 
 
-def build_metrics(con, syms):
-    uni = pd.read_sql("SELECT * FROM universe", con).set_index("symbol")
+def build_metrics(con, syms, uni=None):
+    """Metrics for ``syms``. ``uni`` (index symbol; name, industry, subsector, theme, note) defaults to the
+    curated universe table; the extended universe passes its own frame."""
+    if uni is None:
+        uni = pd.read_sql("SELECT * FROM universe", con).set_index("symbol")
     rows = []
     for s in syms:
         p = prices(con, s)
-        if p.empty:
+        if p.empty or s not in uni.index:
             continue
         m = {"symbol": s, "name": uni.loc[s, "name"], "industry": uni.loc[s, "industry"],
              "subsector": uni.loc[s, "subsector"], "theme": uni.loc[s, "theme"], "note": uni.loc[s, "note"]}

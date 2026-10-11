@@ -7,12 +7,17 @@ Usage:
   python update_data.py --force-fund    # refresh all fundamentals now
   python update_data.py --prices-only   # intraday snapshot (e.g. 3:45 PM IST): prices + metrics only
   python update_data.py --universe nifty500   # other universes (NSE index constituent CSV)
+  python update_data.py --core-only     # curated 64 only: no extended universe, no NSE filing feeds
+  python update_data.py --skip-feeds    # extended universe prices + metrics, but no NSE filing feeds
   Default universe = data/universe_tech.csv (curated Indian tech/SaaS/AI/fintech list; edit to add names)
 
 Sources:
   * Constituents: NSE archives index constituent CSV (public)
   * Prices: Yahoo Finance via yfinance (.NS tickers, ^NSEI, ^BSESN)
-  * Fundamentals: screener.in public company pages (polite: 1 req / ~4s, cached, weekly refresh)
+  * Fundamentals: screener.in public company pages (polite: 1 req / ~4s, cached, weekly refresh;
+    extended universe monthly, BEEMER_EXT_FUND_BUDGET companies per run)
+  * Extended universe, delivery %, index valuations, corporate actions, shareholding, insider trades,
+    deals and official XBRL results: NSE public files and feeds (sources/, run by expand_data.py)
 """
 import argparse, datetime as dt, io, json, logging, os, random, re, sqlite3, sys, time
 import pandas as pd, requests
@@ -32,6 +37,12 @@ UNIVERSES = {
     "nifty500": "https://archives.nseindia.com/content/indices/ind_nifty500list.csv",
 }
 INDICES = {"^CNXIT": "Nifty IT", "^NSEI": "Nifty 50", "^BSESN": "Sensex"}
+# broader market context (Yahoo symbols; db symbol -> Yahoo ticker). NSE's own daily index file
+# (index_eod table, sources/nse_archives.py) adds every other NSE index with P/E, P/B and yield.
+CONTEXT_INDICES = {"^CRSLDX": "^CRSLDX", "^CNX100": "^CNX100", "^NSEBANK": "^NSEBANK", "^NSEMDCP50": "^NSEMDCP50",
+                   "^NIFTYSMLCAP250": "NIFTYSMLCAP250.NS", "^INDIAVIX": "^INDIAVIX", "^CNXPHARMA": "^CNXPHARMA"}
+EXT_FUND_MAX_AGE_DAYS = 30
+EXT_FUND_BUDGET = int(os.environ.get("BEEMER_EXT_FUND_BUDGET", "40"))   # extended-universe screener pages per run
 FUND_MAX_AGE_DAYS = 7
 # stop hammering screener.in when it is clearly refusing us (e.g. blocked cloud/CI IP ranges):
 # after this many companies in a row return nothing, keep the cached fundamentals and move on
@@ -52,6 +63,8 @@ def db():
     CREATE TABLE IF NOT EXISTS fund_meta(symbol TEXT PRIMARY KEY, fetched_at TEXT, basis TEXT, top_ratios TEXT, about TEXT);
     CREATE TABLE IF NOT EXISTS runs(ts TEXT, step TEXT, detail TEXT);
     """)
+    from sources import store
+    store.ensure(con)
     return con
 
 
@@ -194,13 +207,16 @@ def fetch_screener(sym, session):
     return None, rows, {}, ""
 
 
-def update_fundamentals(con, symbols, force=False):
+def update_fundamentals(con, symbols, force=False, max_age_days=FUND_MAX_AGE_DAYS, budget=None):
     s = requests.Session(); s.headers.update({"User-Agent": UA, "Accept-Language": "en-US,en;q=0.9"})
     done = fails = 0
     for sym in symbols:
         row = con.execute("SELECT fetched_at FROM fund_meta WHERE symbol=?", (sym,)).fetchone()
-        if row and not force and (dt.datetime.now() - dt.datetime.fromisoformat(row[0])).days < FUND_MAX_AGE_DAYS:
+        if row and not force and (dt.datetime.now() - dt.datetime.fromisoformat(row[0])).days < max_age_days:
             continue
+        if budget is not None and done + fails >= budget:
+            log.info("fundamentals: per-run budget of %d companies reached; the rest follow on later runs", budget)
+            break
         try:
             basis, rows, top, about = fetch_screener(sym, s)
             if not basis:
@@ -235,27 +251,58 @@ def main():
     ap.add_argument("--full-prices", action="store_true")
     ap.add_argument("--force-fund", action="store_true")
     ap.add_argument("--skip-fund", action="store_true")
+    ap.add_argument("--core-only", action="store_true", help="skip the extended universe and the extra NSE datasets")
+    ap.add_argument("--skip-feeds", action="store_true", help="extended universe prices/metrics, but no NSE filing feeds")
     a = ap.parse_args()
     con = db()
     syms = load_universe(con, a.universe)
-    tick = {s: f"{s}.NS" for s in syms}; tick.update({k: k for k in INDICES})
+    ext = []
+    if not a.core_only and a.universe == "tech":
+        try:
+            from sources import universe as U
+            U.build(con, UNIVERSES["tech"])
+            ext = [s for s in U.load(con, "ext").symbol if s not in syms]
+        except Exception as e:  # never fail the core run over the extended universe
+            log.warning("extended universe unavailable: %s", e)
+    tick = {s: f"{s}.NS" for s in syms + ext}; tick.update({k: k for k in INDICES})
+    if not a.core_only:
+        tick.update(CONTEXT_INDICES)
     update_prices(con, tick, full=a.full_prices)
     if not (a.skip_fund or a.prices_only):
         update_fundamentals(con, syms, force=a.force_fund)
+        if ext:
+            update_fundamentals(con, ext, force=a.force_fund, max_age_days=EXT_FUND_MAX_AGE_DAYS, budget=EXT_FUND_BUDGET)
     sys.path.insert(0, BASE)
     from analytics import build_metrics, export_metrics_sqlite
     m = build_metrics(con, syms)
-    m.to_parquet(os.path.join(DATA, "metrics.parquet"))
-    export_metrics_sqlite(con, frame=m)
-    con.execute("INSERT INTO runs VALUES (?,?,?)", (dt.datetime.now().isoformat(), "metrics", str(len(m))))
+    m["tier"] = "core"
+    m.to_parquet(os.path.join(DATA, "metrics.parquet"))      # Streamlit reads the curated 64 only
+    full = m
+    if ext:
+        from sources import universe as U
+        ux = U.load(con, "ext").set_index("symbol")
+        uni = pd.DataFrame({"name": ux["name"], "industry": ux["macro_industry"].fillna(ux["legacy_industry"]).fillna(""),
+                            "subsector": ux["subsector"], "theme": "", "note": ""})
+        mx = build_metrics(con, ext, uni=uni)
+        if len(mx):
+            mx["tier"] = "ext"
+            full = pd.concat([m, mx], ignore_index=True)
+    export_metrics_sqlite(con, frame=full)                     # the Java API reads core + extended
+    con.execute("INSERT INTO runs VALUES (?,?,?)", (dt.datetime.now().isoformat(), "metrics", str(len(full))))
     con.commit()
-    log.info("done: metrics for %d stocks", len(m))
+    log.info("done: metrics for %d stocks (%d core)", len(full), len(m))
     try:   # Beemer Picks: rules-based belts, one snapshot per run (stored in market.db → ships with published data)
         import picks
         picks.run(con, DATA, m)
         log.info("done: Beemer Picks refreshed")
     except Exception as e:  # never fail the data run over the picks
         log.warning("picks failed: %s", e)
+    if not (a.core_only or a.skip_feeds or a.prices_only):
+        try:
+            import expand_data
+            expand_data.run(con, core=syms)
+        except Exception as e:
+            log.warning("NSE datasets step failed: %s", e)
 
 
 if __name__ == "__main__":
