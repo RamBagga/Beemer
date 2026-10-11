@@ -8,7 +8,8 @@ publishes it as assets on a rolling GitHub Release (tag `data-latest`). This mod
 Order of preference:
   1. Data already on disk that was built locally (no manifest) → used as is, never overwritten.
   2. Published data from the GitHub Release → downloaded if missing, re-checked every BEEMER_DATA_MAX_AGE_HOURS.
-  3. Nothing published / no network → run the pipeline here (BEEMER_BOOTSTRAP_FALLBACK=prices|full|none).
+  3. Nothing published / no network → run the full pipeline here, ~8–10 min one-off (BEEMER_BOOTSTRAP_FALLBACK=full|prices|none).
+     (`prices` is faster but leaves out fundamentals, which most pages need — only useful for debugging.)
 
 Usage:
   python bootstrap.py               # ensure data (what Docker/Render run before starting the app)
@@ -21,7 +22,7 @@ Environment (all optional — see .env.example):
   BEEMER_DATA_TAG             release tag                       (default data-latest)
   BEEMER_DATA_URL             override base URL for the three files (any static host / S3 / R2)
   BEEMER_DATA_MAX_AGE_HOURS   how often a running host re-checks for new data (default 6)
-  BEEMER_BOOTSTRAP_FALLBACK   prices (default) | full | none
+  BEEMER_BOOTSTRAP_FALLBACK   full (default) | prices | none
   GITHUB_TOKEN / BEEMER_GITHUB_TOKEN   only needed if the repo is private
 """
 import argparse, datetime as dt, gzip, json, logging, os, shutil, sqlite3, subprocess, sys, tempfile, threading, urllib.request
@@ -36,7 +37,7 @@ REPO = os.environ.get("BEEMER_DATA_REPO", "RamBagga/Beemer")
 TAG = os.environ.get("BEEMER_DATA_TAG", "data-latest")
 BASE_URL = os.environ.get("BEEMER_DATA_URL", "").rstrip("/")
 MAX_AGE_H = float(os.environ.get("BEEMER_DATA_MAX_AGE_HOURS", "6"))
-FALLBACK = os.environ.get("BEEMER_BOOTSTRAP_FALLBACK", "prices").lower()
+FALLBACK = os.environ.get("BEEMER_BOOTSTRAP_FALLBACK", "full").lower()
 TOKEN = os.environ.get("BEEMER_GITHUB_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
 FILES = ("manifest.json", "market.db.gz", "metrics.parquet")
 UA = "beemer-bootstrap/1.0"

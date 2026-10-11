@@ -10,7 +10,7 @@ flowchart LR
 ```
 
 * **`.github/workflows/update-data.yml`** runs `update_data.py` on GitHub's servers every weekday, at 15:45 IST (prices only) and 18:30 IST (prices plus the weekly fundamentals refresh). It can also be started by hand from the **Actions** tab. It starts from the last published snapshot, so each run is incremental and takes a few minutes. The result is uploaded to the rolling release **`data-latest`** as `market.db.gz`, `metrics.parquet` and `manifest.json`. No secrets are needed because the built-in `GITHUB_TOKEN` is enough.
-* **`bootstrap.py`** runs before the app starts on Docker and Render, and inside the app on every host, at most once an hour. It downloads the snapshot if data is missing, checks for a newer one every `BEEMER_DATA_MAX_AGE_HOURS` (default 6), validates it and swaps it in atomically. If nothing can be downloaded, it builds prices locally as a fallback (about 2 minutes). Data built locally on your Mac is never overwritten.
+* **`bootstrap.py`** runs before the app starts on Docker and Render, and inside the app on every host, at most once an hour. It downloads the snapshot if data is missing, checks for a newer one every `BEEMER_DATA_MAX_AGE_HOURS` (default 6), validates it and swaps it in atomically. If nothing can be downloaded, it builds the full dataset on the host as a one-off fallback (8–10 minutes). Data built locally on your Mac is never overwritten.
 * **If screener.in blocks GitHub's runners:** after 5 failures in a row the pipeline stops asking, keeps the fundamentals it already has and carries on with prices. The run still succeeds and shows a warning. To refresh fundamentals from your Mac instead, run `make update && make publish`.
 
 > The repository is **public**, so the release files can be downloaded without a token. If you make the repo private, set `GITHUB_TOKEN` on the host (a fine-grained token with *Contents: read*), or point `BEEMER_DATA_URL` at any static bucket.
@@ -85,7 +85,7 @@ app_port: 8501
 
 ## Configuration
 
-No secrets are required. Every setting is optional and listed in [`.env.example`](.env.example): `PORT`, `BEEMER_DATA_REPO`, `BEEMER_DATA_TAG`, `BEEMER_DATA_URL`, `BEEMER_DATA_MAX_AGE_HOURS`, `BEEMER_BOOTSTRAP_FALLBACK` (`prices` | `full` | `none`), `GITHUB_TOKEN` (only for a private repo), and `BEEMER_FUND_MAX_FAILS`.
+No secrets are required. Every setting is optional and listed in [`.env.example`](.env.example): `PORT`, `BEEMER_DATA_REPO`, `BEEMER_DATA_TAG`, `BEEMER_DATA_URL`, `BEEMER_DATA_MAX_AGE_HOURS`, `BEEMER_BOOTSTRAP_FALLBACK` (`full` | `prices` | `none`; `prices` skips fundamentals, which most pages need), `GITHUB_TOKEN` (only for a private repo), and `BEEMER_FUND_MAX_FAILS`.
 
 ## Operations
 

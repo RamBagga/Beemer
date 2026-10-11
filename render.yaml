@@ -17,4 +17,4 @@ services:
       - key: BEEMER_DATA_MAX_AGE_HOURS
         value: "6"
       - key: BEEMER_BOOTSTRAP_FALLBACK
-        value: prices
+        value: full
