@@ -93,6 +93,7 @@ export interface Company {
   fundamentals: {
     present: boolean; sales: Pt[]; profit: Pt[]; opm: Pt[]; roePct: Pt[]; roce: Pt[]; peHist: Pt[]; peToday: number | null; fcf: Pt[];
     growthCaption: string; peCaption: string; peMissing: boolean; fcfCaption: string; fcfMissing: boolean; peMedian?: number | null;
+    statement?: { years: string[]; rows: { item: string; values: (number | null)[] }[] };
   };
   metrics: { label: string; value: string; expl: string; why: string }[];
   value: { available: boolean; eps?: number; growth?: number; payout?: number; terminalPe?: number; value?: number; price?: number; mos?: number };

@@ -124,9 +124,39 @@ export function CompanyPage() {
         <p>{co.notes.prices}</p>
         <p>{co.notes.fundamentals}</p>
         <p>{co.notes.cleaning}</p>
+        {co.fundamentals.statement ? <Statement grid={co.fundamentals.statement} /> : null}
       </details>
       <Footer />
     </>
+  );
+}
+
+function fyNum(v: number | null) {
+  if (v == null || Number.isNaN(v)) return "–";
+  const digits = Math.abs(v) >= 1000 ? 0 : 2;
+  return v.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}
+
+function Statement({ grid }: { grid: NonNullable<Company["fundamentals"]["statement"]> }) {
+  return (
+    <div className="fy">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" />
+            {grid.years.map((y) => <th key={y} scope="col" role="columnheader">{y}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {grid.rows.map((row) => (
+            <tr key={row.item}>
+              <td>{row.item}</td>
+              {row.values.map((v, i) => <td key={grid.years[i]}>{fyNum(v)}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

@@ -16,6 +16,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 @Service
 public class CompanyService {
@@ -209,7 +211,8 @@ public class CompanyService {
     }
 
     private Map<String, Object> fundamentals(String symbol, Metric r) {
-        FundamentalsSeries.Charts c = FundamentalsSeries.charts(repo.fundamentals(symbol), prices.close(symbol));
+        List<FundamentalsSeries.Row> rows = repo.fundamentals(symbol);
+        FundamentalsSeries.Charts c = FundamentalsSeries.charts(rows, prices.close(symbol));
         Map<String, Object> f = new LinkedHashMap<>();
         boolean present = !c.sales().isEmpty();
         f.put("present", present);
@@ -233,7 +236,37 @@ public class CompanyService {
             List<Double> pes = c.peHist().stream().map(FundamentalsSeries.Point::value).filter(v -> v != null).toList();
             f.put("peMedian", pes.isEmpty() ? null : SeriesMath.median(pes));
         }
+        Map<String, Object> statement = profitLossGrid(rows);
+        if (statement != null) f.put("statement", statement);
         return f;
+    }
+
+    /** Profit-and-loss line items down the side, financial years across. Same shape as Streamlit's annual dataframe transposed. */
+    private static Map<String, Object> profitLossGrid(List<FundamentalsSeries.Row> rows) {
+        Map<Integer, Map<String, Double>> byYear = new TreeMap<>();
+        TreeSet<String> items = new TreeSet<>();
+        for (FundamentalsSeries.Row row : rows) {
+            if (!"profit-loss".equals(row.section())) continue;
+            LocalDate end = FundamentalsSeries.periodEnd(row.period());
+            if (end == null) continue;
+            byYear.computeIfAbsent(end.getYear(), y -> new LinkedHashMap<>()).putIfAbsent(row.item(), row.value());
+            items.add(row.item());
+        }
+        if (byYear.isEmpty()) return null;
+        List<Integer> years = new ArrayList<>(byYear.keySet());
+        List<Map<String, Object>> lines = new ArrayList<>();
+        for (String item : items) {
+            List<Double> vals = new ArrayList<>();
+            for (Integer year : years) vals.add(byYear.get(year).get(item));
+            Map<String, Object> line = new LinkedHashMap<>();
+            line.put("item", item);
+            line.put("values", vals);
+            lines.add(line);
+        }
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("years", years.stream().map(y -> "FY" + y).toList());
+        out.put("rows", lines);
+        return out;
     }
 
     private static String growthCaption(Metric r) {
