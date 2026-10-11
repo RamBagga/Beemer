@@ -249,6 +249,12 @@ def main():
     con.execute("INSERT INTO runs VALUES (?,?,?)", (dt.datetime.now().isoformat(), "metrics", str(len(m))))
     con.commit()
     log.info("done: metrics for %d stocks", len(m))
+    try:   # Beemer Picks: rules-based belts, one snapshot per run (stored in market.db → ships with published data)
+        import picks
+        picks.run(con, DATA, m)
+        log.info("done: Beemer Picks refreshed")
+    except Exception as e:  # never fail the data run over the picks
+        log.warning("picks failed: %s", e)
 
 
 if __name__ == "__main__":
