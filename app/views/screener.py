@@ -2,6 +2,7 @@ import pandas as pd, numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 import beemer as B
+import belts
 from beemer import A, C
 
 B.hero("Screener · India tech universe",
@@ -12,6 +13,8 @@ B.hero("Screener · India tech universe",
 m = B.load_metrics()
 if m.empty:
     st.warning("Data is still loading — check back in a few minutes."); st.stop()
+
+belts.render(compact=True)
 
 with st.expander("⚙️ Filters", expanded=True):
     c1, c2, c3, c4 = st.columns(4)

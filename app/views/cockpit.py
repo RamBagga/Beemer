@@ -3,12 +3,16 @@ import numpy as np, pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 import beemer as B
+import belts
 from beemer import A, C
 
 B.hero("Cockpit · India tech at a glance",
        "Precision research for India's tech stocks.",
        "IT services giants, SaaS exporters, AI infrastructure, internet platforms, fintech and electronics design — "
        "measured with the same calm instruments Warren Buffett uses, and explained in plain English. Every number below is computed from daily market data.")
+
+# ---------------- Beemer Picks belts ----------------
+belts.render()
 
 m = B.load_metrics()
 idx = {"Nifty IT": B.load_prices("^CNXIT")["adj_close"], "Nifty 50": B.load_prices("^NSEI")["adj_close"], "Sensex": B.load_prices("^BSESN")["adj_close"]}
