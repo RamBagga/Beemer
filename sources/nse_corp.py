@@ -131,7 +131,9 @@ def shareholding(con, sym, xbrl_quarters=4):
         seen.add(period)
         rec = {"promoter": store.num(r.get("pr_and_prgrp")), "public": store.num(r.get("public_val")),
                "employee_trusts": store.num(r.get("employeeTrusts"))}
-        url = r.get("xbrl") if r.get("xbrl") not in (None, "-", "") else None
+        url = r.get("xbrl")
+        if not url or url == "-" or url.rstrip("/").endswith("/-"):
+            url = None
         src = "nse_summary"
         if url and len(seen) <= xbrl_quarters and have.get(period) is None:
             try:
