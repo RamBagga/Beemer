@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { get, post, type Cockpit, type SipResult } from "../api";
+import { get, post, type Cockpit, type Market, type SipResult } from "../api";
 import { Belts } from "../belts";
 import { Chart, area, frame, logTicks, soft } from "../charts";
 import { heatStyle, pctPoints } from "../format";
@@ -22,6 +22,7 @@ export function CockpitPage() {
       <h3>Growth of ₹1 lakh</h3>
       <Growth data={data} />
       <Caption text={data.growth.caption} />
+      <MarketValuations />
       <h3>Sub-sectors</h3>
       <div className="split a">
         <SubBars data={data} />
@@ -247,6 +248,42 @@ function Sip({ defaults }: { defaults: Cockpit["sip"] }) {
         </div>
       ) : <Loading />}
       {spec ? <Chart data={spec.data} layout={spec.layout} height={340} /> : null}
+    </>
+  );
+}
+
+function MarketValuations() {
+  const [m, setM] = useState<Market | null>(null);
+  const P = usePalette();
+  const { theme } = useTheme();
+  useEffect(() => { get<Market>("/api/market").then(setM).catch(() => {}); }, []);
+  if (!m || !m.indices.length) return null;
+  return (
+    <>
+      <h3>Market valuations</h3>
+      <div className="table-wrap mkt">
+        <table className="data">
+          <thead><tr><th>Index</th><th>Level</th><th>1 year</th><th>P/E</th><th>10-yr median P/E</th><th>P/E vs median</th><th>P/B</th><th>Yield</th></tr></thead>
+          <tbody>
+            {m.indices.map((r) => {
+              const vs = r.pe != null && r.peMedian ? (r.pe / r.peMedian - 1) * 100 : null;
+              return (
+                <tr key={r.name} style={{ cursor: "default" }}>
+                  <td>{r.name}</td>
+                  <td>{r.close == null ? "–" : r.close.toLocaleString("en-IN", { maximumFractionDigits: 0 })}</td>
+                  <td style={heatStyle(r.change1y == null ? null : r.change1y * 100, P, theme, true, 0.4)}>{r.change1y == null ? "–" : `${pctPoints(r.change1y, 1)}%`}</td>
+                  <td>{r.pe == null ? "–" : r.pe.toFixed(1)}</td>
+                  <td>{r.peMedian == null ? "–" : r.peMedian.toFixed(1)}</td>
+                  <td style={heatStyle(vs, P, theme, true, 0.4, true)}>{vs == null ? "–" : `${vs >= 0 ? "+" : ""}${vs.toFixed(0)}%`}</td>
+                  <td>{r.pb == null ? "–" : r.pb.toFixed(1)}</td>
+                  <td>{r.div_yield == null ? "–" : `${r.div_yield.toFixed(2)}%`}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <Caption text={`NSE index files${m.asOf ? `, ${m.asOf}` : ""}. Cheaper than its own history shows green.`} />
     </>
   );
 }
