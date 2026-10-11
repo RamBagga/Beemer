@@ -33,6 +33,9 @@ UNIVERSES = {
 }
 INDICES = {"^CNXIT": "Nifty IT", "^NSEI": "Nifty 50", "^BSESN": "Sensex"}
 FUND_MAX_AGE_DAYS = 7
+# stop hammering screener.in when it is clearly refusing us (e.g. blocked cloud/CI IP ranges):
+# after this many companies in a row return nothing, keep the cached fundamentals and move on
+FUND_MAX_CONSECUTIVE_FAILS = int(os.environ.get("BEEMER_FUND_MAX_FAILS", "5"))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("update")
 
@@ -193,7 +196,7 @@ def fetch_screener(sym, session):
 
 def update_fundamentals(con, symbols, force=False):
     s = requests.Session(); s.headers.update({"User-Agent": UA, "Accept-Language": "en-US,en;q=0.9"})
-    done = 0
+    done = fails = 0
     for sym in symbols:
         row = con.execute("SELECT fetched_at FROM fund_meta WHERE symbol=?", (sym,)).fetchone()
         if row and not force and (dt.datetime.now() - dt.datetime.fromisoformat(row[0])).days < FUND_MAX_AGE_DAYS:
@@ -201,7 +204,14 @@ def update_fundamentals(con, symbols, force=False):
         try:
             basis, rows, top, about = fetch_screener(sym, s)
             if not basis:
-                log.warning("no fundamentals for %s", sym); continue
+                log.warning("no fundamentals for %s", sym)
+                fails += 1
+                if fails >= FUND_MAX_CONSECUTIVE_FAILS:
+                    log.warning("screener.in refused %d companies in a row - likely blocked from this network; "
+                                "keeping previously stored fundamentals and continuing with prices only", fails)
+                    break
+                continue
+            fails = 0
             con.execute("DELETE FROM fundamentals WHERE symbol=?", (sym,))
             con.executemany("INSERT OR REPLACE INTO fundamentals VALUES (?,?,?,?,?)", [(sym,) + r for r in rows])
             con.execute("INSERT OR REPLACE INTO fund_meta VALUES (?,?,?,?,?)",
@@ -210,6 +220,10 @@ def update_fundamentals(con, symbols, force=False):
             log.info("fundamentals %s (%s): %d values", sym, basis, len(rows))
         except Exception as e:
             log.warning("fundamentals failed for %s: %s", sym, e)
+            fails += 1
+            if fails >= FUND_MAX_CONSECUTIVE_FAILS:
+                log.warning("too many consecutive fundamentals failures; keeping stored fundamentals")
+                break
     con.execute("INSERT INTO runs VALUES (?,?,?)", (dt.datetime.now().isoformat(), "fundamentals", str(done)))
     con.commit()
 

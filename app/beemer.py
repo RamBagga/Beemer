@@ -7,6 +7,7 @@ import streamlit as st
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import analytics as A  # noqa: E402
+import bootstrap  # noqa: E402
 
 DB = os.path.join(ROOT, "data", "market.db")
 METRICS = os.path.join(ROOT, "data", "metrics.parquet")
@@ -77,7 +78,24 @@ h3 {{ font-size:1.25rem !important; margin-top:1.4rem !important; }}
 """
 
 
+@st.cache_resource(ttl=3600, show_spinner="Loading the latest market data…")
+def _ensure_data():
+    """Fetch published data on fresh cloud hosts; re-checked at most hourly (see bootstrap.py)."""
+    try:
+        return bootstrap.ensure_data()
+    except Exception as e:  # never take the app down over a refresh
+        return {"source": "error", "error": str(e), "version": None}
+
+
+_DATA_VERSION = {"v": None}
+
+
 def setup(title):
+    status = _ensure_data()
+    if status.get("version") != _DATA_VERSION["v"]:   # new data landed → drop cached frames
+        if _DATA_VERSION["v"] is not None:
+            st.cache_data.clear()
+        _DATA_VERSION["v"] = status.get("version")
     st.markdown(CSS, unsafe_allow_html=True)
     st.logo(os.path.join(os.path.dirname(__file__), "static", "beemer-wordmark.svg"), size="large",
             icon_image=os.path.join(os.path.dirname(__file__), "static", "beemer-logo.svg"))
