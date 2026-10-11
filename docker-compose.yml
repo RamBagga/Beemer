@@ -12,7 +12,9 @@ services:
   frontend:
     build: ./frontend
     ports: ["4173:80"]
-    depends_on: [backend]
+    depends_on:
+      backend:
+        condition: service_healthy
   pipeline:
     build:
       context: .
@@ -20,5 +22,8 @@ services:
     environment:
       BEEMER_BOOTSTRAP_FALLBACK: none
     volumes: [beemer-data:/app/data]
+    depends_on:
+      backend:
+        condition: service_healthy
 volumes:
   beemer-data:
