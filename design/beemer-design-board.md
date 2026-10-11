@@ -32,7 +32,7 @@ shown honestly, with how long they've been listed and how far they are from Buff
 
 Beemer opens in **Studio**: a bright, precise light theme that feels like a car-configurator showroom, with porcelain floors,
 brushed-silver surfaces, crisp ink type and one electric-blue accent. **Night drive** is the original dark cockpit; viewers switch
-with the ☀ Studio / ☾ Night pills in the sidebar, and the choice is remembered per browser. Tokens live in `app/beemer.py` (`PALETTES`)
+with the Studio / Night switch in the sidebar, and the choice is remembered per browser. Tokens live in `app/beemer.py` (`PALETTES`)
 and `.streamlit/config.toml`; never hard-code a hex in a view.
 
 ### 3a. Studio (light, default)
@@ -106,27 +106,55 @@ Accent discipline: ≤10% of any screen is coloured; colour = meaning.
 - **Hero / header bar:** Paper→Mist gradient with a soft shadow in Studio (Graphite→Carbon in Night drive), tri-stripe hairline along the top edge, kicker in caps mono.
 - **KPI tiles (instrument cluster):** caps label → big tabular numeral (coloured only when it carries meaning) → one-line explanation.
 - **Score gauge:** 270° thin-arc gauge (iDrive-style) with numeric read-out in the centre; also compact pill badges (`82 · STRONG`) with 1px coloured outline + 12% tint.
-- **Checklist rows:** status glyph · test name · thin progress rail (4px) · finding · "Why Buffett cares".
+- **Checklist rows:** status tag (`PASS` green · `WATCH` amber · `FAIL` ember, mono caps, 1px outline) · test name · 4px progress rail · finding · one-line reason.
 - **Tables:** Graphite rows, Hairline separators, mono tickers, progress-rail score columns in Electric Blue.
-- **Callouts:** Gunmetal panel, 2px Electric Blue left rule, "💡 In plain English".
-- **Disclaimer bar:** Slate Dim micro-copy in every page footer.
+- **Callouts:** raised panel, 2px Electric Blue left rule. One or two sentences, key figures in bold. No label, no icon.
+- **Disclaimer bar:** one compact disclaimer in the footer of every page, then "Made with ❤️ by baggak8s" (the only emoji in the product).
 
-## 7. Tone of voice
-- Precise, calm, premium. Short sentences. Explain, don't sell.
-- Plain English first, the term second: "ROE — profit earned for every ₹100 shareholders put in."
-- Honest about uncertainty and short histories: "Listed in 2024 — too young for 10-year tests."
-- Never: "multibagger", "rocket", "guaranteed", buy/sell calls, target prices.
-- Indian context: ₹, lakh/crore, Nifty IT, SIPs.
+## 7. Tone of voice — automotive precision
+Write like a performance-car product page: short, declarative, confident. Every word earns its place.
+
+**Rules**
+- **No emoji, no decorative symbols.** Not in headings, buttons, labels, badges, tables or docs. The single exception is the footer
+  credit "Made with ❤️ by baggak8s". Functional data glyphs are allowed: ▲ ▼ for price direction, · as a separator, × for multiples.
+- **Sentence length:** headings 2–5 words. Hero lines under 8 words. Body sentences under 15 words. Captions: one line.
+  Callouts: at most two sentences. If it needs a paragraph, it belongs in an expander or the Academy.
+- **No exclamation marks. No questions as headings.** State, don't tease ("Drawdowns", not "Every big crash — and the recovery?").
+- **Numbers carry the message.** Bold the figure, not the adjective: "Held 10 years: **0%** lost money."
+- **Plain English stays.** Define a term in one line, the first time: "ROE. Profit per ₹100 of shareholders' capital."
+- **Honest by default.** State limits plainly: "Treat the score as provisional." "Not backtested."
+- **Compliance line, verbatim:** "Data signals, not recommendations." Never "buy", "sell", "prediction", "target", "multibagger",
+  "rocket", "guaranteed", "don't miss".
+- **Indian context:** ₹, lakh, crore, Nifty IT, SIP. Dates as `09 Oct 2026`. Times in IST.
+
+**Vocabulary**
+| Use | Avoid |
+|---|---|
+| Cockpit · Screener · Company · Academy | Dashboard, Home, Learn |
+| Beemer Picks · belts: Momentum, Compounders, Movers | Top picks, hot stocks, predictions |
+| Buffett Score (0–100) · test · pass / watch / fail | Rating, grade, stars |
+| Value estimate · margin of safety | Fair value, target price |
+| Loss-making · young listing | Risky bet, hype stock |
+| Select a card / row | Click here, tap now |
+
+**Before / after**
+- "Which tech companies would Buffett look at twice?" → "Quality first. Then price."
+- "Does holding longer help — even in tech?" → "Time in the market"
+- Bulb-icon callout, "In plain English: buy the Nifty IT index in a random month and hold 1 year — you lost money 36% of the time…" →
+  "Held 1 year, Nifty IT lost money **36%** of the time. Held 10 years: **0%**."
 
 ## 8. Iconography
-Minimal line-style emoji set used consistently as instrument glyphs:
-⚙️ Quality/ROE · 🛡️ Debt · 📈 Growth · 🏰 Moat · 💵 Cash · 🏷️ Price · 🤖 AI & data · ☁️ SaaS · 🖥️ IT services · 🛰️ ER&D · 📱 Internet · 💳 Fintech · 🔌 Electronics.
-Status: ✅ pass · ⚠️ partial · ❌ fail · — n/a.
+No emoji. Identity comes from type, the tri-stripe, mono kickers and colour-as-meaning.
+- Page navigation: text labels only.
+- Status: `PASS` / `WATCH` / `FAIL` tags (see Components).
+- Sub-sectors: plain names (IT services, ER&D, SaaS & software, AI & data, Internet, Fintech, Electronics).
+- Theme switch: text pills `Studio` / `Night`.
+- Favicon and page icon: the tri-bar mark (`app/static/beemer-logo.svg`).
 
 ## 9. Product narrative (pages)
-1. **Cockpit** — India tech at a glance: Nifty IT vs Nifty 50 vs Sensex, sub-sector heat, IPO-era tracker, crashes, SIP simulator.
-2. **Screener** — 60+ tech names ranked by Buffett Score; filter by sub-sector, profitability, listing age.
-3. **Company** — one-page story: verdict → gauge → checklist → returns → business → valuation.
-4. **Academy** — 10 short lessons on investing (and on tech specifically).
+1. **Cockpit** — India tech, measured. Beemer Picks belts, index growth, sub-sectors, new-age listings, drawdowns, SIP simulator.
+2. **Screener** — Quality first. Then price. Ranked by Buffett Score, with compact Picks belts and filters.
+3. **Company** — verdict, gauge, Buffett checklist, returns, fundamentals, key metrics.
+4. **Academy** — Engineered understanding. Ten lessons, how Picks work, glossary, pre-buy checklist.
 
 *Beemer is an educational tool, not investment advice.*

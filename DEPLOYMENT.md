@@ -19,13 +19,13 @@ flowchart LR
 
 | Platform | Free tier | RAM / CPU | Sleeps when idle? | Private repo | Custom domain | Card needed | Verdict |
 |---|---|---|---|---|---|---|---|
-| **Streamlit Community Cloud** | Free, unlimited public apps | ~690 MB–2.7 GB, up to 2 cores (shared) | After **12 h** without traffic; any visitor can wake it with one click | ✅ (you can also restrict who can view the app) | ❌ only `yourname.streamlit.app` | No | **Primary.** Built for Streamlit, deploys straight from GitHub, redeploys on every push. |
-| **Render** (free web service) | 750 instance-hours a month | 512 MB / 0.1 CPU | After **15 min**; about 1 min to wake | ✅ | ✅ (2 on Hobby) | No | **Alternative 1.** `render.yaml` included. Slow CPU, but a real URL and custom domain. |
-| **Hugging Face Spaces** (Docker) | CPU Basic hardware is free | 16 GB / 2 vCPU | After ~48 h idle | ✅ (private Spaces) | ❌ (paid) | Creating Docker Spaces now needs **PRO** ($9/mo) | Use the `Dockerfile` if you already have PRO. |
-| **Railway** | $5 trial, then $1 of credit a month | Up to plan limits | No (usage-billed) | ✅ | ✅ | Trial without a card | `Procfile` / `Dockerfile` work. Too little credit to run all month. |
-| **Google Cloud Run** | 2M requests and 180k vCPU-s a month | Configurable | Scales to zero (cold start) | n/a (deploys an image) | ✅ | **Yes** | `Dockerfile` works. Set `--port 8080` or rely on `$PORT`. |
-| **Fly.io** | No free tier for new users (trial only) | n/a | n/a | n/a | ✅ | Yes | Not free any more. |
-| **Koyeb** | Free instance only inside the $29/mo Pro plan since Feb 2026 | 512 MB | Scales to zero after 1 h | n/a | ✅ | Yes | Not free any more. |
+| **Streamlit Community Cloud** | Free, unlimited public apps | ~690 MB–2.7 GB, up to 2 cores (shared) | After **12 h** without traffic; any visitor can wake it with one click | Yes (you can also restrict who can view the app) | No only `yourname.streamlit.app` | No | **Primary.** Built for Streamlit, deploys straight from GitHub, redeploys on every push. |
+| **Render** (free web service) | 750 instance-hours a month | 512 MB / 0.1 CPU | After **15 min**; about 1 min to wake | Yes | Yes (2 on Hobby) | No | **Alternative 1.** `render.yaml` included. Slow CPU, but a real URL and custom domain. |
+| **Hugging Face Spaces** (Docker) | CPU Basic hardware is free | 16 GB / 2 vCPU | After ~48 h idle | Yes (private Spaces) | No (paid) | Creating Docker Spaces now needs **PRO** ($9/mo) | Use the `Dockerfile` if you already have PRO. |
+| **Railway** | $5 trial, then $1 of credit a month | Up to plan limits | No (usage-billed) | Yes | Yes | Trial without a card | `Procfile` / `Dockerfile` work. Too little credit to run all month. |
+| **Google Cloud Run** | 2M requests and 180k vCPU-s a month | Configurable | Scales to zero (cold start) | n/a (deploys an image) | Yes | **Yes** | `Dockerfile` works. Set `--port 8080` or rely on `$PORT`. |
+| **Fly.io** | No free tier for new users (trial only) | n/a | n/a | n/a | Yes | Yes | Not free any more. |
+| **Koyeb** | Free instance only inside the $29/mo Pro plan since Feb 2026 | 512 MB | Scales to zero after 1 h | n/a | Yes | Yes | Not free any more. |
 
 Limits change often; these are from each provider's docs as of October 2026.
 
@@ -101,7 +101,7 @@ GitHub turns off scheduled workflows in public repos after 60 days with no commi
 
 ---
 
-## ⚠️ Before you charge money: data licensing and SEBI
+## Before you charge money: data licensing and SEBI
 
 * **Free data is for personal, non-commercial use only.** Yahoo Finance (via `yfinance`), NSE's website and archives, and screener.in all restrict commercial use and redistribution in their terms. A free, educational beta is a grey area. A **paid product needs licensed data**: an NSE or BSE data-feed licence, or an authorised vendor such as CMOTS, Accord Fintech, TrueData or Global Datafeeds. The swap is contained: only the two fetch functions in `update_data.py` (prices and fundamentals) need rewriting. The rest of the app reads the local database.
 * **The published snapshot is public.** The `data-latest` release in a public repo redistributes data derived from those sources. That is fine for a personal project, but before a commercial launch move the snapshot to private storage (set `BEEMER_DATA_URL` or `GITHUB_TOKEN` and make the repo private) and switch to licensed data.

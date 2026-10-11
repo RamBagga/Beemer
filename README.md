@@ -78,8 +78,8 @@ Notes: LTIMindtree trades as **LTM** (formerly LTIM); Unicommerce is **UNIECOM**
 
 ## Buffett Score (0–100)
 Six transparent tests, rescaled when a test lacks data:
-⚙️ consistent ROE > 15% (20) · 🛡️ low debt (15) · 📈 steady profit growth (20) · 🏰 moat proxy: high & stable operating margins (15) ·
-💵 free cash flow (15) · 🏷️ valuation: P/E vs own 10-yr median + margin of safety vs a simple intrinsic value (15).
+consistent ROE > 15% (20) · low debt (15) · steady profit growth (20) · moat proxy: high & stable operating margins (15) ·
+free cash flow (15) · valuation: P/E vs own 10-yr median + margin of safety vs a simple intrinsic value (15).
 Intrinsic value = 10 yrs of EPS growing at the median of (10y sales CAGR, 10y & 5y profit CAGR, capped 18%), dividends at the usual payout,
 terminal P/E 15 (or the historical median if lower), discounted at 12%. Deliberately simple — a sanity check, not a target price.
 
