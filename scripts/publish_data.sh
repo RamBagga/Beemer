@@ -20,11 +20,12 @@ m = {
     "last_price_date": q("SELECT MAX(date) FROM prices WHERE symbol NOT LIKE '^%'"),
     "price_rows": q("SELECT COUNT(*) FROM prices"),
     "companies": q("SELECT COUNT(*) FROM universe"),
+    "companies_all": q("SELECT COUNT(*) FROM company_metrics"),
     "fundamentals_rows": q("SELECT COUNT(*) FROM fundamentals"),
     "fundamentals_oldest_fetch": q("SELECT MIN(fetched_at) FROM fund_meta"),
     "fundamentals_newest_fetch": q("SELECT MAX(fetched_at) FROM fund_meta"),
     "built_by": os.environ.get("GITHUB_WORKFLOW") and f"github-actions run {os.environ.get('GITHUB_RUN_ID')}" or "manual",
-    "license_note": "Derived from free public sources (Yahoo Finance, NSE, screener.in) for personal, non-commercial use.",
+    "license_note": "Derived from free public sources (Yahoo Finance, NSE archives and corporate filings, screener.in) for personal, non-commercial use.",
 }
 json.dump(m, open(os.path.join(out, "manifest.json"), "w"), indent=1)
 print(json.dumps(m, indent=1))

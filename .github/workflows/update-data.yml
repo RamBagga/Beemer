@@ -28,6 +28,12 @@ jobs:
     env:
       TZ: Asia/Kolkata
       BEEMER_FUND_MAX_FAILS: "5"
+      # extended universe + NSE datasets: keep each run well inside the timeout; backfills continue next run
+      BEEMER_EXT_FUND_BUDGET: "40"
+      BEEMER_FEED_BUDGET: "150"
+      BEEMER_ARCHIVE_MAX_DAYS: "400"
+      # NSE often refuses cloud IPs; after this many refusals in a row a host is skipped for the run
+      BEEMER_MAX_REFUSALS: "6"
     steps:
       - uses: actions/checkout@v5
 
@@ -60,6 +66,9 @@ jobs:
           if grep -q "likely blocked" update.log; then
             echo "::warning::screener.in refused requests from the runner - published data keeps the previous fundamentals"
           fi
+          if grep -q "refused" update.log; then
+            echo "::warning::NSE refused some requests from the runner - those datasets keep their previous values"
+          fi
 
       - name: Validate
         run: python bootstrap.py --check
@@ -80,4 +89,18 @@ jobs:
           print(f"- last price date: **{last}**")
           print(f"- price rows: {q('SELECT COUNT(*) FROM prices'):,}")
           print(f"- fundamentals rows: {q('SELECT COUNT(*) FROM fundamentals'):,} (newest fetch {q('SELECT MAX(fetched_at) FROM fund_meta')})")
+          for t in ("universe_all", "delivery", "index_eod", "corp_actions", "board_meetings", "shareholding",
+                    "insider_trades", "deals", "results_xbrl"):
+              try:
+                  print(f"- {t}: {q(f'SELECT COUNT(*) FROM {t}'):,}")
+              except Exception:
+                  print(f"- {t}: not built yet")
+          print("")
+          print("| source | status | rows | at |")
+          print("|---|---|---|---|")
+          try:
+              for s, st, n, ts in c.execute("SELECT source, status, rows, MAX(ts) FROM source_runs GROUP BY source ORDER BY source"):
+                  print(f"| {s} | {st} | {n:,} | {ts} |")
+          except Exception:
+              pass
           PY
