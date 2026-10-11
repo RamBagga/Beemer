@@ -113,7 +113,7 @@ if a is not None and len(a):
     c1, c2 = st.columns(2)
     with c1:
         fig = go.Figure()
-        if sales is not None: fig.add_trace(go.Bar(x=yrs, y=sales, name="Sales / revenue", marker_color="#1E3A63"))
+        if sales is not None: fig.add_trace(go.Bar(x=yrs, y=sales, name="Sales / revenue", marker_color=C["bar"]))
         if npf is not None: fig.add_trace(go.Bar(x=yrs, y=npf, name="Net profit", marker_color=C["blue"]))
         fig.update_layout(barmode="overlay", height=340, title="Sales and profit (₹ crore, financial years)"); fig.update_yaxes(tickprefix="₹")
         st.plotly_chart(fig, width="stretch")
@@ -139,7 +139,7 @@ if a is not None and len(a):
     with c3:
         pe_h = ser.get("pe_hist")
         if pe_h is not None and len(pe_h) >= 3:
-            fig = go.Figure(go.Bar(x=[d.year for d in pe_h.index], y=pe_h.values, name="P/E at year end", marker_color="#1E3A63"))
+            fig = go.Figure(go.Bar(x=[d.year for d in pe_h.index], y=pe_h.values, name="P/E at year end", marker_color=C["bar"]))
             if pd.notna(r.pe): fig.add_trace(go.Scatter(x=[pe_h.index[-1].year + 1], y=[r.pe], mode="markers+text", text=["today"], textposition="top center",
                                                         marker=dict(size=14, color=C["blue"], line=dict(color=C["ice"], width=1)), name="Today"))
             fig.add_hline(y=pe_h.median(), line_dash="dot", line_color=C["muted"], annotation_text=f"median {pe_h.median():.1f}", annotation_position="top left")
