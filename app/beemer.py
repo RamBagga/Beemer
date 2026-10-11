@@ -66,6 +66,7 @@ h3 {{ font-size:1.25rem !important; margin-top:1.4rem !important; }}
 .bm-caption {{ font-size:.83rem; color:{C['muted']}; margin:-4px 0 18px 0; line-height:1.5; }}
 .bm-caption b {{ color:#C9D1DE; }}
 .bm-foot {{ font-size:.75rem; color:{C['dim']}; border-top:1px solid {C['line']}; margin-top:40px; padding-top:14px; line-height:1.5; }}
+.bm-made {{ text-align:center; font:500 .68rem 'JetBrains Mono', monospace; letter-spacing:.14em; color:{C['dim']}; margin:14px 0 4px; opacity:.85; }}
 .bm-lesson {{ background:{C['surface']}; border:1px solid {C['line']}; border-radius:12px; padding:18px 22px; margin-bottom:14px; }}
 .bm-lesson h4 {{ margin:0 0 6px 0; font-size:1.05rem; }}
 .bm-quote {{ font-family:'Inter Tight', sans-serif; font-size:1.1rem; color:{C['text']}; border-left:2px solid {C['blue']}; padding:4px 14px; margin:6px 0 10px; line-height:1.45; }}
@@ -115,7 +116,8 @@ def sidebar_footer():
 def footer():
     m = load_metrics()
     fresh = f" Prices as of {m['last_date'].max()}." if not m.empty else ""
-    st.markdown(f'<div class="bm-foot">⚖️ {DISCLAIMER}{fresh}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="bm-foot">⚖️ {DISCLAIMER}{fresh}</div>'
+                '<div class="bm-made">Made with ❤️ by baggak8s</div>', unsafe_allow_html=True)
 
 
 def hero(kicker, title, sub):
