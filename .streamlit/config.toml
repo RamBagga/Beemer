@@ -12,21 +12,55 @@ gatherUsageStats = false
 toolbarMode = "viewer"
 
 [theme]
-base = "dark"
+# Light ("Studio") is the default; viewers can switch to dark ("Night drive") via ⋮ → Settings → Theme.
+# Tokens mirror app/beemer.py PALETTES and design/beemer-design-board.md.
+base = "light"
+baseRadius = "10px"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+headingFont = "'Inter Tight':https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap"
+primaryColor = "#1F8FFF"
+backgroundColor = "#F4F6F9"
+secondaryBackgroundColor = "#EEF2F7"
+textColor = "#0B1220"
+linkColor = "#0A72D1"
+borderColor = "#DDE3EB"
+dataframeHeaderBackgroundColor = "#F3F6FA"
+chartCategoricalColors = ["#1F8FFF", "#0A72D1", "#B7791F", "#0E9F6E", "#6D5AE6", "#E0364A"]
+
+[theme.sidebar]
+backgroundColor = "#EDF0F4"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#2B3444"
+borderColor = "#DDE3EB"
+
+[theme.light]
+primaryColor = "#1F8FFF"
+backgroundColor = "#F4F6F9"
+secondaryBackgroundColor = "#EEF2F7"
+textColor = "#0B1220"
+linkColor = "#0A72D1"
+borderColor = "#DDE3EB"
+dataframeHeaderBackgroundColor = "#F3F6FA"
+chartCategoricalColors = ["#1F8FFF", "#0A72D1", "#B7791F", "#0E9F6E", "#6D5AE6", "#E0364A"]
+
+[theme.light.sidebar]
+backgroundColor = "#EDF0F4"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#2B3444"
+borderColor = "#DDE3EB"
+
+[theme.dark]
 primaryColor = "#1F8FFF"
 backgroundColor = "#07090D"
 secondaryBackgroundColor = "#141A24"
 textColor = "#E8ECF3"
 linkColor = "#6CC4FF"
 borderColor = "#1F2733"
-baseRadius = "10px"
-font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
-headingFont = "'Inter Tight':https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap"
-codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap"
-chartCategoricalColors = ["#1F8FFF", "#6CC4FF", "#F5B83D", "#34D399", "#8B7CF6", "#FF4D5E"]
 dataframeHeaderBackgroundColor = "#0E121A"
+chartCategoricalColors = ["#1F8FFF", "#6CC4FF", "#F5B83D", "#34D399", "#8B7CF6", "#FF4D5E"]
 
-[theme.sidebar]
+[theme.dark.sidebar]
 backgroundColor = "#0B0E14"
 secondaryBackgroundColor = "#141A24"
 textColor = "#C9D1DE"
