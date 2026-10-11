@@ -1,0 +1,29 @@
+# New stack only. The Streamlit image (Dockerfile at the repo root) is unchanged.
+services:
+  backend:
+    build: ./backend
+    ports: ["8080:8080"]
+    environment:
+      PORT: "8080"
+      BEEMER_DATA_DIR: /data
+      BEEMER_BOOTSTRAP_FALLBACK: none
+      BEEMER_CORS_ORIGINS: ${BEEMER_CORS_ORIGINS:-http://localhost:*,http://127.0.0.1:*}
+    volumes: [beemer-data:/data]
+  frontend:
+    build: ./frontend
+    ports: ["4173:80"]
+    depends_on:
+      backend:
+        condition: service_healthy
+  pipeline:
+    build:
+      context: .
+      dockerfile: pipeline/Dockerfile
+    environment:
+      BEEMER_BOOTSTRAP_FALLBACK: none
+    volumes: [beemer-data:/app/data]
+    depends_on:
+      backend:
+        condition: service_healthy
+volumes:
+  beemer-data:

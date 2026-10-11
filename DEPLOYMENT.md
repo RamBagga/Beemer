@@ -106,3 +106,33 @@ GitHub turns off scheduled workflows in public repos after 60 days with no commi
 * **Free data is for personal, non-commercial use only.** Yahoo Finance (via `yfinance`), NSE's website and archives, and screener.in all restrict commercial use and redistribution in their terms. A free, educational beta is a grey area. A **paid product needs licensed data**: an NSE or BSE data-feed licence, or an authorised vendor such as CMOTS, Accord Fintech, TrueData or Global Datafeeds. The swap is contained: only the two fetch functions in `update_data.py` (prices and fundamentals) need rewriting. The rest of the app reads the local database.
 * **The published snapshot is public.** The `data-latest` release in a public repo redistributes data derived from those sources. That is fine for a personal project, but before a commercial launch move the snapshot to private storage (set `BEEMER_DATA_URL` or `GITHUB_TOKEN` and make the repo private) and switch to licensed data.
 * **SEBI (Research Analysts) Regulations, 2014:** showing paying users stock scores, rankings or "buy/avoid"-style verdicts can count as research or investment advice. That would need SEBI registration as a Research Analyst (or Investment Adviser), along with disclosures and record-keeping. Keep Beemer clearly **educational** (the app already says "Educational only — not investment advice"), avoid personalised recommendations and price targets, and get a securities lawyer's view before you monetise.
+
+---
+
+## Spring Boot + React (new stack)
+
+Streamlit Community Cloud still deploys `main` from `app/main.py`. Do not point that host at `backend/` or `frontend/`. The new stack is a separate API and a static site. No accounts were created for this migration.
+
+| Piece | Free-tier options | Notes |
+|---|---|---|
+| API (`backend/`, port 8080) | Render, Railway, Fly.io or Koyeb free/trial web service, or an Oracle Cloud always-free VM | Java 21. Set `PORT` and `BEEMER_DATA_DIR` to a persistent disk. The process downloads `data-latest` on first boot if the database is missing. `BEEMER_BOOTSTRAP_FALLBACK=none` avoids a 10-minute rebuild when the download fails. |
+| Web (`frontend/dist`) | Vercel, Netlify or Cloudflare Pages | Static build (`npm run build`). Point `/api`, `/actuator`, `/swagger-ui` and `/v3` at the API, the same way `frontend/nginx.conf` does. |
+| Both together | `docker compose up --build` | `backend`, `frontend` (nginx) and a `pipeline` cron container share one volume. The root `Dockerfile` remains the Streamlit image. |
+| Pipeline | Keep GitHub Actions `update-data.yml` | The compose pipeline is optional and uses the same weekday clock (10:15 and 13:00 UTC). |
+
+Set `BEEMER_CORS_ORIGINS` to the frontend origin (comma-separated patterns, for example `https://beemer.pages.dev`) when the site and API are on different hosts. Local dev already allows `http://localhost:*` and `http://127.0.0.1:*`.
+
+Local run, without Docker:
+
+```bash
+./start-new.sh
+./start-new.sh --status
+./start-new.sh --stop
+# API  http://127.0.0.1:8080/swagger-ui.html
+# App  http://127.0.0.1:5173
+# logs: logs/api.log  logs/web.log
+```
+
+The script detaches both processes (same idea as `start.sh`), so closing the terminal does not stop them. It builds `backend/target/beemer-api-1.0.0.jar` when sources changed and runs `java -jar`. If `java` on PATH is older than 21, it uses Homebrew `openjdk@21` or `/usr/libexec/java_home -v 21`, and exits with a clear message when no JDK 21 is installed. When `data/market.db` has no `company_metrics` table, `bootstrap.py` fills it from `metrics.parquet` before the API starts.
+
+Needs Java 21, Maven (only to build the jar), Node 22 and Python 3.12. `make api-test` runs the Java tests. `make web-build` builds the frontend. CI for this stack is `.github/workflows/spring-react.yml` (backend tests, frontend build, Playwright smoke). The existing `.github/workflows/ci.yml` still covers Streamlit.

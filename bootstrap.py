@@ -7,6 +7,7 @@ publishes it as assets on a rolling GitHub Release (tag `data-latest`). This mod
 
 Order of preference:
   1. Data already on disk that was built locally (no manifest) → used as is, never overwritten.
+     If company_metrics is missing, it is filled from metrics.parquet (the Java API reads that table).
   2. Published data from the GitHub Release → downloaded if missing, re-checked every BEEMER_DATA_MAX_AGE_HOURS.
   3. Nothing published / no network → run the full pipeline here, ~8–10 min one-off (BEEMER_BOOTSTRAP_FALLBACK=full|prices|none).
      (`prices` is faster but leaves out fundamentals, which most pages need — only useful for debugging.)
@@ -149,6 +150,10 @@ def ensure_data(force=False, allow_pipeline=True):
         status = {"source": "local" if have and not os.path.exists(MANIFEST) else "release", "updated": False}
         if have and not force and not _stale():
             status["version"] = (_read_json(MANIFEST) or {}).get("generated_at", "local")
+            # Local (and still-fresh published) data returns here. The pipeline is the
+            # only other writer of company_metrics, so a db from before that table
+            # existed would otherwise stay empty until update_data.py ran.
+            _maybe_export_metrics()
             return status
         try:
             status["updated"] = download(force=force)
@@ -162,7 +167,30 @@ def ensure_data(force=False, allow_pipeline=True):
                 else:
                     status["source"] = "missing"
         status["version"] = (_read_json(MANIFEST) or {}).get("generated_at", status["source"])
+        _maybe_export_metrics()
         return status
+
+
+def _maybe_export_metrics():
+    """Fill company_metrics from metrics.parquet when a published snapshot predates that table.
+
+    The Java API reads this table over JDBC. Streamlit is unchanged. Failures are logged, not fatal.
+    """
+    if not (os.path.exists(DB) and os.path.exists(METRICS)):
+        return
+    try:
+        con = sqlite3.connect(DB)
+        try:
+            n = con.execute("SELECT COUNT(*) FROM company_metrics").fetchone()[0]
+        except sqlite3.OperationalError:
+            n = 0
+        if n == 0:
+            import analytics
+            wrote = analytics.export_metrics_sqlite(con, parquet_path=METRICS)
+            log.info("exported %s company_metrics rows for the Java API", wrote)
+        con.close()
+    except Exception as e:
+        log.warning("company_metrics export skipped: %s", e)
 
 
 def main():

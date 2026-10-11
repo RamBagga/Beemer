@@ -15,6 +15,8 @@ Up to 30 years of NSE/BSE price history · 12 years of fundamentals · a transpa
 
 > **Educational tool, not investment advice.** Read [Data licensing](#data-licensing--read-before-selling) before selling this publicly.
 
+The app on Streamlit Community Cloud is the **legacy** UI (`app/main.py`). A Spring Boot API and React frontend live in `backend/` and `frontend/` and do not replace that deployment. Run the new stack with `./start-new.sh` (API on port 8080, app on port 5173; `./start-new.sh --status` / `--stop`, logs in `logs/api.log` and `logs/web.log`). It keeps running after the terminal closes. See [ARCHITECTURE.md](ARCHITECTURE.md) and [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Why Beemer
 Most stock screeners throw 50 ratios at you and leave you to figure out what they mean. Beemer covers **64 Indian-listed tech companies**, from IT services, ER&D, SaaS and AI to internet platforms, fintech and chip design. It scores each one against the questions Warren Buffett asks, and explains every number in one plain-English line.
 

@@ -1,0 +1,35 @@
+server:
+  port: ${PORT:8080}
+  compression:
+    enabled: true
+    mime-types: application/json
+
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+beemer:
+  data-dir: ${BEEMER_DATA_DIR:../data}
+  repo: ${BEEMER_DATA_REPO:RamBagga/Beemer}
+  tag: ${BEEMER_DATA_TAG:data-latest}
+  data-url: ${BEEMER_DATA_URL:}
+  max-age-hours: ${BEEMER_DATA_MAX_AGE_HOURS:6}
+  bootstrap-enabled: ${BEEMER_BOOTSTRAP_ENABLED:true}
+  bootstrap-fallback: ${BEEMER_BOOTSTRAP_FALLBACK:none}
+  github-token: ${BEEMER_GITHUB_TOKEN:${GITHUB_TOKEN:}}
+  cors-origins: ${BEEMER_CORS_ORIGINS:http://localhost:*,http://127.0.0.1:*}

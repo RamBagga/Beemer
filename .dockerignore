@@ -21,3 +21,8 @@ screenshots
 design
 *.md
 !README.md
+
+# Spring Boot + React build context (compose). Streamlit image still uses this file.
+frontend/node_modules
+frontend/dist
+backend/target

@@ -2,8 +2,9 @@
 
 Beemer is a single-machine, batch-updated research app: a **Python data pipeline** pulls free public market data
 into **local storage** once or twice a day, an **analytics layer** turns it into per-company metrics and a
-**Buffett Score**, and a **Streamlit UI** with its own design system presents it to beginners. No servers, queues
-or API keys — everything runs from one folder.
+**Buffett Score**, and a UI presents it to beginners.
+
+Two UIs read that same data. **Streamlit** (`app/`, deployed from `main` as `app/main.py`) is the legacy app and stays in place. **Spring Boot + React** (`backend/`, `frontend/`) is the new stack: the API reads SQLite only, and the React app reproduces the Studio/Night design system. The pipeline still owns ETL.
 
 ```mermaid
 flowchart LR
@@ -87,7 +88,12 @@ beemer/
 ├── start.sh                 one-command setup / run / stop
 ├── bootstrap.py             fetch the published data snapshot on fresh hosts
 ├── .streamlit/config.toml   dark theme, fonts (repo root)
-├── .github/workflows/       update-data.yml (cloud data refresh) · ci.yml (smoke + Docker)
+├── .github/workflows/       update-data.yml · ci.yml (Streamlit) · spring-react.yml
+├── backend/                 Spring Boot API (Java 21)
+├── frontend/                React + Vite
+├── pipeline/                optional compose cron image
+├── docker-compose.yml       API + nginx + pipeline (not the Streamlit image)
+├── start-new.sh             local API + React
 ├── Dockerfile · render.yaml · Procfile · Makefile · .env.example
 ├── update_data.py           ② ingestion pipeline (cron entry point)
 ├── analytics.py             ④ metrics, price cleaning, Buffett Score
@@ -112,6 +118,21 @@ beemer/
 ## Deployment topology
 
 Locally, cron on the Mac runs the pipeline against `data/market.db`. In the cloud, the same pipeline runs in **GitHub Actions** (`update-data.yml`, weekdays 15:45 and 18:30 IST) and publishes `market.db.gz`, `metrics.parquet` and `manifest.json` to the rolling GitHub Release `data-latest`. Hosted apps (Streamlit Community Cloud, Render, Docker) never build data. `bootstrap.py` downloads the snapshot when it's missing, checks for a newer one every 6 hours, and swaps it in atomically, and the app then clears its caches. Details and free-host comparison: [DEPLOYMENT.md](DEPLOYMENT.md).
+
+## Spring Boot + React
+
+```mermaid
+flowchart LR
+    ETL["update_data.py<br/>analytics.py · picks.py"] --> DB[("market.db<br/>prices · fundamentals<br/>company_metrics · picks")]
+    ETL --> PQ["metrics.parquet"]
+    PQ -->|import if the table is empty| DB
+    DB --> API["Spring Boot 3 · Java 21<br/>/api/cockpit · /screener · /companies · /picks · /sip-simulator"]
+    API --> WEB["React · Vite<br/>Cockpit · Screener · Company · Academy"]
+```
+
+`update_data.py` writes `company_metrics` (one JSON payload per symbol) next to the parquet file. `bootstrap.py` backfills that table when a published snapshot has parquet but no table yet. Request-time maths (CAGR, drawdowns, crashes, SIP/XIRR, rolling returns, price cleaning, screener filters, P/E vs history, fundamental charts) live in `backend/src/main/java/com/beemer/math` and are checked against Python golden files in `backend/src/test/resources/golden`.
+
+The API caches cockpit, company, screener and price series for 10 minutes (Caffeine). On startup, if `data/market.db` is missing, it downloads the `data-latest` GitHub release the same way `bootstrap.py` does. Swagger is at `/swagger-ui.html`. Health is `/actuator/health`.
 
 ## Swapping in licensed data later
 
