@@ -12,19 +12,34 @@ import bootstrap  # noqa: E402
 DB = os.path.join(ROOT, "data", "market.db")
 METRICS = os.path.join(ROOT, "data", "metrics.parquet")
 # ---------------- design tokens (see design/beemer-design-board.md) ----------------
-# Light ("Studio") is the default; dark ("Night drive") is selectable via ⋮ → Settings → Theme.
+# Light ("Studio") is the default; dark ("Night") via the Studio / Night switch in the menu drawer.
 # Brand tri-stripe colours never change: Ice #6CC4FF · Cobalt #2A4BD7 · Signal Red #F0303F.
 PALETTES = {
-    "light": dict(bg="#F4F6F9", surface="#FFFFFF", raised="#EEF2F7", line="#DDE3EB", grid="#E9EDF2", text="#0B1220", body="#2B3444",
-                  muted="#5B6577", dim="#8A94A6", chart_text="#4A5466", blue="#1F8FFF", ice="#0A72D1", cobalt="#2A4BD7", red="#E0283A",
-                  green="#0E9F6E", amber="#B7791F", ember="#E0364A", violet="#6D5AE6", bar="#BFD3EE", sidebar="#EDF0F4",
-                  shadow="0 1px 2px rgba(15,23,42,.04), 0 12px 28px -16px rgba(15,23,42,.22)",
-                  hero="linear-gradient(120deg,#FFFFFF 0%,#F3F6FA 55%,#E8EDF4 100%)", sheen="rgba(255,255,255,.9)"),
-    "dark": dict(bg="#07090D", surface="#0E121A", raised="#141A24", line="#1F2733", grid="#1A212C", text="#E8ECF3", body="#C9D1DE",
-                 muted="#8B95A7", dim="#5B6577", chart_text="#AEB7C6", blue="#1F8FFF", ice="#6CC4FF", cobalt="#2A4BD7", red="#F0303F",
-                 green="#34D399", amber="#F5B83D", ember="#FF4D5E", violet="#8B7CF6", bar="#1E3A63", sidebar="#0B0E14",
-                 shadow="none", hero="linear-gradient(120deg,#0E121A,#07090D 70%)", sheen="rgba(255,255,255,.04)"),
+    "light": dict(bg="#F5F7FB", surface="#FFFFFF", raised="#F0F3F8", line="#E2E7EF", grid="#ECEFF5", text="#0A1022", body="#283145",
+                  muted="#556073", dim="#828CA0", chart_text="#5E687B", blue="#2D6BFF", ice="#2563C9", cobalt="#2A4BD7", red="#E0283A",
+                  green="#10B981", amber="#F59E0B", ember="#F43F5E", violet="#7466E8", teal="#14B8A6", bar="#D3DDF1", sidebar="#FBFCFE", pos_t="#047857", neg_t="#BE123C",
+                  shadow="0 1px 2px rgba(10,16,34,.04), 0 12px 28px -16px rgba(10,16,34,.20)",
+                  hero="linear-gradient(120deg,#FFFFFF 0%,#F4F7FC 55%,#E9EEF8 100%)", sheen="rgba(255,255,255,.9)"),
+    "dark": dict(bg="#06080E", surface="#0C111B", raised="#121926", line="#1C2433", grid="#151C29", text="#EAEFF7", body="#C3CBD9",
+                 muted="#97A1B4", dim="#6E788E", chart_text="#A3ADBF", blue="#5B8CFF", ice="#7DB8FF", cobalt="#2A4BD7", red="#F0303F",
+                 green="#34D399", amber="#FBBF24", ember="#FB7185", violet="#A08FFF", teal="#2DD4BF", bar="#22355C", sidebar="#0A0E17", pos_t="#6EE7B7", neg_t="#FDA4AF",
+                 shadow="none", hero="linear-gradient(120deg,#0E1424,#06080E 70%)", sheen="rgba(255,255,255,.04)"),
 }
+# sub-sector identity colours: same hue on every chart, card and table (categorical, never gain/loss)
+SUBSECTOR_COLORS = {"IT services": "#3B82F6", "SaaS & software products": "#8B5CF6", "AI & data": "#06B6D4",
+                    "Engineering & design R&D": "#6366F1", "Electronics & semicon design": "#0EA5A4",
+                    "Fintech": "#D946EF", "Internet & consumer tech": "#F97316"}
+
+
+def sub_color(name):
+    return SUBSECTOR_COLORS.get(name, "#64748B")
+
+
+def sub_dot(name, size=8):
+    return (f'<span style="display:inline-block;width:{size}px;height:{size}px;border-radius:50%;background:{sub_color(name)};'
+            f'margin-right:6px;vertical-align:middle"></span>')
+
+
 BRAND = dict(ice="#6CC4FF", cobalt="#2A4BD7", red="#F0303F")
 
 
@@ -53,19 +68,41 @@ WORDMARK = open(os.path.join(os.path.dirname(__file__), "static", "beemer-wordma
 DISCLAIMER = ("For education only. Not investment advice. Beemer is not SEBI-registered. "
               "Public data from Yahoo Finance, NSE and screener.in; it may be delayed or wrong. Past returns guarantee nothing.")
 
+def rgba(hex_, a):
+    h = hex_.lstrip("#")
+    return f"rgba({int(h[0:2], 16)},{int(h[2:4], 16)},{int(h[4:6], 16)},{a})"
+
+
+def area(col, top=0.22, down=False):
+    """Scatter kwargs for a soft vertical gradient fill (strongest at the line)."""
+    stops = [[0, rgba(col, 0.0)], [1, rgba(col, top)]] if not down else [[0, rgba(col, top)], [1, rgba(col, 0.0)]]
+    return dict(fill="tozeroy", fillgradient=dict(type="vertical", colorscale=stops))
+
+
+def soft(col, a=0.07):
+    """Flat, faint fill: use on log axes, where a vertical gradient maps unevenly."""
+    return dict(fill="tozeroy", fillcolor=rgba(col, a))
+
+
 # ---------------- Plotly template ----------------
 def _template(P):
-    return go.layout.Template(layout=go.Layout(
-    font=dict(family="Inter, system-ui, sans-serif", size=12, color=P["chart_text"]),
-    title=dict(font=dict(family="'Inter Tight', Inter, sans-serif", size=15, color=P["text"]), x=0, xanchor="left"),
-    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-    colorway=[P["blue"], P["ice"], P["amber"], P["green"], P["violet"], P["ember"]],
-    xaxis=dict(showgrid=False, linecolor=P["line"], ticks="", zeroline=False, tickfont=dict(color=P["muted"])),
-    yaxis=dict(showgrid=True, gridcolor=P["grid"], zeroline=False, linecolor="rgba(0,0,0,0)", tickfont=dict(color=P["muted"])),
-    hoverlabel=dict(bgcolor=P["surface"], bordercolor=P["line"], font=dict(family="Inter", color=P["text"])),
-    legend=dict(orientation="h", yanchor="top", y=-0.12, xanchor="left", x=0, bgcolor="rgba(0,0,0,0)", font=dict(color=P["muted"])),
-    polar=dict(bgcolor="rgba(0,0,0,0)"),
-    margin=dict(l=10, r=10, t=46, b=40), hovermode="x unified"))
+    axis = dict(ticks="", zeroline=False, tickfont=dict(color=P["muted"], size=11), title=dict(font=dict(color=P["muted"], size=11)),
+                showspikes=True, spikemode="across", spikesnap="cursor", spikethickness=1, spikecolor=P["dim"], spikedash="dot")
+    return go.layout.Template(
+        layout=go.Layout(
+            font=dict(family="Inter, system-ui, sans-serif", size=12, color=P["chart_text"]),
+            title=dict(font=dict(family="'Inter Tight', Inter, sans-serif", size=14, color=P["text"]), x=0, xanchor="left"),
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            colorway=[P["blue"], P["violet"], P["teal"], P["amber"], P["ember"], P["ice"]],
+            xaxis=dict(showgrid=False, showline=True, linecolor=P["line"], linewidth=1, **axis),
+            yaxis=dict(showgrid=True, gridcolor=P["grid"], griddash="dot", gridwidth=1, showline=False, **axis),
+            hoverlabel=dict(bgcolor=P["surface"], bordercolor=P["line"], namelength=-1, align="left",
+                            font=dict(family="Inter, sans-serif", size=12, color=P["text"])),
+            legend=dict(orientation="h", yanchor="top", y=-0.12, xanchor="left", x=0, bgcolor="rgba(0,0,0,0)", font=dict(color=P["muted"], size=11)),
+            polar=dict(bgcolor="rgba(0,0,0,0)"),
+            barcornerradius=4, bargap=0.32,
+            margin=dict(l=10, r=10, t=46, b=40), hovermode="x unified"),
+        data=dict(scatter=[go.Scatter(line=dict(width=1.6))], bar=[go.Bar(marker=dict(line=dict(width=0)))]))
 
 
 for _k, _P in PALETTES.items():
@@ -82,7 +119,7 @@ def css():
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
 h1, h2, h3, h4 {{ font-family:'Inter Tight', Inter, sans-serif !important; color:{C['text']} !important; letter-spacing:-0.015em; font-weight:600 !important; }}
 h3 {{ font-size:1.25rem !important; margin-top:1.4rem !important; }}
-.block-container {{ padding-top:2.2rem; max-width:1320px; }}
+.block-container {{ padding-top:5rem; max-width:1320px; }}
 .bm-k {{ font:500 .72rem 'JetBrains Mono', monospace; letter-spacing:.16em; text-transform:uppercase; color:{C['muted']}; }}
 .bm-hero {{ background:{C['hero']}; box-shadow:{C['shadow']}; border:1px solid {C['line']}; border-radius:14px; padding:30px 200px 28px 34px; margin-bottom:18px; position:relative; overflow:hidden; }}
 .bm-hero:before {{ content:""; position:absolute; top:0; left:0; right:0; height:3px; background:{STRIPE}; }}
@@ -90,21 +127,24 @@ h3 {{ font-size:1.25rem !important; margin-top:1.4rem !important; }}
 .bm-hero p {{ color:{C['muted']}; font-size:1.02rem; margin:0; max-width:860px; line-height:1.55; }}
 .bm-hero svg.bg {{ position:absolute; right:34px; top:50%; transform:translateY(-50%); width:118px; height:118px; }}
 .bm-card {{ background:{C['surface']}; box-shadow:{C['shadow']}; border:1px solid {C['line']}; border-radius:12px; padding:16px 18px; height:100%; }}
-.bm-kpi .l {{ font:500 .68rem 'JetBrains Mono', monospace; letter-spacing:.14em; text-transform:uppercase; color:{C['muted']}; }}
-.bm-kpi .v {{ font-family:'Inter Tight', Inter, sans-serif; font-weight:600; font-size:1.7rem; color:{C['text']}; font-variant-numeric:tabular-nums; line-height:1.25; margin:4px 0 3px; }}
-.bm-kpi .e {{ font-size:.82rem; color:{C['muted']}; line-height:1.4; }}
-.bm-kpi .v.pos {{ color:{C['green']}; }} .bm-kpi .v.neg {{ color:{C['ember']}; }} .bm-kpi .v.acc {{ color:{C['ice']}; }}
+.bm-kpi .l {{ font:600 .72rem 'Inter Tight', Inter, sans-serif; letter-spacing:.07em; text-transform:uppercase; color:{C['muted']}; }}
+.bm-kpi .v {{ font-family:'Inter Tight', Inter, sans-serif; font-weight:650; font-size:1.8rem; color:{C['text']}; font-variant-numeric:tabular-nums; letter-spacing:-.02em; line-height:1.2; margin:6px 0 4px; }}
+.bm-kpi .e {{ font-size:.86rem; color:{C['body']}; line-height:1.5; opacity:.85; }}
+.bm-kpi .v.pos {{ color:{C['pos_t']}; }} .bm-kpi .v.neg {{ color:{C['neg_t']}; }} .bm-kpi .v.acc {{ color:{C['ice']}; }}
+.bm-chip {{ display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:6px; font:600 .8rem Inter, sans-serif; font-variant-numeric:tabular-nums; }}
+.bm-chip.pos {{ color:{C['pos_t']}; background:{rgba(C['green'], .13)}; }} .bm-chip.neg {{ color:{C['neg_t']}; background:{rgba(C['ember'], .13)}; }}
+[data-testid='stMarkdownContainer'], .bm-card {{ font-variant-numeric:tabular-nums; }}
 .bm-callout {{ background:{C['raised']}; border-left:2px solid {C['blue']}; border-radius:8px; padding:13px 17px; margin:8px 0 14px 0; color:{C['body']}; font-size:.95rem; line-height:1.55; }}
-.bm-badge {{ display:inline-block; padding:4px 12px; border-radius:999px; font:600 .78rem 'Inter Tight', sans-serif; letter-spacing:.08em; text-transform:uppercase; vertical-align:middle; }}
+.bm-badge {{ display:inline-block; padding:4px 12px; border-radius:999px; font:700 .8rem 'Inter Tight', sans-serif; letter-spacing:.08em; text-transform:uppercase; vertical-align:middle; }}
 .bm-check {{ display:flex; gap:12px; padding:13px 0; border-bottom:1px solid {C['line']}; }}
 .bm-check:last-child {{ border-bottom:none; }}
-.bm-check .ic {{ font:600 .6rem 'JetBrains Mono', monospace; letter-spacing:.12em; padding:3px 7px; border-radius:4px; height:max-content; margin-top:2px; min-width:46px; text-align:center; }}
+.bm-check .ic {{ font:700 .66rem Inter, sans-serif; letter-spacing:.08em; padding:3px 8px; border-radius:4px; height:max-content; margin-top:2px; min-width:46px; text-align:center; }}
 .bm-check .t {{ font-family:'Inter Tight', sans-serif; font-weight:600; color:{C['text']}; }}
-.bm-check .d {{ font-size:.9rem; color:{C['body']}; margin:3px 0; }}
-.bm-check .w {{ font-size:.82rem; color:{C['muted']}; }}
+.bm-check .d {{ font-size:.92rem; color:{C['body']}; margin:3px 0; line-height:1.5; }}
+.bm-check .w {{ font-size:.85rem; color:{C['muted']}; line-height:1.5; }}
 .bm-bar {{ height:4px; background:{C['line']}; border-radius:4px; margin:7px 0; max-width:380px; }}
 .bm-bar i {{ display:block; height:4px; border-radius:4px; }}
-.bm-caption {{ font-size:.83rem; color:{C['muted']}; margin:-4px 0 18px 0; line-height:1.5; }}
+.bm-caption {{ font-size:.86rem; color:{C['muted']}; margin:-4px 0 18px 0; line-height:1.5; }}
 .bm-caption b {{ color:{C['body']}; }}
 .bm-foot {{ font-size:.75rem; color:{C['dim']}; border-top:1px solid {C['line']}; margin-top:40px; padding-top:14px; line-height:1.5; }}
 .bm-made {{ text-align:center; font:500 .68rem 'JetBrains Mono', monospace; letter-spacing:.14em; color:{C['dim']}; margin:14px 0 4px; opacity:.85; }}
@@ -114,7 +154,45 @@ h3 {{ font-size:1.25rem !important; margin-top:1.4rem !important; }}
 .bm-mono {{ font-family:'JetBrains Mono', monospace; color:{C['ice']}; font-size:.85em; }}
 .bm-side-tag {{ color:{C['muted']}; font-size:.78rem; margin:2px 0 8px; line-height:1.45; }}
 .bm-stripe {{ height:2px; background:{STRIPE}; border-radius:2px; margin:4px 0 14px; width:64px; }}
-[data-testid="stSidebarHeader"] img {{ height:2.1rem !important; max-width:200px; }}
+[data-testid="stSidebarHeader"] img {{ height:1.6rem !important; max-width:180px; }}
+/* top bar + burger drawer */
+header[data-testid="stHeader"] {{ background:{rgba(C['bg'], .82)}; backdrop-filter:saturate(160%) blur(14px); -webkit-backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:1px solid {C['line']}; }}
+[data-testid="stHeaderLogo"] {{ height:1.25rem !important; margin-left:4px; }}
+/* Streamlit's own toggles stay in the DOM (our burger drives them) but are hidden */
+[data-testid="stExpandSidebarButton"], [data-testid="stSidebarCollapseButton"] {{ position:absolute !important; width:1px !important; height:1px !important;
+  opacity:0 !important; pointer-events:none !important; overflow:hidden; }}
+[data-testid="stHeaderLogo"] {{ margin-left:52px !important; }}
+[data-testid="stSidebarHeader"] {{ padding-left:68px !important; }}
+/* drawer: fixed width, overlays content, animates transform only */
+section[data-testid="stSidebar"] {{ position:fixed !important; top:0; left:0; height:100vh !important; z-index:1000010 !important;
+  width:300px !important; min-width:300px !important; max-width:300px !important;
+  background:{C['sidebar']} !important; border-right:1px solid {C['line']}; will-change:transform; backface-visibility:hidden;
+  box-shadow:0 24px 64px -12px {rgba('#0A1022', .35)};
+  transition:transform .3s cubic-bezier(0.22,1,0.36,1) !important; }}
+section[data-testid="stSidebar"][aria-expanded="false"] {{ transform:translate3d(-310px,0,0) !important; box-shadow:none; }}
+section[data-testid="stSidebar"][aria-expanded="true"] {{ transform:translate3d(0,0,0) !important; }}
+[data-testid="stAppViewContainer"]::after {{ content:""; position:fixed; inset:0; z-index:1000005; pointer-events:none; opacity:0;
+  background:{rgba('#0A1022', .30 if theme_type() == 'light' else .55)}; backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
+  transition:opacity .3s cubic-bezier(0.22,1,0.36,1); will-change:opacity; }}
+[data-testid="stAppViewContainer"]:has(section[data-testid="stSidebar"][aria-expanded="true"])::after {{ opacity:1; }}
+/* burger: lives on <body>, above the drawer, morphs to an X */
+#bm-burger {{ position:fixed; top:11px; left:14px; z-index:1000020; width:38px; height:38px; border-radius:10px; cursor:pointer; padding:0;
+  border:1px solid {C['line']}; background:{C['surface']}; transition:border-color .2s, background-color .2s; -webkit-tap-highlight-color:transparent; }}
+#bm-burger:hover {{ border-color:{C['blue']}; }}
+#bm-burger:focus-visible {{ outline:2px solid {C['blue']}; outline-offset:2px; }}
+#bm-burger i {{ position:absolute; left:11px; width:16px; height:1.5px; border-radius:2px; background:{C['text']};
+  transition:transform .3s cubic-bezier(0.22,1,0.36,1), opacity .2s; will-change:transform; }}
+#bm-burger i:nth-child(1) {{ top:13px; }} #bm-burger i:nth-child(2) {{ top:18px; }} #bm-burger i:nth-child(3) {{ top:23px; }}
+#bm-burger.open i:nth-child(1) {{ transform:translateY(5px) rotate(45deg); }}
+#bm-burger.open i:nth-child(2) {{ opacity:0; transform:scaleX(.3); }}
+#bm-burger.open i:nth-child(3) {{ transform:translateY(-5px) rotate(-45deg); }}
+@media (prefers-reduced-motion: reduce) {{
+  section[data-testid="stSidebar"], #bm-burger i, [data-testid="stAppViewContainer"]::after {{ transition:none !important; }} }}
+[data-testid="stSidebarResizeHandle"] {{ display:none !important; }}
+[data-testid="stSidebarNavLink"] {{ border-radius:8px; padding:8px 12px; margin:1px 0; }}
+[data-testid="stSidebarNavLink"] span {{ font:500 .98rem 'Inter Tight', Inter, sans-serif !important; letter-spacing:-.005em; }}
+[data-testid="stSidebarNavSeparator"] {{ display:none; }}
 [data-testid="stExpander"] details {{ background:{C['surface']}; border-color:{C['line']}; }}
 </style>
 """
@@ -142,9 +220,9 @@ def setup(title):
     st.markdown(css(), unsafe_allow_html=True)
     wm = "beemer-wordmark.svg" if theme_type() == "dark" else "beemer-wordmark-light.svg"
     st.logo(os.path.join(os.path.dirname(__file__), "static", wm), size="large",
-            icon_image=os.path.join(os.path.dirname(__file__), "static", "beemer-logo.svg"))
+            icon_image=os.path.join(os.path.dirname(__file__), "static", wm))
     with st.sidebar:
-        st.markdown('<div class="bm-stripe"></div><div class="bm-side-tag">Precision research for India\'s tech stocks.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="bm-stripe"></div><div class="bm-k" style="font-size:.6rem;margin:0 0 8px">Theme</div>', unsafe_allow_html=True)
         theme_switch()
 
 
@@ -174,6 +252,31 @@ _THEME_JS = """
     return false;
   };
   if (ensure()) return;
+  // burger drawer: one persistent button on the page body drives Streamlit's own sidebar toggles
+  const sbEl = () => document.querySelector('section[data-testid="stSidebar"]');
+  const isOpen = () => { const sb = sbEl(); return !!sb && sb.getAttribute('aria-expanded') === 'true'; };
+  const press = sel => { const b = document.querySelector(sel); if (b) b.click(); };
+  const setOpen = want => { if (want === isOpen()) return;
+    if (want) press('[data-testid="stExpandSidebarButton"]');
+    else press('[data-testid="stSidebarCollapseButton"] button, button[data-testid="stSidebarCollapseButton"]'); };
+  let bb = document.getElementById('bm-burger');
+  if (!bb) {
+    bb = document.createElement('button'); bb.id = 'bm-burger'; bb.type = 'button';
+    bb.setAttribute('aria-label', 'Menu'); bb.setAttribute('aria-expanded', 'x');
+    for (let i = 0; i !== 3; i++) bb.appendChild(document.createElement('i'));
+    bb.addEventListener('click', e => { e.stopPropagation(); setOpen(!isOpen()); });
+    document.body.appendChild(bb);
+  }
+  const sync = () => { const b = document.getElementById('bm-burger'); if (!b) return; const v = isOpen() ? 'true' : 'false';
+    if (b.getAttribute('aria-expanded') === v) return; b.classList.toggle('open', v === 'true'); b.setAttribute('aria-expanded', v); };
+  sync();
+  if (!window.__bmDrawer) { window.__bmDrawer = true;
+    new MutationObserver(ms => { if (ms.some(m => m.target.id !== 'bm-burger')) sync(); })
+      .observe(document.body, { subtree: true, attributes: true, attributeFilter: ['aria-expanded'] });
+    document.addEventListener('click', e => { if (!isOpen() || e.target.closest('#bm-burger')) return;
+      if (!sbEl().contains(e.target) || e.target.closest('[data-testid="stSidebarNavLink"]')) setTimeout(() => setOpen(false), 60); }, true);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
+  }
   sessionStorage.removeItem('bm-theme-reloaded');
   document.querySelectorAll('.bm-theme button').forEach(b => {
     if (b.dataset.bound) return; b.dataset.bound = '1';
@@ -235,13 +338,39 @@ def caption(text):
 
 def score_color(s):
     if s is None or pd.isna(s): return C["dim"]
-    return C["green"] if s >= 75 else C["blue"] if s >= 60 else C["amber"] if s >= 40 else C["ember"]
+    return C["green"] if s >= 75 else C["teal"] if s >= 60 else C["amber"] if s >= 40 else C["ember"]
+
+
+def heat(v, lo=0, hi=100, signed=False, cap=0.5):
+    """Styler css for a heat cell. Scores: rose→amber→teal→emerald bands. Signed values: tint scales with size."""
+    if v is None or pd.isna(v): return ""
+    if signed:
+        if v == 0: return ""
+        col = C["green"] if v > 0 else C["ember"]; a = 0.06 + 0.22 * min(abs(v) / (cap * 100), 1)
+        return f"background-color:{rgba(col, round(a, 3))};color:{C['pos_t'] if v > 0 else C['neg_t']};font-weight:600"
+    col = score_color(v)
+    return f"background-color:{rgba(col, .16)};color:{ink(col)};font-weight:650"
+
+
+def ink(col):
+    """Readable text tone of an accent colour: pulled toward the body text so it clears WCAG AA on cards."""
+    a, b = col.lstrip("#"), C["text"].lstrip("#")
+    w = .58 if theme_type() == "light" else .7
+    mix = [round(int(a[i:i + 2], 16) * w + int(b[i:i + 2], 16) * (1 - w)) for i in (0, 2, 4)]
+    return "#" + "".join(f"{v:02X}" for v in mix)
+
+
+def chip(x, d=2, arrow=True):
+    """Positive/negative change chip, e.g. ▲ 3.62%."""
+    if x is None or pd.isna(x): return ""
+    up = x >= 0
+    return f'<span class="bm-chip {"pos" if up else "neg"}">{("▲ " if up else "▼ ") if arrow else ""}{abs(x)*100:.{d}f}%</span>'
 
 
 def badge(s, label=None):
     col = score_color(s)
     txt = "n/a" if s is None or pd.isna(s) else f"{s:.0f} · {label or A.score_label(s)}"
-    return f'<span class="bm-badge" style="color:{col};border:1px solid {col};background:{col}1F">{txt}</span>'
+    return f'<span class="bm-badge" style="color:{ink(col)};border:1px solid {rgba(col, .55)};background:{rgba(col, .12)}">{txt}</span>'
 
 
 def gauge(score, title="Buffett Score", height=230):
