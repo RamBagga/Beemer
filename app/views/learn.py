@@ -1,5 +1,6 @@
 import streamlit as st
 import beemer as B
+import belts
 from beemer import C
 
 B.hero("Academy · 10 short lessons",
@@ -52,6 +53,39 @@ for i, (n, t, body, tryit) in enumerate(LESSONS):
     with (c1 if i % 2 == 0 else c2):
         st.markdown(f'<div class="bm-lesson"><div class="bm-k">Lesson {n}</div><h4>{t}</h4><div style="font-size:.93rem;color:#C9D1DE;line-height:1.6">{body}</div>'
                     f'<div style="margin-top:10px;font-size:.83rem;color:{C["ice"]}">→ Try it in Beemer: {tryit}</div></div>', unsafe_allow_html=True)
+
+st.markdown("### How Beemer Picks work")
+B.callout("💡 <b>In plain English:</b> the moving belts on the Cockpit are <b>data signals, not recommendations</b>. A computer applies the same fixed rules to all "
+          "companies after every data update and lists the five that score highest. Nobody hand-edits them, nobody is paid to include a stock, and a pick is never a "
+          "prediction or a reason to buy. Think of them as “stocks worth reading about today”, then do the reading on the Company page.")
+_bt = (belts.load_picks()[1] or {}).get("backtest") or {}
+c1, c2, c3 = st.columns(3)
+with c1:
+    st.markdown(f"""<div class="bm-lesson"><div class="bm-k" style="color:{C['ice']}">Belt 01 · 1–3 months</div><h4>Short-term momentum</h4>
+<div style="font-size:.88rem;color:#C9D1DE;line-height:1.6"><b>Who qualifies:</b> 200+ trading days of history, price above its 50-day average, beat the Nifty IT index over 3 months, trades ₹2 crore+ a day.<br>
+<b>Score:</b> 35% 3-month return vs Nifty IT · 15% 1-month return vs Nifty IT · 20% trend (above 50-day average; 50-day above 200-day) · 10% volume pick-up · 20% latest quarter's sales &amp; profit growth vs a year ago.<br>
+<b>Why it can matter:</b> stocks that have been rising with improving results often keep drifting the same way for a while.<br>
+<b>Catch:</b> momentum reverses suddenly, and it says nothing about whether the business is worth the price.</div></div>""", unsafe_allow_html=True)
+with c2:
+    st.markdown(f"""<div class="bm-lesson"><div class="bm-k" style="color:{C['green']}">Belt 02 · 5 years +</div><h4>Long-term compounders</h4>
+<div style="font-size:.88rem;color:#C9D1DE;line-height:1.6"><b>Who qualifies:</b> 5+ years of financials, profitable over the last 12 months, Buffett Score 60+, debt below 1× equity, 3+ years listed.<br>
+<b>Score:</b> 40% Buffett Score · 15% ROE above 15% year after year · 15% return on capital (ROCE) · 15% price vs value (margin of safety, P/E vs its own history) · 15% 5-year profit growth.<br>
+<b>Why it can matter:</b> this is Buffett's recipe — great businesses at sensible prices, held for years.<br>
+<b>Catch:</b> it looks backwards. A great past doesn't guarantee a great future, especially in fast-changing tech.</div></div>""", unsafe_allow_html=True)
+with c3:
+    st.markdown(f"""<div class="bm-lesson"><div class="bm-k" style="color:{C['amber']}">Belt 03 · last 1–5 days</div><h4>Volatile movers</h4>
+<div style="font-size:.88rem;color:#C9D1DE;line-height:1.6"><b>Who qualifies:</b> 120+ trading days of history, trades ₹1 crore+ a day.<br>
+<b>Score:</b> 60% size of the 5-day move compared with the stock's own normal weekly swing · 25% unusual volume vs the previous 60 days · 15% size of the latest day's move. Green = up, red = down.<br>
+<b>Why it can matter:</b> big, unusual moves usually mean news — results, a deal, a downgrade. It's a prompt to find out why.<br>
+<b>Catch:</b> this belt is a weather report, not a tip. Chasing big moves is how beginners get hurt.</div></div>""", unsafe_allow_html=True)
+sb, vb = _bt.get("short") or {}, _bt.get("volatile") or {}
+if sb:
+    B.callout(f"📏 <b>Honest track record.</b> We re-ran the momentum rules on every month-end from {sb['from']} to {sb['to']} (prices only — we don't have past quarterly results as they were known at the time). "
+              f"The top 5 beat the median stock over the next <b>3 months</b> in <b>{sb['hit_rate_3m']*100:.0f}%</b> of months, by a median {sb['median_excess_3m']*100:+.1f} percentage points; "
+              f"over the next <b>1 month</b> it was close to a coin flip ({sb['hit_rate_1m']*100:.0f}%). "
+              + (f"After the biggest <i>down</i> weeks, those stocks did {vb['after_down_1m_excess']*100:+.1f} pts vs the median over the next month — sharp falls have tended to partly bounce. " if vb else "")
+              + "The long-term belt isn't backtested, because today's fundamentals would leak future information into the past. "
+              "Caveat: the test uses today's list of companies, so firms that delisted or collapsed are missing — real-world results would likely be a bit worse.")
 
 st.markdown("### Glossary")
 cols = st.columns(2)
