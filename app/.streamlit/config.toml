@@ -1,0 +1,32 @@
+[server]
+headless = true
+port = 8501
+address = "127.0.0.1"
+enableStaticServing = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "viewer"
+
+[theme]
+base = "dark"
+primaryColor = "#1F8FFF"
+backgroundColor = "#07090D"
+secondaryBackgroundColor = "#141A24"
+textColor = "#E8ECF3"
+linkColor = "#6CC4FF"
+borderColor = "#1F2733"
+baseRadius = "10px"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+headingFont = "'Inter Tight':https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap"
+chartCategoricalColors = ["#1F8FFF", "#6CC4FF", "#F5B83D", "#34D399", "#8B7CF6", "#FF4D5E"]
+dataframeHeaderBackgroundColor = "#0E121A"
+
+[theme.sidebar]
+backgroundColor = "#0B0E14"
+secondaryBackgroundColor = "#141A24"
+textColor = "#C9D1DE"
+borderColor = "#1F2733"
