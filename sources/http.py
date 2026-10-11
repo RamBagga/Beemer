@@ -42,11 +42,12 @@ class Polite:
         self._last = {}
         self._refusals = {}
         self._warmed = set()
+        self._slow = {}          # host -> extra gap after timeouts / 429s (adaptive back-off)
         self._lock = threading.Lock()
 
     # -- bookkeeping --
     def _wait(self, host):
-        gap = MIN_GAP.get(host, DEFAULT_GAP)
+        gap = MIN_GAP.get(host, DEFAULT_GAP) + self._slow.get(host, 0)
         with self._lock:
             dt_ = time.monotonic() - self._last.get(host, 0)
             if dt_ < gap:
@@ -98,7 +99,10 @@ class Polite:
             try:
                 r = self.s.get(url, headers=headers, timeout=timeout)
             except requests.RequestException as e:
-                err = e; time.sleep(2 * (attempt + 1)); continue
+                # the host is slow or shedding load: widen the gap for the rest of the run
+                self._slow[host] = min(self._slow.get(host, 0) * 2 or 1.0, 8.0)
+                log.info("%s slow (%s); gap now %.1fs", host, type(e).__name__, MIN_GAP.get(host, DEFAULT_GAP) + self._slow[host])
+                err = e; time.sleep(5 * (attempt + 1)); continue
             if r.status_code == 200:
                 body = r.content
                 if b"Access Denied" in body[:600] and b"edgesuite" in body[:2000]:
@@ -116,6 +120,8 @@ class Polite:
             if r.status_code in (401, 403):
                 self._refused(host, url, r.status_code)
             if r.status_code in (429, 500, 502, 503, 504):
+                if r.status_code in (429, 503):
+                    self._slow[host] = min(self._slow.get(host, 0) * 2 or 1.0, 8.0)
                 err = f"HTTP {r.status_code}"
                 time.sleep((10 if r.status_code == 429 else 3) * (attempt + 1))
                 continue
