@@ -56,9 +56,10 @@ public class ApiController {
             @RequestParam(defaultValue = "0") int minRoe,
             @RequestParam(defaultValue = "false") boolean profitable,
             @RequestParam(defaultValue = "false") boolean seasoned,
-            @RequestParam(defaultValue = "false") boolean belowValue) {
+            @RequestParam(defaultValue = "false") boolean belowValue,
+            @RequestParam(defaultValue = "core") String scope) {
         return screener.screen(new ScreenerFilter.Query(
-                subsector == null ? List.of() : subsector, minScore, maxPe, maxDe, minRoe, profitable, seasoned, belowValue));
+                subsector == null ? List.of() : subsector, minScore, maxPe, maxDe, minRoe, profitable, seasoned, belowValue), scope);
     }
 
     @GetMapping("/api/companies")

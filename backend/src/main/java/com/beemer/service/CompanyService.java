@@ -50,6 +50,7 @@ public class CompanyService {
     @Cacheable("companies")
     public List<Map<String, Object>> list() {
         List<Metric> all = new ArrayList<>(metrics.all());
+        all.sort(Comparator.comparing((Metric m) -> MetricsService.isCore(m) ? 0 : 1));
         all.sort(Comparator.comparing(m -> m.text("name") == null ? "" : m.text("name")));
         List<Map<String, Object>> out = new ArrayList<>();
         for (Metric m : all) {
@@ -57,6 +58,7 @@ public class CompanyService {
             row.put("symbol", m.symbol());
             row.put("name", m.text("name"));
             row.put("score", m.num("buffett_score"));
+            row.put("tier", MetricsService.isCore(m) ? "core" : "ext");
             out.add(row);
         }
         return out;
@@ -106,7 +108,8 @@ public class CompanyService {
 
         Double cap = r.num("market_cap_cr");
         int higher = 0;
-        if (cap != null) for (Metric m : all) {
+        List<Metric> peers = MetricsService.isCore(r) ? metrics.core() : all;
+        if (cap != null) for (Metric m : peers) {
             Double c = m.num("market_cap_cr");
             if (c != null && c > cap) higher++;
         }
@@ -114,7 +117,7 @@ public class CompanyService {
         List<Map<String, Object>> kpis = new ArrayList<>();
         kpis.add(kpi("Price", IndianFormat.inr(r.num("price"), 0),
                 fmtDate(r.text("last_date")) + ". 52-week high " + IndianFormat.inr(r.num("high_52w")) + "."));
-        kpis.add(kpi("Market cap", IndianFormat.crore(cap), cap == null ? "" : "Rank " + (higher + 1) + " of " + all.size() + "."));
+        kpis.add(kpi("Market cap", IndianFormat.crore(cap), cap == null ? "" : "Rank " + (higher + 1) + " of " + peers.size() + (MetricsService.isCore(r) ? " core" : " tech") + "."));
         if (r.num("pe") != null) {
             Double med = r.num("pe_median_10y");
             kpis.add(kpi("P/E", IndianFormat.num(r.num("pe")), med != null ? "10-yr median " + IndianFormat.num(med) + "." : EXPLAIN.get("pe")[1]));
