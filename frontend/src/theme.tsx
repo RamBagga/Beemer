@@ -34,6 +34,8 @@ export const SUBSECTOR: Record<string, string> = {
   "Electronics & semicon design": "#0EA5A4",
   Fintech: "#D946EF",
   "Internet & consumer tech": "#F97316",
+  "Telecom & networks": "#65A30D",
+  "Other tech": "#94A3B8",
 };
 
 export function subColor(name?: string | null) {

@@ -18,9 +18,11 @@ public class ScreenerService {
 
     public ScreenerService(MetricsService metrics) { this.metrics = metrics; }
 
-    @Cacheable(value = "screener", key = "#q")
-    public Map<String, Object> screen(ScreenerFilter.Query q) {
-        List<Metric> all = metrics.all();
+    public Map<String, Object> screen(ScreenerFilter.Query q) { return screen(q, "core"); }
+
+    @Cacheable(value = "screener", key = "#q.toString() + '|' + #scope")
+    public Map<String, Object> screen(ScreenerFilter.Query q, String scope) {
+        List<Metric> all = metrics.scope(scope);
         List<ScreenerFilter.Row> rows = new ArrayList<>();
         Map<String, Metric> by = new LinkedHashMap<>();
         for (Metric m : all) {
@@ -63,6 +65,9 @@ public class ScreenerService {
                 + "</b> profitable. Median P/E <b>" + (medPe == null ? "–" : IndianFormat.fixed(medPe, 1)) + "</b>.");
         out.put("rows", outRows);
         out.put("scatter", dots);
+        out.put("scope", "all".equalsIgnoreCase(scope) ? "all" : "core");
+        out.put("coreCount", metrics.core().size());
+        out.put("allCount", metrics.all().size());
         out.put("subsectors", all.stream().map(m -> m.text("subsector")).filter(s -> s != null).distinct().sorted().toList());
         return out;
     }
@@ -96,6 +101,10 @@ public class ScreenerService {
         r.put("cagr5", m.num("cagr_5y"));
         r.put("maxDd", m.num("max_drawdown"));
         r.put("mcap", m.num("market_cap_cr"));
+        r.put("tier", MetricsService.isCore(m) ? "core" : "ext");
+        r.put("promoter", m.num("own_promoter"));
+        r.put("fii", m.num("own_fii"));
+        r.put("deliv", m.num("deliv_pct_20d"));
         return r;
     }
 }

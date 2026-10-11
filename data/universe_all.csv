@@ -1,0 +1,203 @@
+symbol,name,isin,series,listing_date,face_value,macro_industry,legacy_industry,subsector,tier,indices,class_source,updated_at
+AFFLE,Affle 3i Limited,INE00WC01027,EQ,2019-08-08,2.0,Information Technology,,AI & data,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+ANGELONE,Angel One Limited,INE732I01021,EQ,2020-10-05,1.0,Financial Services,,Fintech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+AVALON,Avalon Technologies Limited,INE0LCL01028,EQ,2023-04-18,2.0,Capital Goods,,Electronics & semicon design,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+BSOFT,BIRLASOFT LIMITED,INE836A01035,EQ,1999-11-24,2.0,Information Technology,,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+CAMS,Computer Age Management Services Limited,INE596I01020,EQ,2021-05-07,2.0,Financial Services,,Fintech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,core,2026-10-11
+CARTRADE,Cartrade Tech Limited,INE290S01011,EQ,2021-08-20,10.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+COFORGE,Coforge Limited,INE591G01025,EQ,2004-08-30,2.0,Information Technology,,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+CYIENT,Cyient Limited,INE136B01020,EQ,1998-09-30,5.0,Information Technology,,Engineering & design R&D,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+CYIENTDLM,Cyient DLM Limited,INE055S01018,EQ,2023-07-10,10.0,,,Electronics & semicon design,core,,core,2026-10-11
+DIXON,Dixon Technologies (India) Limited,INE935N01020,EQ,2017-09-18,2.0,Consumer Durables,,Electronics & semicon design,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+E2E,E2E Networks Limited,INE255Z01027,BE,2022-04-12,1.0,Information Technology,,AI & data,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+EASEMYTRIP,Easy Trip Planners Limited,INE07O001026,EQ,2021-03-19,1.0,,,Internet & consumer tech,core,,core,2026-10-11
+ECLERX,eClerx Services Limited,INE738I01010,EQ,2007-12-31,10.0,Services,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,core,2026-10-11
+ETERNAL,ETERNAL LIMITED,INE758T01015,EQ,2021-07-23,1.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 50|NIFTY 500|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+FIRSTCRY,Brainbees Solutions Limited,INE02RE01045,EQ,2024-08-13,2.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+GROWW,Billionbrains Garage Ventures Limited,INE0HOQ01053,EQ,2025-11-12,2.0,Financial Services,,Fintech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+HAPPSTMNDS,Happiest Minds Technologies Limited,INE419U01012,EQ,2020-09-17,2.0,Information Technology,,IT services,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+HCLTECH,HCL Technologies Limited,INE860A01027,EQ,2000-01-06,2.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 50|NIFTY 500|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+HEXT,Hexaware Technologies Limited,INE093A01041,EQ,2025-02-19,1.0,Information Technology,,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL,core,2026-10-11
+INDIAMART,Indiamart Intermesh Limited,INE933S01016,EQ,2019-07-04,10.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+INFY,Infosys Limited,INE009A01021,EQ,1995-02-08,5.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 50|NIFTY 500|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+INTELLECT,Intellect Design Arena Limited,INE306R01017,EQ,2014-12-18,5.0,Information Technology,,SaaS & software products,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+IXIGO,Le Travenues Technology Limited,INE0HV901016,EQ,2024-06-18,1.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+JUSTDIAL,Just Dial Limited,INE599M01018,EQ,2013-06-05,10.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+KAYNES,Kaynes Technology India Limited,INE918Z01012,EQ,2022-11-22,10.0,Capital Goods,,Electronics & semicon design,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,core,2026-10-11
+KFINTECH,Kfin Technologies Limited,INE138Y01010,EQ,2022-12-29,10.0,Financial Services,,Fintech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,core,2026-10-11
+KPITTECH,KPIT Technologies Limited,INE04I401011,EQ,2019-04-22,10.0,Information Technology,,Engineering & design R&D,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+LATENTVIEW,Latent View Analytics Limited,INE0I7C01011,EQ,2021-11-23,1.0,Information Technology,,AI & data,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+LENSKART,Lenskart Solutions Limited,INE956O01016,EQ,2025-11-10,2.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+LTM,LTM Limited,INE214T01019,EQ,2016-07-21,1.0,Information Technology,,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+LTTS,L&T Technology Services Limited,INE010V01017,EQ,2016-09-23,2.0,Information Technology,,Engineering & design R&D,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL,core,2026-10-11
+MAPMYINDIA,C.E. Info Systems Limited,INE0BV301023,EQ,2021-12-21,2.0,Information Technology,,SaaS & software products,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+MASTEK,Mastek Limited,INE759A01021,EQ,1995-05-10,5.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+MEESHO,Meesho Limited,INE0VDM01015,EQ,2025-12-10,1.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+MOBIKWIK,One Mobikwik Systems Limited,INE0HLU01028,EQ,2024-12-18,2.0,,,Fintech,core,,core,2026-10-11
+MOSCHIP,Moschip Technologies Limited,INE935B01025,EQ,2025-02-05,2.0,,,Electronics & semicon design,core,,core,2026-10-11
+MPHASIS,MphasiS Limited,INE356A01018,EQ,2004-06-04,10.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+NAUKRI,Info Edge (India) Limited,INE663F01032,EQ,2006-11-21,2.0,Consumer Services,Computers - Software,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+NAZARA,Nazara Technologies Limited,INE418L01047,EQ,2021-03-30,2.0,Media Entertainment & Publication,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+NETWEB,Netweb Technologies India Limited,INE0NT901020,EQ,2023-07-27,2.0,Information Technology,,AI & data,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+NEWGEN,Newgen Software Technologies Limited,INE619B01017,EQ,2018-01-29,10.0,Information Technology,,SaaS & software products,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+NUCLEUS,Nucleus Software Exports Limited,INE096B01018,EQ,2002-12-19,10.0,,Computers - Software,SaaS & software products,core,,core,2026-10-11
+NYKAA,FSN E-Commerce Ventures Limited,INE388Y01029,EQ,2021-11-10,1.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+OFSS,Oracle Financial Services Software Limited,INE881D01027,EQ,2002-06-28,5.0,Information Technology,Computers - Software,SaaS & software products,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+PAYTM,One 97 Communications Limited,INE982J01020,EQ,2021-11-18,1.0,Financial Services,,Fintech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+PERSISTENT,Persistent Systems Limited,INE262H01021,EQ,2010-04-06,5.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+PINELABS,Pine Labs Limited,INE15B701018,EQ,2025-11-14,1.0,Financial Services,,Fintech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+POLICYBZR,PB Fintech Limited,INE417T01026,EQ,2021-11-15,2.0,Financial Services,,Fintech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+RATEGAIN,Rategain Travel Technologies Limited,INE0CLI01024,EQ,2021-12-17,1.0,Information Technology,,SaaS & software products,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+ROUTE,ROUTE MOBILE LIMITED,INE450U01017,EQ,2020-09-21,10.0,Telecommunication,,SaaS & software products,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+SAKSOFT,Saksoft Limited,INE667G01023,EQ,2005-05-09,1.0,,Computers - Software,IT services,core,,core,2026-10-11
+SONATSOFTW,Sonata Software Limited,INE269A01021,EQ,1999-07-28,1.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+SWIGGY,Swiggy Limited,INE00H001014,EQ,2024-11-13,1.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,core,2026-10-11
+SYRMA,Syrma SGS Technology Limited,INE0DYJ01015,EQ,2022-08-26,10.0,Capital Goods,,Electronics & semicon design,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,core,2026-10-11
+TANLA,Tanla Platforms Limited,INE483C01032,EQ,2007-01-05,1.0,Information Technology,Computers - Software,SaaS & software products,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+TATAELXSI,Tata Elxsi Limited,INE670A01012,EQ,2003-09-17,10.0,Information Technology,Computers - Software,Engineering & design R&D,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+TBOTEK,TBO Tek Limited,INE673O01025,EQ,2024-05-15,1.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+TCS,Tata Consultancy Services Limited,INE467B01029,EQ,2004-08-25,1.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 50|NIFTY 500|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+TECHM,Tech Mahindra Limited,INE669C01036,EQ,2006-08-28,5.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 50|NIFTY 500|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+UNIECOM,Unicommerce Esolutions Limited,INE00U401027,EQ,2024-08-13,1.0,,,SaaS & software products,core,,core,2026-10-11
+URBANCO,Urban Company Limited,INE0CAZ01013,EQ,2025-09-17,1.0,Consumer Services,,Internet & consumer tech,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+WIPRO,Wipro Limited,INE075A01022,EQ,1995-11-08,2.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY IT|NIFTY INDIA DIGITAL,core,2026-10-11
+ZAGGLE,Zaggle Prepaid Ocean Services Limited,INE07K301024,EQ,2023-09-22,1.0,Information Technology,,Fintech,core,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,core,2026-10-11
+ZENSARTECH,Zensar Technologies Limited,INE520A01027,EQ,2003-07-09,2.0,Information Technology,Computers - Software,IT services,core,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,core,2026-10-11
+3IINFOLTD,3i Infotech Limited,INE748C01038,BE,2021-10-22,10.0,,,Other tech,ext,,name_match,2026-10-11
+63MOONS,63 moons technologies limited,INE111B01023,EQ,2005-06-20,2.0,,,Other tech,ext,,name_match,2026-10-11
+AAATECH,AAA Technologies Limited,INE0D0U01013,EQ,2022-11-28,10.0,,,Other tech,ext,,name_match,2026-10-11
+ACCELYA,Accelya Solutions India Limited,INE793A01012,EQ,1999-12-01,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+ACSTECH,ACS Technologies Limited,INE366C01021,BE,2026-04-20,10.0,,,Other tech,ext,,name_match,2026-10-11
+ADROITINFO,Adroit Infotech Limited,INE737B01033,BE,1997-08-13,10.0,,,Other tech,ext,,name_match,2026-10-11
+ADSL,Allied Digital Services Limited,INE102I01027,EQ,2007-07-25,5.0,,Computers - Hardware,Electronics & semicon design,ext,,nse_legacy_industry,2026-10-11
+AKSHOPTFBR,Aksh Optifibre Limited,INE523B01011,BE,2000-08-18,5.0,,Cables - Telecom,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+ALLDIGI,Alldigi Tech Limited,INE835G01018,EQ,2005-05-09,10.0,,,Other tech,ext,,name_match,2026-10-11
+AMAGI,Amagi Media Labs Limited,INE121R01077,EQ,2026-01-21,5.0,Information Technology,,IT services,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,nse_industry,2026-10-11
+AMBER,Amber Enterprises India Limited,INE371P01015,EQ,2018-01-30,10.0,Consumer Durables,,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA NEW AGE CONSUMPTION,curated,2026-10-11
+APOLLO,Apollo Micro Systems Limited,INE713T01028,EQ,2018-01-22,1.0,Capital Goods,,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,curated,2026-10-11
+APTECHT,Aptech Limited,INE266F01018,EQ,2002-09-27,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+ARMEE,ArMee Infotech Limited,INE0TWE01016,EQ,2026-09-30,10.0,,,Other tech,ext,,name_match,2026-10-11
+ASTRAMICRO,Astra Microwave Products Limited,INE386C01029,EQ,2004-11-01,2.0,Capital Goods,Telecommunication - Equipment,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,curated,2026-10-11
+AURIONPRO,Aurionpro Solutions Limited,INE132H01018,EQ,2005-10-25,10.0,Information Technology,Computers - Software,IT services,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,nse_industry,2026-10-11
+AVANCE,Avance Technologies Limited,INE758A01072,EQ,2026-08-17,1.0,,,Other tech,ext,,name_match,2026-10-11
+BBOX,Black Box Limited,INE676A01027,EQ,2003-07-22,2.0,Information Technology,,IT services,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+BEL,Bharat Electronics Limited,INE263A01024,EQ,2000-07-19,1.0,Capital Goods,Electronics - Industrial,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY 50|NIFTY 500,curated,2026-10-11
+BHARTIARTL,Bharti Airtel Limited,INE397D01024,EQ,2002-02-15,5.0,Telecommunication,Telecommunication - Services,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 50|NIFTY 500|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,nse_industry,2026-10-11
+BHARTIHEXA,Bharti Hexacom Limited,INE343G01021,EQ,2024-04-12,5.0,Telecommunication,,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,nse_industry,2026-10-11
+BLS,BLS International Services Limited,INE153T01027,EQ,2016-06-14,1.0,Consumer Services,,Internet & consumer tech,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nifty_digital,2026-10-11
+BLUECLOUDS,Blue Cloud Softech Solutions Limited,INE373T01047,EQ,2026-08-17,1.0,,,Other tech,ext,,name_match,2026-10-11
+BSE,BSE Limited,INE118H01025,EQ,2017-02-03,2.0,Financial Services,,Fintech,ext,NIFTY TOTAL MARKET|NIFTY 50|NIFTY 500,curated,2026-10-11
+CALSOFT,California Software Company Limited,INE526B01014,BE,2000-06-28,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+CAPILLARY,Capillary Technologies India Limited,INE0ILV01024,EQ,2025-11-21,2.0,Information Technology,,IT services,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,nse_industry,2026-10-11
+CDSL,Central Depository Services (India) Limited,INE736A01011,EQ,2017-06-30,10.0,Financial Services,,Fintech,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,curated,2026-10-11
+CEINSYS,Ceinsys Tech Limited,INE016Q01014,EQ,2026-02-19,10.0,,,Other tech,ext,,name_match,2026-10-11
+CENTUM,Centum Electronics Limited,INE320B01020,EQ,2007-10-05,10.0,Capital Goods,Electronics - Industrial,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,curated,2026-10-11
+CGVAK,CG Vak Software & Exports Limited,INE084D01010,EQ,2026-08-17,10.0,,,Other tech,ext,,name_match,2026-10-11
+COMPUSOFT,Compucom Software Limited,INE453B01029,EQ,2012-03-02,2.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+CSM,CSM Technologies Limited,INE0ZK601013,EQ,2026-07-02,10.0,,,Other tech,ext,,name_match,2026-10-11
+CTE,Cambridge Technology Enterprises Limited,INE627H01017,BE,2007-02-07,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+CURAA,Cura Technologies Limited,INE117B01020,BE,2025-03-21,10.0,,,Other tech,ext,,name_match,2026-10-11
+CYBERTECH,Cybertech Systems And Software Limited,INE214A01019,EQ,1999-01-27,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+DATAMATICS,Datamatics Global Services Limited,INE365B01017,EQ,2004-05-07,5.0,Information Technology,Computers - Software,IT services,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,nse_industry,2026-10-11
+DATAPATTNS,Data Patterns (India) Limited,INE0IX101010,EQ,2021-12-24,2.0,Capital Goods,,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,curated,2026-10-11
+DCI,Dc Infotech And Communication Limited,INE0A1101019,EQ,2022-10-19,10.0,,,Other tech,ext,,name_match,2026-10-11
+DEVIT,Dev Information Technology Limited,INE060X01034,EQ,2022-02-15,2.0,,,Other tech,ext,,name_match,2026-10-11
+DIGISPICE,DiGiSPICE Technologies Limited,INE927C01020,EQ,2008-05-27,3.0,,,Other tech,ext,,name_match,2026-10-11
+DLINKINDIA,D-Link (India) Limited,INE250K01012,EQ,2009-12-18,2.0,,Computers - Hardware,Electronics & semicon design,ext,,nse_legacy_industry,2026-10-11
+DSSL,Dynacons Systems & Solutions Limited,INE417B01040,EQ,2011-12-01,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+EBGNG,GNG Electronics Limited,INE18JU01028,EQ,2025-07-30,2.0,Information Technology,,IT services,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,nse_industry,2026-10-11
+ELIN,Elin Electronics Limited,INE050401020,EQ,2022-12-30,5.0,,,Electronics & semicon design,ext,,curated,2026-10-11
+EQUIPPP,Equippp Social Impact Technologies Limited,INE217G01035,BE,2021-05-19,1.0,,,Other tech,ext,,name_match,2026-10-11
+ESDS,ESDS Software Solution Limited,INE0DRI01029,EQ,2026-09-04,1.0,,,Other tech,ext,,name_match,2026-10-11
+EXCELSOFT,Excelsoft Technologies Limited,INE606N01019,EQ,2025-11-26,10.0,,,Other tech,ext,,name_match,2026-10-11
+FCSSOFT,FCS Software Solutions Limited,INE512B01022,EQ,2005-09-21,1.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+FINOPB,Fino Payments Bank Limited,INE02NC01014,EQ,2021-11-12,10.0,,,Fintech,ext,,curated,2026-10-11
+FRACTAL,Fractal Analytics Limited,INE212S01015,EQ,2026-02-16,1.0,Information Technology,,IT services,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+FSL,Firstsource Solutions Limited,INE684F01012,EQ,2007-02-22,10.0,Services,Computers - Software,IT services,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,nse_legacy_industry,2026-10-11
+GATECH,GACM Technologies Limited,INE224E01028,BE,2016-07-25,1.0,,,Other tech,ext,,name_match,2026-10-11
+GENESYS,Genesys International Corporation Limited,INE727B01026,EQ,2003-01-23,5.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+GENUSPOWER,Genus Power Infrastructures Limited,INE955D01029,EQ,2005-07-08,1.0,Capital Goods,Electronics - Industrial,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,nse_legacy_industry,2026-10-11
+GOLDTECH,AION-TECH SOLUTIONS LIMITED,INE805A01014,BE,2001-04-11,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+GSS,GSS Infotech Limited,INE871H01011,EQ,2008-03-07,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+GTL,GTL Limited,INE043A01012,EQ,1995-03-29,10.0,,Telecommunication - Services,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+GTLINFRA,GTL Infrastructure Limited,INE221H01019,EQ,2006-11-09,10.0,,Telecommunication - Equipment,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+GVPTECH,GVP Infotech Limited,INE382T01030,BE,2022-09-06,2.0,,,Other tech,ext,,name_match,2026-10-11
+HBLENGINE,HBL Engineering Limited,INE292B01021,EQ,2007-01-04,1.0,Capital Goods,,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,curated,2026-10-11
+HCL-INSYS,HCL Infosystems Limited,INE236A01020,EQ,1997-01-01,2.0,,Computers - Hardware,Electronics & semicon design,ext,,nse_legacy_industry,2026-10-11
+HFCL,HFCL Limited,INE548A01028,BE,2011-03-09,1.0,Telecommunication,Telecommunication - Equipment,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,nse_industry,2026-10-11
+HGS,Hinduja Global Solutions Limited,INE170I01016,EQ,2007-06-19,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+HIRECT,Hirect Limited,INE835D01023,EQ,2006-12-26,2.0,,Electronics - Industrial,Electronics & semicon design,ext,,nse_legacy_industry,2026-10-11
+HONAUT,Honeywell Automation India Limited,INE671A01010,EQ,2003-07-18,10.0,Capital Goods,Electronics - Industrial,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,nse_legacy_industry,2026-10-11
+IDEA,Vodafone Idea Limited,INE669E01016,EQ,2007-03-09,10.0,Telecommunication,Telecommunication - Services,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,nse_industry,2026-10-11
+IDEAFORGE,Ideaforge Technology Limited,INE349Y01013,EQ,2023-07-07,10.0,,,Other tech,ext,,name_match,2026-10-11
+IKIO,IKIO Technologies Limited,INE0LOJ01019,EQ,2023-06-16,10.0,,,Electronics & semicon design,ext,,curated,2026-10-11
+IKS,Inventurus Knowledge Solutions Limited,INE115Q01022,EQ,2024-12-19,1.0,Information Technology,,IT services,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+INDUSTOWER,Indus Towers Limited,INE121J01017,EQ,2012-12-28,10.0,Telecommunication,,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150,nse_industry,2026-10-11
+INFOBEAN,InfoBeans Technologies Limited,INE344S01016,EQ,2019-07-15,10.0,,,Other tech,ext,,name_match,2026-10-11
+INTENTECH,Intense Technologies Limited,INE781A01025,EQ,2017-03-23,2.0,,,Other tech,ext,,name_match,2026-10-11
+IRCTC,Indian Railway Catering And Tourism Corporation Limited,INE335Y01020,EQ,2019-10-14,2.0,Consumer Services,,Internet & consumer tech,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,curated,2026-10-11
+ISFT,Intrasoft Technologies Limited,INE566K01011,BE,2010-04-12,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+ITI,ITI Limited,INE248A01017,EQ,2003-09-15,10.0,Telecommunication,Telecommunication - Equipment,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+KAVDEFENCE,Kavveri Defence & Wireless Technologies Limited,INE641C01019,BE,2008-01-29,10.0,,,Other tech,ext,,name_match,2026-10-11
+KELLTONTEC,Kellton Tech Solutions Limited,INE164B01030,EQ,2016-03-02,1.0,,,Other tech,ext,,name_match,2026-10-11
+KERNEX,Kernex Microsystems (India) Limited,INE202H01019,EQ,2005-12-20,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+LCCINFOTEC,LCC Infotech Limited,INE938A01021,BE,2000-03-02,2.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+LEENEE,Lee & Nee Softwares Exports Limited,INE791B01014,BE,2026-08-17,10.0,,,Other tech,ext,,name_match,2026-10-11
+MATRIMONY,Matrimony.Com Limited,INE866R01028,EQ,2017-09-21,5.0,,,Internet & consumer tech,ext,,curated,2026-10-11
+MCX,Multi Commodity Exchange of India Limited,INE745G01043,EQ,2012-03-09,2.0,Financial Services,,Fintech,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150,curated,2026-10-11
+MICEL,MIC Electronics Limited,INE287C01037,BE,2021-12-17,2.0,,,Other tech,ext,,name_match,2026-10-11
+MTARTECH,Mtar Technologies Limited,INE864I01014,BE,2021-03-15,10.0,Capital Goods,,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,curated,2026-10-11
+MTNL,Mahanagar Telephone Nigam Limited,INE153A01019,EQ,1999-02-17,10.0,,Telecommunication - Services,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+NELCO,NELCO Limited,INE045B01015,EQ,2003-05-28,10.0,,Computers - Hardware,Electronics & semicon design,ext,,nse_legacy_industry,2026-10-11
+NIITLTD,NIIT Limited,INE161A01038,EQ,2004-08-16,2.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+NPST,Network People Services Technologies Limited,INE0FFK01017,EQ,2025-04-30,10.0,,,Other tech,ext,,name_match,2026-10-11
+ONIDA,Onida Electronics Limited,INE831A01028,EQ,2004-05-24,1.0,,,Other tech,ext,,name_match,2026-10-11
+ONMOBILE,OnMobile Global Limited,INE809I01019,BE,2008-02-19,10.0,,Telecommunication - Services,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+ONWARDTEC,Onward Technologies Limited,INE229A01017,EQ,2001-03-07,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+ORIENTTECH,Orient Technologies Limited,INE0PPK01015,EQ,2024-08-28,10.0,,,Other tech,ext,,name_match,2026-10-11
+PALREDTEC,Palred Technologies Limited,INE218G01033,EQ,2016-05-09,10.0,,,Other tech,ext,,name_match,2026-10-11
+PARAS,Paras Defence and Space Technologies Limited,INE045601023,EQ,2021-10-01,5.0,Capital Goods,,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,curated,2026-10-11
+PGEL,PG Electroplast Limited,INE457L01029,EQ,2011-09-26,1.0,Consumer Durables,Consumer Durables,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA NEW AGE CONSUMPTION,curated,2026-10-11
+PROSTARM,Prostarm Info Systems Limited,INE0BX301013,EQ,2025-06-03,10.0,,,Other tech,ext,,name_match,2026-10-11
+PROTEAN,Protean eGov Technologies Limited,INE004A01022,EQ,2025-02-06,10.0,,,Other tech,ext,,name_match,2026-10-11
+PWL,Physicswallah Limited,INE0LP301011,EQ,2025-11-18,1.0,Consumer Services,,Internet & consumer tech,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,nifty_digital,2026-10-11
+QUICKHEAL,Quick Heal Technologies Limited,INE306L01010,EQ,2016-02-18,10.0,,,Other tech,ext,,name_match,2026-10-11
+QUINT,Quint Digital Limited,INE641R01017,BE,2026-04-20,10.0,,,Other tech,ext,,name_match,2026-10-11
+QUINTEGRA,Quintegra Solutions Limited,INE033B01011,EQ,2000-12-20,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+RAILTEL,Railtel Corporation Of India Limited,INE0DD101019,EQ,2021-02-26,10.0,Telecommunication,,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+RAMCOSYS,Ramco Systems Limited,INE246B01019,EQ,2000-04-12,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+RCOM,Reliance Communications Limited,INE330H01018,BE,2006-03-06,5.0,,Telecommunication - Services,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+RELIABLE,Reliable Data Services Limited,INE375Y01018,EQ,2024-07-10,10.0,,,Other tech,ext,,name_match,2026-10-11
+RIR,RIR Power Electronics Limited,INE302D01024,EQ,2026-07-16,2.0,,,Electronics & semicon design,ext,,curated,2026-10-11
+RSSOFTWARE,R. S. Software (India) Limited,INE165B01029,EQ,1999-05-19,5.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+RSYSTEMS,R Systems International Limited,INE411H01032,EQ,2006-04-26,1.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+SAGILITY,SAGILITY LIMITED,INE0W2G01015,EQ,2024-11-12,10.0,Information Technology,,IT services,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+SASKEN,Sasken Technologies Limited,INE231F01020,EQ,2005-09-09,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+SECURKLOUD,SECUREKLOUD TECHNOLOGIES LIMITED,INE650K01021,EQ,2014-01-29,5.0,,,Other tech,ext,,name_match,2026-10-11
+SFL,Sheela Foam Limited,INE916U01025,EQ,2016-12-09,5.0,Consumer Durables,,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY MICROCAP 250,curated,2026-10-11
+SHYAMTEL,Shyam Telecom Limited,INE635A01023,EQ,2006-11-06,10.0,,Telecommunication - Services,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+SILVERTUC,Silver Touch Technologies Limited,INE625X01026,EQ,2022-05-12,2.0,,,Other tech,ext,,name_match,2026-10-11
+SMARTLINK,Smartlink Holdings Limited,INE178C01020,BE,2001-04-11,2.0,,Computers - Hardware,Electronics & semicon design,ext,,nse_legacy_industry,2026-10-11
+STLNETWORK,STL Networks Limited,INE1VXE01018,EQ,2025-09-04,2.0,,,Other tech,ext,,name_match,2026-10-11
+STLTECH,Sterlite Technologies Limited,INE089C01029,BE,2000-12-08,2.0,Telecommunication,,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+STYL,Seshaasai Technologies Limited,INE04VU01023,EQ,2025-09-30,10.0,,,Other tech,ext,,name_match,2026-10-11
+TAALTECH,Taal Tech Limited,INE524T01029,EQ,2026-04-20,2.0,,,Other tech,ext,,name_match,2026-10-11
+TAKE,TAKE Limited,INE142I01023,EQ,2007-08-27,1.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+TATACOMM,Tata Communications Limited,INE151A01013,EQ,1995-04-12,10.0,Telecommunication,Telecommunication - Services,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY MIDCAP 150|NIFTY INDIA DIGITAL|NIFTY INDIA NEW AGE CONSUMPTION,nse_industry,2026-10-11
+TATATECH,Tata Technologies Limited,INE142M01025,EQ,2023-11-30,2.0,Information Technology,,IT services,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+TEJASNET,Tejas Networks Limited,INE010J01012,EQ,2017-06-27,10.0,Telecommunication,,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+TERASOFT,Tera Software Limited,INE482B01010,EQ,2016-12-29,10.0,,,Other tech,ext,,name_match,2026-10-11
+TNTELE,Tamilnadu Telecommunication Limited,INE141D01018,BE,2003-02-04,10.0,,Cables - Telecom,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+TRACXN,Tracxn Technologies Limited,INE0HMF01019,EQ,2022-10-20,1.0,,,Other tech,ext,,name_match,2026-10-11
+TRIGYN,Trigyn Technologies Limited,INE948A01012,EQ,1998-04-09,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+TTML,Tata Teleservices (Maharashtra) Limited,INE517B01013,EQ,2000-10-20,10.0,Telecommunication,Telecommunication - Services,Telecom & networks,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250|NIFTY INDIA DIGITAL,nse_industry,2026-10-11
+TVSELECT,TVS Electronics Limited,INE236G01019,EQ,2003-12-26,10.0,,Computers - Hardware,Electronics & semicon design,ext,,nse_legacy_industry,2026-10-11
+UMESLTD,Usha Martin Education & Solutions Limited,INE240C01028,EQ,2010-07-12,1.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+UNIINFO,Uniinfo Telecom Services Limited,INE481Z01011,EQ,2022-01-12,10.0,,,Other tech,ext,,name_match,2026-10-11
+VINDHYATEL,Vindhya Telelinks Limited,INE707A01012,EQ,1995-02-08,10.0,,Cables - Telecom,Telecom & networks,ext,,nse_legacy_industry,2026-10-11
+XCHANGING,Xchanging Solutions Limited,INE692G01013,EQ,2005-03-09,10.0,,Computers - Software,IT services,ext,,nse_legacy_industry,2026-10-11
+XELPMOC,Xelpmoc Design And Tech Limited,INE01P501012,EQ,2019-02-04,10.0,,,Other tech,ext,,name_match,2026-10-11
+XTGLOBAL,Xtglobal Infotech Limited,INE547B01028,EQ,2024-09-16,1.0,,,Other tech,ext,,name_match,2026-10-11
+XTRANET,Xtranet Technologies Limited,INE0NG701011,EQ,2026-07-30,10.0,,,Other tech,ext,,name_match,2026-10-11
+YATRA,Yatra Online Limited,INE0JR601024,EQ,2023-09-28,1.0,,,Internet & consumer tech,ext,,curated,2026-10-11
+ZENTEC,Zen Technologies Limited,INE251B01027,EQ,2015-03-30,1.0,Capital Goods,,Electronics & semicon design,ext,NIFTY TOTAL MARKET|NIFTY 500|NIFTY SMALLCAP 250,curated,2026-10-11

@@ -31,7 +31,7 @@ public class AppConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager manager = new CaffeineCacheManager("cockpit", "company", "companies", "picks", "metrics", "screener", "prices", "academy");
+        CaffeineCacheManager manager = new CaffeineCacheManager("cockpit", "company", "companies", "picks", "metrics", "screener", "prices", "academy", "filings", "market", "inventory");
         manager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)));
         return manager;
     }

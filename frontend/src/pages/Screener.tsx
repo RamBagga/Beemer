@@ -8,7 +8,8 @@ import { subColor, usePalette, useTheme } from "../theme";
 import { Callout, Caption, Footer, Hero, Loading, Warn } from "../ui";
 
 type Key = keyof ScreenerRow;
-const COLS: { key: Key; label: string; kind: "text" | "score" | "signed" | "inv" | "num" | "num2" | "int" | "bool" | "sub" | "verdict" }[] = [
+type Kind = "text" | "score" | "signed" | "inv" | "num" | "num2" | "int" | "bool" | "sub" | "verdict" | "pp";
+const COLS: { key: Key; label: string; kind: Kind }[] = [
   { key: "name", label: "Company", kind: "text" },
   { key: "symbol", label: "Symbol", kind: "text" },
   { key: "subsector", label: "Sub-sector", kind: "sub" },
@@ -36,6 +37,9 @@ const COLS: { key: Key; label: string; kind: "text" | "score" | "signed" | "inv"
   { key: "cagr5", label: "5y CAGR %", kind: "signed" },
   { key: "maxDd", label: "Worst fall %", kind: "num" },
   { key: "mcap", label: "Mkt cap (₹ cr)", kind: "int" },
+  { key: "promoter", label: "Promoters %", kind: "pp" },
+  { key: "fii", label: "Foreign %", kind: "pp" },
+  { key: "deliv", label: "Delivery 20d %", kind: "pp" },
 ];
 
 export function ScreenerPage() {
@@ -48,6 +52,7 @@ export function ScreenerPage() {
   const [prof, setProf] = useState(false);
   const [seasoned, setSeasoned] = useState(false);
   const [mos, setMos] = useState(false);
+  const [scope, setScope] = useState<"core" | "all">(() => (sessionStorage.getItem("beemer-scope") === "all" ? "all" : "core"));
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<Screener | null>(null);
   const [err, setErr] = useState("");
@@ -66,12 +71,14 @@ export function ScreenerPage() {
     q.set("profitable", String(prof));
     q.set("seasoned", String(seasoned));
     q.set("belowValue", String(mos));
+    q.set("scope", scope);
+    try { sessionStorage.setItem("beemer-scope", scope); } catch { /* private mode */ }
     const t = setTimeout(() => {
       get<Screener>("/api/screener?" + q.toString()).then((d) => { setData(d); setSubs(d.subsectors); setErr(""); })
         .catch((e) => setErr(String(e.message || e)));
     }, 120);
     return () => clearTimeout(t);
-  }, [pick, minScore, maxPe, maxDe, minRoe, prof, seasoned, mos]);
+  }, [pick, minScore, maxPe, maxDe, minRoe, prof, seasoned, mos, scope]);
 
   const rows = useMemo(() => {
     if (!data) return [];
@@ -113,12 +120,14 @@ export function ScreenerPage() {
     };
   }, [data, P]);
 
-  function cell(r: ScreenerRow, kind: typeof COLS[number]["kind"], key: Key) {
+  function cell(r: ScreenerRow, kind: Kind, key: Key) {
     const v = r[key];
     if (kind === "bool") return <td style={{ color: r.profitable ? P.pos : P.neg, fontWeight: 600 }}>{r.profitable ? "Yes" : "No"}</td>;
     if (kind === "sub") return <td style={{ color: subColor(r.subsector), fontWeight: 600 }}>{r.subsector}</td>;
     if (kind === "verdict") return <td style={{ color: verdictColor(r.verdict, P, theme), fontWeight: 650 }}>{r.verdict ?? "–"}</td>;
-    if (kind === "text") return <td className={key === "name" ? "wrap" : ""} style={key === "name" ? { fontWeight: 650 } : undefined}>{String(v ?? "–")}</td>;
+    if (kind === "text" && key === "name") return <td className="wrap" style={{ fontWeight: 650 }}>{String(v ?? "–")}{scope === "all" && r.tier === "core" ? <span className="bm-tier">Core</span> : null}</td>;
+    if (kind === "text") return <td>{String(v ?? "–")}</td>;
+    if (kind === "pp") return <td>{v == null ? "–" : (v as number).toFixed(1)}</td>;
     if (kind === "score") {
       const n = v as number | null;
       return <td style={heatStyle(n, P, theme)}>{n == null ? "–" : n.toFixed(0)}</td>;
@@ -141,6 +150,15 @@ export function ScreenerPage() {
       <Hero kicker="Screener" title="Quality first. Then price." sub="Ranked by Buffett Score, 0–100, across six tests." />
       {err ? <Warn text={/unavailable|loading/i.test(err) ? "Data is loading. Back in a few minutes." : err} /> : null}
       <Belts compact />
+      <div className="bm-seg" role="tablist" aria-label="Universe">
+        <button type="button" role="tab" aria-selected={scope === "core"} className={scope === "core" ? "on" : ""} onClick={() => setScope("core")}>
+          Core 64
+        </button>
+        <button type="button" role="tab" aria-selected={scope === "all"} className={scope === "all" ? "on" : ""} onClick={() => setScope("all")}>
+          All tech{data?.allCount ? ` · ${data.allCount}` : ""}
+        </button>
+        <span className="hint">{scope === "core" ? "Hand-picked leaders." : "Every NSE-listed tech name we track. Smaller names have thinner data."}</span>
+      </div>
       <details className="exp" open>
         <summary>Filters</summary>
         <div className="filters">
@@ -203,7 +221,7 @@ export function ScreenerPage() {
         </table>
         <p>Tests without enough data are skipped and the score rescaled to 100. Young listings score on thin evidence. Loss-makers score low by design.</p>
         <p><b>Value estimate.</b> 10 years of earnings growing at the median of 10-yr sales, 10-yr and 5-yr profit growth (capped at 18%), the usual dividend paid out, then valued at P/E 15 (or the historical median if lower). Discounted at 12% a year. A sanity check, not a target.</p>
-        <p><b>Sources.</b> Up to 12 years of financials from screener.in public pages, consolidated where available.</p>
+        <p><b>Sources.</b> Up to 12 years of financials from screener.in public pages, consolidated where available. Ownership and delivery from NSE filings and end-of-day files.</p>
       </details>
       <Footer asOf={undefined} />
     </>

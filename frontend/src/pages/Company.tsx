@@ -5,6 +5,7 @@ import { Chart, area, frame, logTicks, soft } from "../charts";
 import { ink, rgba, scoreColor, sig3, us0 } from "../format";
 import { usePalette, useTheme, subColor } from "../theme";
 import { Callout, Caption, Footer, Kpi, Loading, Warn } from "../ui";
+import { FilingsSection } from "../filings";
 
 export function CompanyPage() {
   const [params, setParams] = useSearchParams();
@@ -35,14 +36,20 @@ export function CompanyPage() {
       <label className="co-select" style={{ display: "block", marginBottom: 12 }}>
         <span className="bm-k">Company</span>
         <select value={co.symbol} onChange={(e) => setParams({ symbol: e.target.value })} style={{ display: "block", marginTop: 6, minWidth: 320 }}>
-          {[...list].sort((a, b) => a.name.localeCompare(b.name)).map((c) => (
-            <option key={c.symbol} value={c.symbol}>{c.name}  ·  {c.symbol}</option>
-          ))}
+          {(["core", "ext"] as const).map((tier) => {
+            const group = list.filter((c) => (c.tier || "core") === tier).sort((a, b) => a.name.localeCompare(b.name));
+            if (!group.length) return null;
+            return (
+              <optgroup key={tier} label={tier === "core" ? "Core 64" : "All tech"}>
+                {group.map((c) => <option key={c.symbol} value={c.symbol}>{c.name}  ·  {c.symbol}</option>)}
+              </optgroup>
+            );
+          })}
         </select>
       </label>
       <div className="split e">
         <div className="bm-hero tight">
-          <div className="bm-k"><span className="bm-dot" style={{ width: 7, height: 7, background: subColor(co.subsector) }} />{co.subsector} · {co.theme} · <span className="bm-mono">NSE:{co.symbol}</span> · {co.youngNote}</div>
+          <div className="bm-k"><span className="bm-dot" style={{ width: 7, height: 7, background: subColor(co.subsector) }} />{co.subsector}{co.theme ? ` · ${co.theme}` : ""} · <span className="bm-mono">NSE:{co.symbol}</span> · {co.youngNote}</div>
           <h1>{co.name} <span className="bm-badge" style={{ color: ink(col, P, theme), border: `1px solid ${rgba(col, 0.55)}`, background: rgba(col, 0.12) }}>{co.score == null ? "n/a" : `${co.score.toFixed(0)} · ${co.scoreLabel}`}</span></h1>
           <p>{co.verdict}</p>
         </div>
@@ -99,6 +106,7 @@ export function CompanyPage() {
           </div>
         </>
       ) : null}
+      <FilingsSection symbol={co.symbol} />
       <h3>Key metrics</h3>
       <div className="kpi-row c4">
         {co.metrics.map((m) => <Kpi key={m.label} label={m.label} value={m.value} expl={m.expl} />)}

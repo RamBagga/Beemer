@@ -28,7 +28,7 @@ public class CockpitService {
 
     @Cacheable("cockpit")
     public Map<String, Object> view() {
-        List<Metric> all = metrics.all();
+        List<Metric> all = metrics.core();
         List<SeriesMath.Pt> it = prices.adj("^CNXIT");
         List<SeriesMath.Pt> nf = prices.adj("^NSEI");
         List<SeriesMath.Pt> sx = prices.adj("^BSESN");

@@ -78,6 +78,13 @@ Read [ARCHITECTURE.md](ARCHITECTURE.md) for the data flow diagram and module map
 (NSE symbol, name, subsector, theme, note) and re-run `update_data.py`. Other universes: `--universe nifty50|nifty100|nifty500`.
 Notes: LTIMindtree trades as **LTM** (formerly LTIM); Unicommerce is **UNIECOM**; MosChip has NSE data only from 2025 (BSE-listed before).
 
+**All tech** (`universe_all`, ~200 names): the core 64 plus every NSE-listed name tagged Information Technology or
+Telecommunication by NSE, every Nifty India Digital internet and fintech name, NSE legacy industries such as
+Computers - Software / Hardware, Electronics and Telecom equipment, a short hand-checked list of EMS, fintech and
+platform names filed under other industries, and small untagged names whose company name is clearly tech.
+Built by `sources/universe.py`; `class_source` records why each name is in. The Screener has a Core 64 / All tech
+toggle; the Cockpit and the Picks belts stay on the core 64.
+
 ## Buffett Score (0–100)
 Six transparent tests, rescaled when a test lacks data:
 consistent ROE > 15% (20) · low debt (15) · steady profit growth (20) · moat proxy: high & stable operating margins (15) ·
@@ -89,7 +96,11 @@ terminal P/E 15 (or the historical median if lower), discounted at 12%. Delibera
 - `update_data.py` — idempotent & incremental. Prices: last 10 days re-fetched and upserted; if a split/dividend adjustment is detected
   on overlap, that symbol's full history is reloaded. Fundamentals: refreshed when older than 7 days, 1 request / ~4–5 s, raw HTML cached in `data/screener_cache/`.
 - `analytics.py` — price cleaning (drops one-day Yahoo glitches; rescales unadjusted splits/demergers: single-day moves > ±30% while the market moved < 8%), metrics and score.
-- Storage: SQLite `data/market.db` (prices, fundamentals, universe, run log) + `data/metrics.parquet` (one row per company).
+- `expand_data.py` — NSE datasets for every tracked name (delivery %, index valuations, corporate actions, board meetings,
+  shareholding, insider trades, bulk/block deals, official quarterly results), a split/bonus audit of Yahoo prices, and
+  enrichment of `company_metrics`. `update_data.py` calls it after the metrics; `--core-only` or `--skip-feeds` turn it off.
+  Run alone: `python expand_data.py --steps delivery,feeds`. Tests: `python -m pytest tests`.
+- Storage: SQLite `data/market.db` (prices, fundamentals, universe, run log, NSE datasets) + `data/metrics.parquet` (one row per core company, read by Streamlit).
 
 ### Schedule (weekdays, IST)
 | Time | Job | Command |
@@ -100,7 +111,36 @@ terminal P/E 15 (or the historical median if lower), discounted at 12%. Delibera
 `scripts/install_cron.sh` writes both cron lines (auto-converts to a UTC machine clock: 10:15 / 13:00 UTC) and starts `cron` if needed (Linux; on macOS cron is built in, jobs run only while the Mac is awake).
 Logs: `logs/update_snapshot.log`, `logs/update_eod.log`. The app re-reads data every 10 minutes.
 
-## Free / public Indian market data sources — what we found
+## Data sources
+
+Every source below is free and public. Beemer reads them the way a browser would: normal headers, no logins,
+no captchas, no paywalls, nothing that gets around a block. Each host has a minimum gap between requests,
+immutable files (archives, XBRL filings) are cached in `data/cache/`, and a host that refuses repeatedly is
+skipped for the rest of the run while stored data is kept (`sources/http.py`).
+
+| Source | Data | History | Update cadence | Terms / licence | Reliability |
+|---|---|---|---|---|---|
+| Yahoo Finance via `yfinance` | Daily OHLCV, split- and dividend-adjusted close, for every tracked name (`.NS`) and 10 indices (Nifty 50, Nifty IT, Sensex, Nifty 100, Nifty 500, Bank, Midcap 50, Smallcap 250, Pharma, India VIX) | From 1996 for the oldest names; indices from 1997–2011 | Every run (incremental, last 10 days re-checked) | Yahoo terms: personal use only | Medium. Pre-2006 glitches and some unadjusted demergers, repaired by `analytics.clean_prices` and checked against NSE split records (`price_audit`) |
+| screener.in public company pages | Annual and quarterly P&L, balance sheet, cash flow, ratios, shareholding | 10–12 years annual, ~12 quarters | Core 64 weekly; extended names monthly, 40 a run | Personal, non-commercial use; robots.txt allows company pages | High for listed names; no API, layout can change |
+| NSE `EQUITY_L.csv` + index constituent CSVs (Total Market, Microcap 250, IT, India Digital, New Age Consumption, 50, 500, Midcap 150, Smallcap 250) | Every listed equity (symbol, ISIN, listing date, face value), NSE industry tags and index membership | Current snapshot | Every run; committed copy in `data/universe_all.csv` | NSE website terms: information only, no commercial redistribution without a licence | High |
+| NSE board-meetings feed | Legacy industry tags for small names; board meetings and results dates | ~2 years per company | Every 3 days per company | As above | High |
+| NSE `sec_bhavdata_full` daily archive | Official EOD OHLC, VWAP, trades, delivery quantity and delivery % | 2020 onward (earlier files are not on the archive host) | Daily | As above | High (one 2022 file is corrupt on NSE's side and is skipped) |
+| NSE `ind_close_all` daily archive | Every NSE index: OHLC, turnover, P/E, P/B, dividend yield | 2015 onward | Daily | As above | High |
+| NSE corporate actions feed | Dividends, splits, bonuses, rights, buybacks, with ex and record dates | From the 1990s for older names | Weekly per company | As above | High; free-text subjects parsed into kind, amount and ratio |
+| NSE shareholding feed + SHP XBRL | Promoter / public % every quarter; XBRL breakdown into foreign, domestic institutions, mutual funds, insurance, retail, HNI, pledge flag | ~5 years summary; XBRL for the last 12 quarters (core) or 4 (others) | Fortnightly per company | As above | High |
+| NSE insider trading (SEBI PIT) feed | Promoter, director and KMP trades with mode, value and holding after | 3 years | Weekly per company | As above | High |
+| NSE bulk and block deals feed | Client, side, quantity, price | 2 years per company; last 5 days market-wide | Weekly per company, daily market-wide | As above; NSE caps a call at 70 rows, so history is pulled per company | High |
+| NSE financial results (Ind-AS XBRL to Dec 2024, integrated filings from 2025) | Official quarterly revenue, other income, costs, PBT, tax, net profit, profit to owners, EPS, consolidated and standalone | Ind-AS filings from ~2017; all filings for the core 64, the last 8 for others | Weekly per company | As above | High; older pre-Ind-AS formats are listed but not parsed |
+
+Not used, and why:
+- **BSE APIs** (`api.bseindia.com`): refused with HTTP 403 from both a home and a cloud network, so not used. BSE's bhavcopy file downloads work, but without a BSE industry list there is no clean way to find BSE-only tech names.
+- **NSE quote and historical-price APIs**: refused (403). Delivery and prices come from the archive files instead.
+- **AMFI / AMC monthly portfolios**: each fund house publishes its own spreadsheet with no shared format. The mutual-fund share of each company comes from the shareholding XBRL instead.
+- **jugaad-data / nselib**: wrap the same NSE endpoints (including the refused historical one), so they would add a dependency without adding data.
+
+Row counts and the last run of each source: `GET /api/data/inventory`, or the `source_runs` table.
+
+### Earlier research
 | Source | What | Pros | Cons |
 |---|---|---|---|
 | **yfinance** (Yahoo Finance) — github.com/ranaroussi/yfinance | Daily OHLCV for `.NS`/`.BO`, indices (`^NSEI` from 2007, `^BSESN` from 1997, `^CNXIT` from 2007) | No key, long history (some NSE stocks from 1996), split/dividend-adjusted series, easy | Unofficial; pre-2006 NSE data has glitches and some unadjusted demergers (we clean them); Yahoo terms = personal use |
@@ -113,10 +153,10 @@ Logs: `logs/update_snapshot.log`, `logs/update_eod.log`. The app re-reads data e
 | **screener.in** (public company pages) | 10–12 yrs P&L, balance sheet, cash flow, ratios, shareholding | Best free fundamentals for Indian cos; robots.txt allows company pages | **No API**; ToS = personal, non-commercial use; we fetch politely (1 req/4–5 s, cached, weekly) |
 | **Tickertape / Trendlyne** | Research UIs, screeners, scores | Great UX reference | No public API (Tickertape web endpoints are undocumented; Trendlyne sells a paid MCP connector) — not used |
 
-**What Beemer uses today:** yfinance (prices, indices), NSE archives (index lists), screener.in public pages (fundamentals).
+**What Beemer uses today:** see the Data sources table above.
 
 ## Data licensing — read before selling
-Yahoo, NSE and screener.in all limit their free data to personal / non-commercial use. For a paid public product you will need
+Yahoo, NSE (website, archives and corporate-filing feeds) and screener.in all limit their free data to personal / non-commercial use. For a paid public product you will need
 licensed data: e.g. an NSE/BSE market-data licence or a licensed vendor (CMOTS, Accord Fintech, ACE Equity/Capitaline, Drishti, DalalOS, etc.)
 for prices, and XBRL filings parsed in-house or a licensed fundamentals feed. The pipeline is modular (`update_data.py` fetchers) so sources can be swapped.
 Also review SEBI's Research Analyst / Investment Adviser rules — scores and "margin of safety" displays should stay clearly educational.
