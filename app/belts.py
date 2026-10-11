@@ -13,20 +13,20 @@ from beemer import C
 import picks as P
 
 def accent(belt):
-    return {"short": C["ice"], "long": C["green"], "volatile": C["amber"]}[belt]
+    return {"short": C["blue"], "long": C["teal"], "volatile": C["violet"]}[belt]
 
 
 # conveyor hardware per theme: light = brushed aluminium belt under a studio spotlight; dark = graphite belt at night
 HW = {
-    "light": dict(stage="linear-gradient(180deg,#FFFFFF,#EEF2F7)", slat_a="#AEB8C6", slat_b="#D9DFE7",
+    "light": dict(stage="linear-gradient(180deg,#FFFFFF,#EFF3F9)", slat_a="#AEB8C6", slat_b="#D9DFE7",
                   surf_shadow="inset 0 1px 0 rgba(255,255,255,.9), inset 0 -6px 12px rgba(15,23,42,.10), 0 10px 18px -6px rgba(15,23,42,.25)",
                   roller="radial-gradient(circle at 35% 30%, #FFFFFF, #CBD3DE 55%, #8E99AA)", roller_shadow="0 4px 10px rgba(15,23,42,.25)",
                   card="linear-gradient(160deg,#FFFFFF,#F6F8FB 70%)", card_shadow="0 10px 22px -10px rgba(15,23,42,.30), 0 2px 4px rgba(15,23,42,.05)",
                   beam=14, pool=22, light=True),
-    "dark": dict(stage="linear-gradient(180deg,#0E121A,#07090D)", slat_a="#1B2331", slat_b="#0F141D",
+    "dark": dict(stage="linear-gradient(180deg,#0E1424,#06080E)", slat_a="#1B2331", slat_b="#0F141D",
                  surf_shadow="inset 0 1px 0 rgba(255,255,255,.06), inset 0 -8px 14px rgba(0,0,0,.6), 0 10px 18px rgba(0,0,0,.55)",
                  roller="radial-gradient(circle at 35% 30%, #3A4558, #141A24 60%, #07090D)", roller_shadow="0 4px 10px rgba(0,0,0,.6)",
-                 card="linear-gradient(160deg,#141A24,#0E121A 70%)", card_shadow="0 10px 18px rgba(0,0,0,.45)",
+                 card="linear-gradient(160deg,#131B2B,#0C111B 70%)", card_shadow="0 10px 18px rgba(0,0,0,.45)",
                  beam=16, pool=30, light=False),
 }
 SPEED = {"short": 34, "long": 26, "volatile": 46}            # px / second
@@ -85,9 +85,9 @@ def css():
 .bmp-belt {{ position:relative; background:{H['stage']}; box-shadow:{C['shadow']}; border:1px solid {C['line']}; border-radius:14px; margin-bottom:12px; overflow:hidden; }}
 .bmp-belt:before {{ content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--acc); opacity:.8; }}
 .bmp-bh {{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:12px 18px 0 20px; flex-wrap:wrap; }}
-.bmp-bh .k {{ font:500 .66rem 'JetBrains Mono',monospace; letter-spacing:.16em; text-transform:uppercase; color:var(--acc); }}
+.bmp-bh .k {{ font:500 .68rem 'JetBrains Mono',monospace; letter-spacing:.16em; text-transform:uppercase; color:var(--acc); }}
 .bmp-bh .t {{ font:600 1.02rem 'Inter Tight',sans-serif; color:{C['text']}; margin-left:10px; }}
-.bmp-bh .b {{ font-size:.8rem; color:{C['muted']}; }}
+.bmp-bh .b {{ font-size:.84rem; color:{C['muted']}; }}
 .bmp-stage {{ position:relative; height:var(--sh); overflow:hidden; cursor:default; }}
 /* spotlight: beam from above + pool of light on the belt */
 .bmp-beam {{ position:absolute; left:50%; top:-10px; width:var(--spot); height:calc(var(--sh) + 10px); transform:translateX(-50%); pointer-events:none;
@@ -120,24 +120,25 @@ def css():
   border:1px solid var(--cacc); box-shadow:0 0 26px -4px var(--cacc), inset 0 0 18px -10px var(--cacc); }}
 .bmp-card:hover {{ border-color:var(--cacc); }}
 .bmp-card .r1 {{ display:flex; justify-content:space-between; align-items:center; gap:6px; }}
-.bmp-card .tk {{ font:500 .8rem 'JetBrains Mono',monospace; color:{C['ice']}; letter-spacing:.04em; }}
-.bmp-card .sc {{ font:600 .64rem 'Inter Tight',sans-serif; letter-spacing:.06em; padding:2px 7px; border-radius:999px; border:1px solid; white-space:nowrap; }}
-.bmp-card .nm {{ font-size:.72rem; color:{C['muted']}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:1px 0 4px; }}
+.bmp-card .tk {{ font:700 .98rem 'Inter Tight',Inter,sans-serif; color:{C['text']}; letter-spacing:.01em; }}
+.bmp-card .sc {{ font:700 .66rem Inter,sans-serif; letter-spacing:.05em; padding:2px 8px; border-radius:999px; border:1px solid; white-space:nowrap; }}
+.bmp-card .nm {{ font-size:.78rem; color:{C['muted']}; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:1px 0 4px; }}
 .bmp-card .r2 {{ display:flex; justify-content:space-between; align-items:flex-end; gap:8px; }}
-.bmp-card .px {{ font:600 1.12rem 'Inter Tight',sans-serif; font-variant-numeric:tabular-nums; line-height:1.1; }}
-.bmp-card .ch {{ font:500 .72rem 'JetBrains Mono',monospace; }}
-.bmp-card .st {{ font:500 .6rem 'JetBrains Mono',monospace; letter-spacing:.1em; color:{C['dim']}; margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
-.bmp-card .st b {{ font-weight:500; }}
-.bmp-card .why {{ font-size:.7rem; line-height:1.35; color:{C['body']}; margin-top:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }}
-.bmp-card .new {{ position:absolute; top:-8px; left:10px; font:600 .55rem 'JetBrains Mono',monospace; letter-spacing:.14em; padding:2px 6px; border-radius:4px;
+.bmp-card .px {{ font:650 1.42rem 'Inter Tight',sans-serif; font-variant-numeric:tabular-nums; letter-spacing:-.02em; line-height:1.1; color:{C['text']}; margin-bottom:4px; }}
+.bmp-card .bm-chip {{ font-size:.78rem; padding:1px 7px; }}
+.bmp-card .st {{ font:500 .74rem Inter,sans-serif; color:{C['muted']}; margin-top:7px; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
+.bmp-card .st b {{ font-weight:650; }}
+.bmp-card .why {{ font-size:.78rem; line-height:1.45; color:{C['body']}; margin-top:5px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }}
+.bmp-card .new {{ position:absolute; top:-9px; left:10px; font:700 .62rem Inter,sans-serif; letter-spacing:.1em; padding:2px 6px; border-radius:4px;
   background:var(--cacc); color:{C['bg']}; }}
 .bmp-card.ghost {{ filter:grayscale(1) {'' if H['light'] else 'brightness(.6)'}; z-index:1; }}
 .bmp-card.ghost .new {{ background:{C['ember']}; }}
+.bmp-card.ghost {{ --cacc:{C['ember']}; }}
 .bmp-card img.spk {{ display:block; }}
 .bmp-chg {{ font:500 .62rem 'JetBrains Mono',monospace; letter-spacing:.12em; color:{C['muted']}; margin-left:12px; }}
 .bmp-chg .in {{ color:{C['green']}; }} .bmp-chg .out {{ color:{C['ember']}; }}
-.bmp-note {{ font-size:.74rem; color:{C['dim']}; padding:0 18px 10px 20px; margin-top:-4px; line-height:1.45; }}
-.bmp-note b {{ color:{C['muted']}; font-weight:600; }}
+.bmp-note {{ font-size:.8rem; color:{C['muted']}; padding:0 18px 10px 20px; margin-top:-4px; line-height:1.45; }}
+.bmp-note b {{ color:{C['text']}; font-weight:650; }}
 .bmp-belt.compact .bmp-bh {{ padding-top:8px; }}
 .bmp-belt.compact .bmp-bh .b {{ display:none; }}
 @media (max-width: 700px) {{ .bmp-bh .b {{ display:none; }} .bmp-head .upd {{ text-align:left; }} }}
@@ -188,7 +189,6 @@ JS = r"""
     dropped.forEach((s, j) => {
       const g = document.createElement('div');
       g.className = 'bmp-card ghost';
-      g.style.setProperty('--cacc', '#FF4D5E');
       g.innerHTML = '<span class="new">EXITED</span><div class="r1"><span class="tk">' + s + '</span></div><div class="nm">' + (cfg.names[s] || '') + '</div>' +
                     '<div class="why">No longer meets the rules.</div>';
       lane.appendChild(g);
@@ -224,9 +224,9 @@ JS = r"""
         const dy = (1 - e) * (c.isNew ? -90 : -36);
         const sc = (cfg.compact ? 0.94 + 0.08 * pe : 0.9 + 0.13 * pe);
         c.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + (dy - pe * (cfg.compact ? 3 : 8)).toFixed(1) + 'px,0) scale(' + sc.toFixed(3) + ')';
-        c.el.style.opacity = (Math.max(0, Math.min(1, e)) * (cfg.light ? 0.55 + 0.45 * pe : 1)).toFixed(3);
-        c.el.style.filter = cfg.light ? 'saturate(' + (0.35 + 0.65 * pe).toFixed(3) + ') contrast(' + (0.86 + 0.14 * pe).toFixed(3) + ')'
-                                      : 'brightness(' + (0.58 + 0.5 * pe).toFixed(3) + ') saturate(' + (0.65 + 0.35 * pe).toFixed(3) + ')';
+        c.el.style.opacity = (Math.max(0, Math.min(1, e)) * (cfg.light ? 0.9 + 0.1 * pe : 1)).toFixed(3);
+        c.el.style.filter = cfg.light ? 'saturate(' + (0.8 + 0.2 * pe).toFixed(3) + ')'
+                                      : 'brightness(' + (0.82 + 0.18 * pe).toFixed(3) + ') saturate(' + (0.85 + 0.15 * pe).toFixed(3) + ')';
         c.el.style.setProperty('--p', pe.toFixed(3));
         c.el.style.zIndex = 2 + Math.round(pe * 10);
       });
@@ -267,23 +267,29 @@ def _spark_svg(vals, col, w=92, h=28):
     return f'<img class="spk" alt="" width="{w}" height="{h}" src="data:image/svg+xml;base64,{base64.b64encode(svg.encode()).decode()}">'
 
 
+def _SUBS():
+    m = B.load_metrics()
+    return dict(zip(m.symbol, m.subsector)) if not m.empty else {}
+
+
 def _card(r, belt, new, compact):
     up = (r.get("direction") == "up") if belt == "volatile" else True
     cacc = (C["green"] if up else C["ember"]) if belt == "volatile" else accent(belt)
     ch = r.get("chg_1d")
-    chtxt = f'<span class="ch" style="color:{C["green"] if (ch or 0) >= 0 else C["ember"]}">{"▲" if (ch or 0) >= 0 else "▼"} {abs(ch or 0)*100:.2f}%</span>' if ch is not None and pd.notna(ch) else ""
+    chtxt = B.chip(ch)
     sc = r["score"]; scol = B.score_color(sc)
     stat = r.get("stat")
-    stxt = f'{r["stat_label"]} <b style="color:{C["green"] if (stat or 0) >= 0 else C["ember"]}">{(stat or 0)*100:+.1f}%</b>' if stat is not None and pd.notna(stat) else r["stat_label"]
+    slab = {"3M vs NIFTY IT": "3M vs Nifty IT", "1Y RETURN": "1Y return", "5-DAY MOVE": "5-day move"}.get(r["stat_label"], r["stat_label"])
+    stxt = f'{slab} <b style="color:{C["pos_t"] if (stat or 0) >= 0 else C["neg_t"]}">{(stat or 0)*100:+.1f}%</b>' if stat is not None and pd.notna(stat) else slab
     bs = r.get("buffett_score")
     if belt != "long" and not compact and bs is not None and pd.notna(bs):
-        stxt += f' · BUFFETT {bs:.0f}'
+        stxt += f' · Buffett <b style="color:{C["text"]}">{bs:.0f}</b>'
     spark = _spark_svg(json.loads(r["spark"]) if isinstance(r["spark"], str) else r["spark"], cacc, 70 if compact else 92, 22 if compact else 28)
     why = html.escape(r["reason"])
     newtag = '<span class="new">NEW</span>' if new else ""
     body = (f'{newtag}<div class="r1"><span class="tk">{html.escape(r["symbol"])}</span>'
-            f'<span class="sc" style="color:{scol};border-color:{scol};background:{scol}1F">SIGNAL {sc:.0f}</span></div>'
-            f'<div class="nm">{html.escape(str(r["name"]))}</div>'
+            f'<span class="sc" style="color:{B.ink(scol)};border-color:{B.rgba(scol, .5)};background:{B.rgba(scol, .12)}">SIGNAL {sc:.0f}</span></div>'
+            f'<div class="nm">{B.sub_dot(_SUBS().get(r["symbol"]), 7)}{html.escape(str(r["name"]))}</div>'
             f'<div class="r2"><div><div class="px">{B.inr(r["price"], 2 if r["price"] < 1000 else 0)}</div>{chtxt}</div>{spark}</div>'
             f'<div class="st">{stxt}</div>')
     if not compact:
@@ -296,7 +302,7 @@ def _belt_html(belt, items, meta, names, compact, n):
     info = P.BELTS[belt]
     ch = (meta.get("changes") or {}).get(belt) or {}
     entered = set(ch.get("entered") or [])
-    cw, chh, sh, spot = (214, 124, 182, 300) if compact else (268, 156, 222, 380)
+    cw, chh, sh, spot = (226, 140, 198, 310) if compact else (284, 184, 250, 400)
     cards = "".join(_card(r, belt, r["symbol"] in entered, compact) for r in items.to_dict("records"))
     cfg = {"belt": belt, "run": meta.get("generated_at", ""), "items": list(items.symbol), "previous": ch.get("previous") or [],
            "names": {s: names.get(s, "") for s in (ch.get("previous") or [])}, "speed": SPEED[belt] * (0.85 if compact else 1),
@@ -326,7 +332,7 @@ def render(compact=False):
     asof = pd.Timestamp(meta.get("as_of")).strftime("%d %b %Y") if meta.get("as_of") else "–"
     head = (f'<div class="bmp-head"><div class="ttl">Beemer Picks <span>Data signals, not recommendations.</span></div>'
             f'<div class="upd">Updated <b>{upd}</b><br>Prices {asof} · Daily refresh</div></div>')
-    disc = '<div class="bmp-disc">Fixed rules. Top five per belt. Select a card for the company. Rules in Academy.</div>'
+    disc = ""
     belts = "".join(_belt_html(b, pk[pk.belt == b].sort_values("rank"), meta, names, compact, i)
                     for i, b in enumerate(["short", "long", "volatile"], 1) if (pk.belt == b).any())
     if compact:
