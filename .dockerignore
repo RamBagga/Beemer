@@ -1,0 +1,23 @@
+# keep the image small: no local env, data, logs, screenshots or design sources
+.git
+.github
+.venv
+venv
+__pycache__
+*.py[cod]
+.pytest_cache
+.DS_Store
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+data/*.db
+data/*.db-journal
+data/*.parquet
+data/screener_cache
+data/.published_manifest.json
+logs/*
+screenshots
+design
+*.md
+!README.md

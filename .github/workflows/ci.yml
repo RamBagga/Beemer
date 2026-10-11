@@ -35,3 +35,19 @@ jobs:
           streamlit run app/main.py --server.port 8501 --server.address 127.0.0.1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8501/_stcore/health && exit 0; sleep 1; done
           exit 1
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build image
+        run: docker build -t beemer .
+      - name: Run container and wait for it to become healthy
+        run: |
+          docker run -d --name beemer -p 8080:8080 -e PORT=8080 beemer
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8080/_stcore/health; then echo; docker logs beemer | tail -5; exit 0; fi
+            sleep 2
+          done
+          docker logs beemer; exit 1
