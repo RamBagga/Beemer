@@ -1,0 +1,5 @@
+# optional: headless page checks / screenshots (scripts/check_pages.py, scripts/shot.py)
+# after install: .venv/bin/python -m playwright install chromium
+-r requirements.txt
+playwright==1.63.0
+pillow==12.3.0
