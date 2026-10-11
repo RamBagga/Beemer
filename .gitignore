@@ -26,6 +26,14 @@ data/*_constituents.csv
 .vscode/
 *.swp
 
+# Spring Boot + React
+backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+
 # Secrets (future licensed-data keys)
 .env
 .env.*

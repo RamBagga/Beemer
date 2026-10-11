@@ -3,7 +3,7 @@ PY      ?= .venv/bin/python
 PORT    ?= 8501
 IMAGE   ?= beemer
 
-.PHONY: help setup run start stop status update snapshot bootstrap publish test health docker-build docker-run clean
+.PHONY: help setup run start stop status update snapshot bootstrap publish test health docker-build docker-run clean api web new api-test web-build web-e2e compose
 
 help:            ## list targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-13s %s\n", $$1, $$2}'
@@ -40,6 +40,21 @@ docker-build:    ## build the container image
 	docker build -t $(IMAGE) .
 docker-run:      ## run the container on PORT
 	docker run --rm -p $(PORT):8501 $(IMAGE)
+
+api:             ## Spring Boot API on :8080 (new stack)
+	cd backend && mvn -q -DskipTests spring-boot:run
+web:             ## React dev server on :5173 (new stack)
+	cd frontend && npm run dev -- --host 127.0.0.1 --port 5173
+new:             ## API + React together
+	./start-new.sh
+api-test:        ## Java unit tests against Python golden files
+	cd backend && mvn -B test
+web-build:       ## production frontend build
+	cd frontend && npm ci && npm run build
+web-e2e:         ## Playwright smoke (API on :8080, set BEEMER_WEB if not using preview)
+	cd frontend && npm run test:e2e
+compose:         ## new stack in Docker (API, nginx, pipeline). Streamlit image is separate.
+	docker compose up --build
 
 clean:           ## remove the virtualenv and caches (keeps data)
 	rm -rf .venv __pycache__ app/__pycache__ app/views/__pycache__
