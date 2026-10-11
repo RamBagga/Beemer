@@ -1,24 +1,63 @@
-# BEEMER — Precision research for India's tech stocks
+<p align="center">
+  <img src="design/beemer-wordmark.svg" alt="Beemer" width="320">
+</p>
 
-Beginner-friendly, Buffett-style research dashboard for **Indian-listed tech companies**: IT services, ER&D,
-SaaS/software products, AI & data, internet platforms, fintech and electronics/semicon design.
-Every metric comes with a one-line plain-English explanation and "why Buffett cares".
+<h3 align="center">Precision research for India's tech stocks</h3>
 
-> Educational tool, not investment advice. See **Data licensing** before selling this publicly.
+<p align="center">
+Buffett-style insights on Indian AI, SaaS and tech companies, explained simply.<br>
+Up to 30 years of NSE/BSE price history · 12 years of fundamentals · a transparent 0–100 Buffett Score · refreshed every trading day.
+</p>
 
-## Quick start (localhost)
+<p align="center">
+  <img src="screenshots/01-cockpit.png" alt="Beemer Cockpit" width="900">
+</p>
 
+> **Educational tool, not investment advice.** Read [Data licensing](#data-licensing--read-before-selling) before selling this publicly.
+
+## Why Beemer
+Most stock screeners throw 50 ratios at you and leave you to figure out what they mean. Beemer covers **64 Indian-listed tech companies**, from IT services, ER&D, SaaS and AI to internet platforms, fintech and chip design. It scores each one against the questions Warren Buffett asks, and explains every number in one plain-English line.
+
+## Getting started
+
+### 1. Prerequisites
+- macOS or Linux
+- Python 3.11+ (macOS: `brew install python@3.12`; `start.sh` picks the best version automatically)
+- Git, and an internet connection. **No API keys needed.**
+
+### 2. Clone and run
 ```bash
-cd beemer
-./start.sh            # first run: creates .venv, installs deps, downloads data (~8–10 min), starts the app
-# → http://localhost:8501
-./start.sh --cron     # optional: also install the weekday refresh schedule
-./start.sh --fg       # run in the foreground
-./start.sh --status   # running? which port?
-./start.sh --stop     # stop
+git clone git@github.com:RamBagga/Beemer.git
+cd Beemer
+./start.sh
 ```
-Requirements: Python 3.11–3.13 recommended (macOS: `brew install python@3.12`; `start.sh` picks it automatically), macOS or Linux, internet access. No API keys.
-If port 8501 is taken, `start.sh` uses the next free port. Architecture overview: [ARCHITECTURE.md](ARCHITECTURE.md).
+Then open **http://localhost:8501**.
+
+The first run creates a virtual environment, installs dependencies and downloads all market data. That takes about 8 to 10 minutes. After that, the app starts in seconds.
+
+### 3. Everyday commands
+| Command | What it does |
+|---|---|
+| `./start.sh` | Start the app in the background |
+| `./start.sh --fg` | Run in the foreground (see logs live) |
+| `./start.sh --status` | Is it running, and on which port? |
+| `./start.sh --stop` | Stop the app |
+| `./start.sh --cron` | Install the weekday auto-refresh (3:45 PM and 6:30 PM IST) |
+| `.venv/bin/python update_data.py` | Refresh data manually right now |
+
+### 4. Troubleshooting
+- **Port 8501 is busy:** `start.sh` automatically uses the next free port. Run `./start.sh --status` to see which one.
+- **The app won't start:** check `logs/streamlit.log`.
+- **Data looks old:** run `.venv/bin/python update_data.py`, or install the schedule with `./start.sh --cron`. Cron jobs only run while the Mac is awake.
+- **Start from scratch:** delete `data/market.db`, `data/metrics.parquet` and `.venv`, then run `./start.sh`.
+
+### 5. Learn the codebase
+Read [ARCHITECTURE.md](ARCHITECTURE.md) for the data flow diagram and module map, and [design/beemer-design-board.md](design/beemer-design-board.md) for the design system.
+
+## Screenshots
+| Screener | Company | Academy |
+|---|---|---|
+| <img src="screenshots/02-screener.png" width="300"> | <img src="screenshots/03-company-infosys.png" width="300"> | <img src="screenshots/05-academy.png" width="300"> |
 
 ## Pages
 | Page | What it shows |
@@ -90,3 +129,11 @@ scripts/                 cron wrapper + installer, check_pages.py (headless rend
 requirements-dev.txt     playwright + pillow for the screenshot scripts
 data/universe_tech.csv   curated universe
 ```
+
+## Roadmap
+- Licensed data feeds for a commercial launch
+- Public deployment
+- Bigger universe (Nifty 500), watchlists and alerts
+
+## License
+See [LICENSE](LICENSE).
