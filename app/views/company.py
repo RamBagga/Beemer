@@ -1,4 +1,4 @@
-import json
+import json, re
 import numpy as np, pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -37,7 +37,7 @@ if not bad and good: verdict += "No red flags."
 young = f" · listed {r.first_date[:4]}" if r.young_listing else f" · data since {r.first_date[:4]}"
 c_h, c_g = st.columns([3.2, 1])
 with c_h:
-    st.markdown(f"""<div class="bm-hero" style="padding-right:34px"><div class="bm-k">{r.subsector} · {r.theme} · <span class="bm-mono">NSE:{sym}</span>{young}</div>
+    st.markdown(f"""<div class="bm-hero" style="padding-right:34px"><div class="bm-k">{B.sub_dot(r.subsector, 7)}{r.subsector} · {r.theme} · <span class="bm-mono">NSE:{sym}</span>{young}</div>
 <h1>{short} {B.badge(r.buffett_score, r.score_label)}</h1><p>{verdict}</p></div>""", unsafe_allow_html=True)
 with c_g:
     st.plotly_chart(B.gauge(r.buffett_score), width="stretch", config={"displayModeBar": False})
@@ -46,12 +46,13 @@ if r.young_listing:
 if not r.profitable_ttm:
     B.callout(f"<b>Loss-making.</b> 12-month net profit {B.crore(r.get('profit_ttm_cr'))}. Most tests read low until profits arrive.")
 about = (ser.get("meta") or {}).get("about")
+about = re.sub(r"\s*\[\d+\]", "", about).strip() if about else about
 if about:
     st.markdown(f"<div style='color:{C['muted']};margin:-6px 0 12px 0;font-size:.92rem'>{about}</div>", unsafe_allow_html=True)
 
 k = st.columns(5)
 with k[0]: B.kpi("Price", B.inr(r.price, 0), f"{pd.Timestamp(r.last_date):%d %b %Y}. 52-week high {B.inr(r.high_52w)}.")
-with k[1]: B.kpi("Market cap", B.crore(r.market_cap_cr), "The whole company, at today's price.")
+with k[1]: B.kpi("Market cap", B.crore(r.market_cap_cr), f"Rank {int((m.market_cap_cr > r.market_cap_cr).sum()) + 1} of {len(m)}." if pd.notna(r.market_cap_cr) else "")
 with k[2]:
     if pd.notna(r.pe):
         B.kpi("P/E", B.num(r.pe), f"10-yr median {B.num(r.get('pe_median_10y'))}." if pd.notna(r.get('pe_median_10y')) else B.EXPLAIN["pe"][1])
@@ -72,7 +73,7 @@ with cl:
     for s in subs:
         f = s["pts"] / s["max"]
         stt = status(s); sc = {"pass": C["green"], "watch": C["amber"], "fail": C["ember"]}[stt]
-        html += (f'<div class="bm-check"><div class="ic" style="color:{sc};border:1px solid {sc};background:{sc}14">{stt.upper()}</div><div style="flex:1"><div class="t">{s["name"]} '
+        html += (f'<div class="bm-check"><div class="ic" style="color:{B.ink(sc)};border:1px solid {B.rgba(sc, .5)};background:{B.rgba(sc, .1)}">{stt.upper()}</div><div style="flex:1"><div class="t">{s["name"]} '
                  f'<span style="color:{C["muted"]};font-weight:500;font-size:.85rem">· {s["pts"]:.3g}/{s["max"]}</span></div>'
                  f'<div class="bm-bar"><i style="width:{f*100:.0f}%;background:{B.score_color(f*100)}"></i></div>'
                  f'<div class="d">{s["detail"]}</div><div class="w">{s["why"]}</div></div></div>')
@@ -80,12 +81,11 @@ with cl:
 with cr:
     cats = [{"roe": "QUALITY", "debt": "DEBT", "growth": "GROWTH", "moat": "MOAT", "fcf": "CASH", "value": "PRICE"}[s["key"]] for s in subs]
     vals = [s["pts"] / s["max"] * 100 for s in subs]
-    fig = go.Figure(go.Scatterpolar(r=vals + vals[:1], theta=cats + cats[:1], fill="toself", line=dict(color=C["blue"], width=2),
-                                    fillcolor="rgba(31,143,255,0.18)", name=short))
-    fig.update_layout(polar=dict(radialaxis=dict(range=[0, 100], showticklabels=False, gridcolor=C["line"]), angularaxis=dict(gridcolor=C["line"], tickfont=dict(color=C["muted"], size=11)),
+    fig = go.Figure(go.Scatterpolar(r=vals + vals[:1], theta=cats + cats[:1], fill="toself", line=dict(color=C["blue"], width=1.6),
+                                    fillcolor=B.rgba(C["blue"], .14), marker=dict(size=5, color=C["blue"]), name=short))
+    fig.update_layout(polar=dict(radialaxis=dict(range=[0, 100], showticklabels=False, gridcolor=C["grid"], linecolor=C["grid"]), angularaxis=dict(gridcolor=C["grid"], linecolor=C["line"], tickfont=dict(color=C["muted"], size=11, family="JetBrains Mono")),
                                  bgcolor="rgba(0,0,0,0)"), height=380, showlegend=False, title="Profile", margin=dict(t=60, l=50, r=50, b=20))
     st.plotly_chart(fig, width="stretch")
-    B.caption("Fuller shape, more tests passed. Dents show where to dig.")
 
 # ---------- returns ----------
 st.markdown("### Returns")
@@ -93,13 +93,13 @@ k = st.columns(6)
 for col, (lab, key) in zip(k, [("1 yr", "cagr_1y"), ("3 yrs", "cagr_3y"), ("5 yrs", "cagr_5y"), ("10 yrs", "cagr_10y"), ("20 yrs", "cagr_20y"), (f"Since {r.first_date[:4]}", "cagr_max")]):
     v = r.get(key)
     with col: B.kpi(f"{lab} / yr", B.pct(v) if pd.notna(v) else "–", "", "pos" if pd.notna(v) and v > 0 else ("neg" if pd.notna(v) else None))
-st.markdown(f"<div class='bm-caption' style='margin-top:6px'>Compound annual growth rate, price only.</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='bm-caption' style='margin-top:6px'>Annualised, price only.</div>", unsafe_allow_html=True)
 s = p["adj_close"]; dd = A.drawdowns(s)
 fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[.72, .28], vertical_spacing=.04)
-fig.add_trace(go.Scatter(x=s.index, y=s, name="Price, adjusted", line=dict(color=C["blue"], width=1.6), fill="tozeroy", fillcolor="rgba(31,143,255,0.07)"), 1, 1)
+fig.add_trace(go.Scatter(x=s.index, y=s, name="Price, adjusted", line=dict(color=C["blue"], width=1.6), hovertemplate="₹%{y:,.1f}", **B.soft(C["blue"])), 1, 1)
 sx = B.load_prices("^BSESN")["adj_close"]; sx = sx[sx.index >= s.index[0]]
-fig.add_trace(go.Scatter(x=sx.index, y=sx / sx.iloc[0] * s.iloc[0], name="Sensex, rebased", line=dict(color=C["muted"], width=1.3, dash="dot")), 1, 1)
-fig.add_trace(go.Scatter(x=dd.index, y=dd * 100, name="Below peak", fill="tozeroy", line=dict(color=C["ember"], width=1), fillcolor="rgba(255,77,94,0.22)"), 2, 1)
+fig.add_trace(go.Scatter(x=sx.index, y=sx / sx.iloc[0] * s.iloc[0], name="Sensex, rebased", line=dict(color=C["dim"], width=1.2, dash="dot"), hovertemplate="₹%{y:,.1f}"), 1, 1)
+fig.add_trace(go.Scatter(x=dd.index, y=dd * 100, name="Below peak", line=dict(color=C["ember"], width=1), hovertemplate="%{y:.1f}%", **B.area(C["ember"], .28, down=True)), 2, 1)
 B.log_axis(fig, float(min(s.min(), (sx / sx.iloc[0] * s.iloc[0]).min())), float(max(s.max(), (sx / sx.iloc[0] * s.iloc[0]).max())), row=1, col=1); fig.update_yaxes(ticksuffix="%", row=2, col=1)
 fig.update_layout(height=520)
 st.plotly_chart(fig, width="stretch")
@@ -114,9 +114,9 @@ if a is not None and len(a):
     c1, c2 = st.columns(2)
     with c1:
         fig = go.Figure()
-        if sales is not None: fig.add_trace(go.Bar(x=yrs, y=sales, name="Sales / revenue", marker_color=C["bar"]))
-        if npf is not None: fig.add_trace(go.Bar(x=yrs, y=npf, name="Net profit", marker_color=C["blue"]))
-        fig.update_layout(barmode="overlay", height=340, title="Sales and profit · ₹ crore"); fig.update_yaxes(tickprefix="₹")
+        if sales is not None: fig.add_trace(go.Bar(x=yrs, y=sales, name="Sales / revenue", marker_color=C["bar"], hovertemplate="₹%{y:,.0f} cr"))
+        if npf is not None: fig.add_trace(go.Bar(x=yrs, y=npf, name="Net profit", marker_color=C["blue"], hovertemplate="₹%{y:,.0f} cr"))
+        fig.update_layout(barmode="group", bargap=.3, bargroupgap=.08, height=340, title="Sales and profit · ₹ crore"); fig.update_yaxes(tickprefix="₹")
         st.plotly_chart(fig, width="stretch")
         per = next((n for n in (10, 5, 3) if pd.notna(r.get(f"sales_cagr_{n}y"))), None)
         gtxt = (f"{per}-yr growth: sales <b>{B.pct(r.get(f'sales_cagr_{per}y'))}</b>" + (f", profit <b>{B.pct(r.get(f'profit_cagr_{per}y'))}</b> a year. " if pd.notna(r.get(f'profit_cagr_{per}y')) else " a year. Profit growth n/m. ")) if per else "Too few years to measure growth. "
@@ -125,24 +125,23 @@ if a is not None and len(a):
         roe = ser.get("roe")
         fig = go.Figure()
         if roe is not None:
-            fig.add_trace(go.Scatter(x=yrs, y=roe * 100, name="ROE", mode="lines+markers", line=dict(color=C["blue"], width=2)))
+            fig.add_trace(go.Scatter(x=yrs, y=roe * 100, name="ROE", mode="lines+markers", line=dict(color=C["blue"], width=1.8), marker=dict(size=5), hovertemplate="%{y:.1f}%"))
         if opm is not None:
-            fig.add_trace(go.Scatter(x=yrs, y=opm, name="Operating margin", mode="lines+markers", line=dict(color=C["amber"], width=2)))
+            fig.add_trace(go.Scatter(x=yrs, y=opm, name="Operating margin", mode="lines+markers", line=dict(color=C["teal"], width=1.6), marker=dict(size=5), hovertemplate="%{y:.1f}%"))
         roce = A.first_col(ser["tables"].get("ratios"), ["ROCE %"])
         if roce is not None:
-            fig.add_trace(go.Scatter(x=[A._pdate(i).year for i in roce.index], y=roce, name="ROCE", mode="lines+markers", line=dict(color=C["violet"], width=1.5, dash="dot")))
-        fig.add_hline(y=15, line_dash="dot", line_color=C["green"], annotation_text="15%", annotation_position="top left")
+            fig.add_trace(go.Scatter(x=[A._pdate(i).year for i in roce.index], y=roce, name="ROCE", mode="lines+markers", line=dict(color=C["violet"], width=1.3, dash="dot"), marker=dict(size=4), hovertemplate="%{y:.1f}%"))
+        fig.add_hline(y=15, line_dash="dot", line_width=1, line_color=C["dim"], annotation_text="15%", annotation_position="top left", annotation_font=dict(color=C["muted"], size=11))
         fig.update_yaxes(ticksuffix="%"); fig.update_layout(height=340, title="Returns on capital and margin")
         st.plotly_chart(fig, width="stretch")
-        B.caption("High and flat suggests a moat.")
     c3, c4 = st.columns(2)
     with c3:
         pe_h = ser.get("pe_hist")
         if pe_h is not None and len(pe_h) >= 3:
-            fig = go.Figure(go.Bar(x=[d.year for d in pe_h.index], y=pe_h.values, name="P/E at year end", marker_color=C["bar"]))
+            fig = go.Figure(go.Bar(x=[d.year for d in pe_h.index], y=pe_h.values, name="P/E at year end", marker_color=C["bar"], hovertemplate="%{y:.1f}"))
             if pd.notna(r.pe): fig.add_trace(go.Scatter(x=[pe_h.index[-1].year + 1], y=[r.pe], mode="markers+text", text=["today"], textposition="top center",
-                                                        marker=dict(size=14, color=C["blue"], line=dict(color=C["ice"], width=1)), name="Today"))
-            fig.add_hline(y=pe_h.median(), line_dash="dot", line_color=C["muted"], annotation_text=f"median {pe_h.median():.1f}", annotation_position="top left")
+                                                        marker=dict(size=12, color=C["blue"], line=dict(color=C["surface"], width=2)), textfont=dict(color=C["blue"], size=11), name="Today", hovertemplate="%{y:.1f}"))
+            fig.add_hline(y=pe_h.median(), line_dash="dot", line_width=1, line_color=C["dim"], annotation_text=f"median {pe_h.median():.1f}", annotation_position="top left", annotation_font=dict(color=C["muted"], size=11))
             fig.update_layout(height=330, title="P/E vs its own history", showlegend=False)
             st.plotly_chart(fig, width="stretch")
             B.caption(f"Year-end P/E vs today: <b>{abs(r.pe_vs_history)*100:.0f}% {'below' if r.pe_vs_history < 0 else 'above'}</b> the 10-yr median. Approximate." if pd.notna(r.get("pe_vs_history")) else "Year-end P/E. Approximate.")
@@ -154,12 +153,12 @@ if a is not None and len(a):
         if fcf is not None:
             fy = [A._pdate(i).year for i in fcf.index]
             fig = go.Figure()
-            fig.add_trace(go.Bar(x=fy, y=fcf, name="Free cash flow", marker_color=[C["green"] if v > 0 else C["ember"] for v in fcf]))
-            if npf is not None: fig.add_trace(go.Scatter(x=yrs, y=npf, name="Net profit", line=dict(color=C["ice"], width=2)))
+            fig.add_trace(go.Bar(x=fy, y=fcf, name="Free cash flow", marker_color=[C["teal"] if v > 0 else C["ember"] for v in fcf], hovertemplate="₹%{y:,.0f} cr"))
+            if npf is not None: fig.add_trace(go.Scatter(x=yrs, y=npf, name="Net profit", line=dict(color=C["blue"], width=1.8), hovertemplate="₹%{y:,.0f} cr"))
             fig.update_layout(height=330, title="Profit vs free cash flow"); fig.update_yaxes(tickprefix="₹")
             st.plotly_chart(fig, width="stretch")
             conv = r.get("fcf_conversion_10y")
-            B.caption((f"Cash conversion <b>{B.pct(conv,0)}</b> of profit. " if pd.notna(conv) else "Cash conversion n/m. ") + "Red bars: cash consumed that year.")
+            B.caption(f"Cash conversion <b>{B.pct(conv,0)}</b> of profit, 10 years." if pd.notna(conv) else "Cash conversion n/m.")
         else:
             B.callout("No cash-flow history yet.")
 

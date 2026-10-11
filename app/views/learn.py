@@ -5,7 +5,7 @@ from beemer import C
 
 B.hero("Academy",
        "Engineered understanding.",
-       "Ten lessons. Two minutes each. How Buffett thinks, applied to Indian tech.")
+       "Buffett's principles, applied to Indian tech.")
 
 q = st.columns(3)
 for col, (qt, src) in zip(q, [
@@ -51,11 +51,11 @@ LESSONS = [
 c1, c2 = st.columns(2)
 for i, (n, t, body, tryit) in enumerate(LESSONS):
     with (c1 if i % 2 == 0 else c2):
-        st.markdown(f'<div class="bm-lesson"><div class="bm-k">Lesson {n}</div><h4>{t}</h4><div style="font-size:.93rem;color:{C["body"]};line-height:1.6">{body}</div>'
-                    f'<div style="margin-top:10px;font:500 .72rem \'JetBrains Mono\',monospace;letter-spacing:.06em;color:{C["ice"]}">TRY · {tryit}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="bm-lesson"><div class="bm-k">Lesson {n}</div><h4>{t}</h4><div style="font-size:.93rem;color:{C["body"]};line-height:1.6">{body}</div></div>',
+                    unsafe_allow_html=True)
 
 st.markdown("### How Beemer Picks work")
-B.callout("<b>Data signals, not recommendations.</b> Fixed rules, applied to every company after each update. Top five per belt. No manual edits.")
+B.callout("<b>Data signals, not recommendations.</b> Fixed rules, rerun after every data update. Top five per belt.")
 _bt = (belts.load_picks()[1] or {}).get("backtest") or {}
 
 
@@ -66,15 +66,15 @@ def belt_card(col, color, kicker, title, rows):
 
 
 c1, c2, c3 = st.columns(3)
-belt_card(c1, C["ice"], "Belt 01 · 1–3 months", "Momentum", [
+belt_card(c1, C["blue"], "Belt 01 · 1–3 months", "Momentum", [
     ("Qualifies", "200+ trading days. Above 50-day average. Ahead of Nifty IT over 3 months. ₹2 cr+ traded daily."),
     ("Weights", "35% 3-month vs Nifty IT · 15% 1-month · 20% trend · 10% volume · 20% latest-quarter growth."),
     ("Limit", "Momentum reverses without warning. It says nothing about value.")])
-belt_card(c2, C["green"], "Belt 02 · 5 years +", "Compounders", [
+belt_card(c2, C["teal"], "Belt 02 · 5 years +", "Compounders", [
     ("Qualifies", "5+ years of results. Profitable. Buffett Score 60+. Debt under 1× equity. Listed 3+ years."),
     ("Weights", "40% Buffett Score · 15% ROE consistency · 15% ROCE · 15% price vs value · 15% profit growth."),
     ("Limit", "Backward-looking. Tech changes fast.")])
-belt_card(c3, C["amber"], "Belt 03 · last 5 days", "Movers", [
+belt_card(c3, C["violet"], "Belt 03 · last 5 days", "Movers", [
     ("Qualifies", "120+ trading days. ₹1 cr+ traded daily."),
     ("Weights", "60% 5-day move vs normal swing · 25% unusual volume · 15% last-session move."),
     ("Limit", "A prompt to find the news. Not a reason to chase.")])

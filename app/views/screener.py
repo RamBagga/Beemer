@@ -7,7 +7,7 @@ from beemer import A, C
 
 B.hero("Screener",
        "Quality first. Then price.",
-       "Every company scored 0–100 on six Buffett tests. A starting point for research, not a signal to act.")
+       "Ranked by Buffett Score, 0–100, across six tests.")
 
 m = B.load_metrics()
 if m.empty:
@@ -63,18 +63,36 @@ tbl = pd.DataFrame({
     "1y return %": f.cagr_1y * 100, "5y CAGR %": f.cagr_5y * 100, "Worst fall %": f.max_drawdown * 100,
     "Mkt cap (₹ cr)": f.market_cap_cr,
 })
-sub_cfg = {k: st.column_config.ProgressColumn(k, min_value=0, max_value=100, format="%d", width="small") for k in ["ROE test", "Debt test", "Growth test", "Moat test", "Cash test", "Price test"]}
+sub_cfg = {k: st.column_config.NumberColumn(k, width="small") for k in ["ROE test", "Debt test", "Growth test", "Moat test", "Cash test", "Price test"]}
+signed = ["1y return %", "5y CAGR %", "Margin of safety %", "P/E vs own history %", "Worst fall %"]
+def _tone(v, invert=False):
+    if pd.isna(v) or v == 0: return ""
+    good = (v < 0) if invert else (v > 0)
+    return f"color:{C['pos_t'] if good else C['neg_t']};font-weight:600"
+tests = ["Buffett Score", "ROE test", "Debt test", "Growth test", "Moat test", "Cash test", "Price test"]
+styled = (tbl.style
+          .map(lambda v: B.heat(v), subset=tests)
+          .map(lambda v: B.heat(v, signed=True, cap=.6), subset=["1y return %", "5y CAGR %", "Margin of safety %"])
+          .map(lambda v: B.heat(-v if pd.notna(v) else v, signed=True, cap=.6), subset=["P/E vs own history %"])
+          .map(lambda v: f"color:{B.sub_color(v)};font-weight:600", subset=["Sub-sector"])
+          .map(lambda v: f"color:{B.ink(B.score_color({'Strong': 80, 'Good': 65, 'Mixed': 50, 'Weak': 20}.get(v, None)))};font-weight:650" if v in ('Strong', 'Good', 'Mixed', 'Weak') else "", subset=["Verdict"])
+          .format("{:.0f}", subset=tests, na_rep="–")
+          .format("{:.1f}", subset=["ROE median %", "ROCE %", "Sales growth 3y %", "Profit growth 5y %", "Op. margin %", "P/E", "P/E vs own history %", "Div. yield %", "Margin of safety %", "1y return %", "5y CAGR %", "Worst fall %"], na_rep="–")
+          .format("{:.2f}", subset=["Debt/Equity"], na_rep="–")
+          .format("{:,.0f}", subset=["Mkt cap (₹ cr)"], na_rep="–")
+          .map(lambda v: f"color:{C['pos_t'] if v == 'Yes' else C['neg_t']};font-weight:600", subset=["Profitable"])
+          .map(lambda v: "font-weight:650", subset=["Company"]))
 event = st.dataframe(
-    tbl, hide_index=True, width="stretch", height=min(38 * len(tbl) + 40, 760), on_select="rerun", selection_mode="single-row",
+    styled, hide_index=True, width="stretch", row_height=40, height=min(40 * len(tbl) + 42, 800), on_select="rerun", selection_mode="single-row",
     column_config={
-        "Buffett Score": st.column_config.ProgressColumn("Buffett Score", min_value=0, max_value=100, format="%.0f", help="0–100 overall score"),
+        "Buffett Score": st.column_config.NumberColumn("Buffett Score", help="0–100 overall score", width="small"),
         **sub_cfg,
-        **{k: st.column_config.NumberColumn(k, format="%.1f") for k in ["ROE median %", "ROCE %", "Sales growth 3y %", "Profit growth 5y %", "Op. margin %", "P/E", "P/E vs own history %", "Div. yield %", "Margin of safety %", "1y return %", "5y CAGR %", "Worst fall %"]},
-        "Debt/Equity": st.column_config.NumberColumn("Debt/Equity", format="%.2f"),
+        "Sub-sector": st.column_config.TextColumn("Sub-sector", width="medium"),
+        "Company": st.column_config.TextColumn("Company", width="medium"),
+
         "Listed": st.column_config.NumberColumn("Listed", format="%d", help="First year with NSE price data (≈ listing year for new-age companies)"),
-        "Mkt cap (₹ cr)": st.column_config.NumberColumn("Mkt cap (₹ cr)", format="%,.0f"),
     })
-B.caption("Select a row to open the company. Test columns score 0–100; blank means too little data.")
+B.caption("Select a row to open the company. Blank: too little data.")
 sel = event.selection.rows if event and event.selection else []
 if sel:
     st.session_state["company"] = tbl.iloc[sel[0]]["Symbol"]
@@ -85,15 +103,15 @@ q = f.dropna(subset=["roe_median_10y", "pe"]); q = q[q.pe <= 200]
 fig = go.Figure(go.Scatter(
     x=q.pe, y=q.roe_median_10y * 100, mode="markers+text", text=q.symbol, textposition="top center", textfont=dict(size=10, color=C["muted"], family="JetBrains Mono"),
     marker=dict(size=np.clip(np.sqrt(q.market_cap_cr.fillna(1e4)) / 22, 7, 34), color=[B.score_color(s) for s in q.buffett_score],
-                line=dict(color=C["bg"], width=1), opacity=.9),
+                line=dict(color=C["surface"], width=1.2), opacity=.88),
     customdata=np.stack([q.name, q.buffett_score], axis=1),
     hovertemplate="<b>%{customdata[0]}</b><br>P/E %{x:.1f}<br>ROE (10y median) %{y:.1f}%<br>Buffett Score %{customdata[1]:.0f}<extra></extra>"))
-fig.add_hline(y=15, line_dash="dot", line_color=C["green"], annotation_text="15% ROE", annotation_position="top left")
+fig.add_hline(y=15, line_dash="dot", line_width=1, line_color=C["teal"], annotation_text="15% ROE", annotation_position="top left", annotation_font=dict(color=C["teal"], size=11))
 fig.update_xaxes(type="log", title="P/E, log scale", tickvals=[5, 10, 20, 30, 50, 100, 200], ticktext=["5", "10", "20", "30", "50", "100", "200"])
 fig.update_yaxes(title="ROE, 10-yr median (%)")
-fig.update_layout(height=520, hovermode="closest")
+fig.update_layout(height=520, hovermode="closest", xaxis_showspikes=False, yaxis_showspikes=False)
 st.plotly_chart(fig, width="stretch")
-B.caption("Size: market value. Colour: Buffett Score. Top-left is the target: high returns, modest price. P/E above 200 not shown.")
+B.caption("Size: market cap. Colour: Buffett Score. P/E above 200 hidden.")
 
 with st.expander("How the Buffett Score works"):
     st.markdown("""

@@ -8,7 +8,7 @@ from beemer import A, C
 
 B.hero("Cockpit",
        "India tech, measured.",
-       f"{len(B.load_metrics()) or 64} listed tech companies. Six Buffett tests. Plain English.")
+       f"{len(B.load_metrics()) or 64} listed companies across seven sub-sectors, scored on six Buffett tests.")
 
 # ---------------- Beemer Picks belts ----------------
 belts.render()
@@ -21,20 +21,21 @@ start = max(it.index[0], nf.index[0])
 # ---------------- KPI cluster ----------------
 k = st.columns(5)
 with k[0]: B.kpi(f"Nifty IT · since {it.index[0].year}", B.pct(A.cagr_from_series(it, 'max')) + "/yr", f"Nifty 50: {B.pct(A.cagr_from_series(nf[nf.index >= start], 'max'))}/yr, same period.", "acc")
-with k[1]: B.kpi(f"Sensex · since {sx.index[0].year}", B.pct(A.cagr_from_series(sx, 'max')) + "/yr", "Long-run market return, ex-dividends.")
+with k[1]: B.kpi(f"Sensex · since {sx.index[0].year}", B.pct(A.cagr_from_series(sx, 'max')) + "/yr", "Excludes dividends.")
 cur = A.drawdowns(it).iloc[-1]
-with k[2]: B.kpi("Nifty IT vs peak", B.pct(cur, 1) if cur < -0.001 else "At a high", "Distance from the all-time high.", "neg" if cur < -0.1 else None)
+with k[2]: B.kpi("Nifty IT vs peak", B.pct(cur, 1) if cur < -0.001 else "At a high", f"Peak {it.idxmax():%b %Y}.", "neg" if cur < -0.1 else None)
 if not m.empty:
     with k[3]: B.kpi("Companies", f"{len(m)}", f"{int(m.profitable_ttm.sum())} profitable · {int(m.young_listing.sum())} listed under 5 years.")
-    with k[4]: B.kpi("Score 60+", f"{int((m.buffett_score >= 60).sum())}", "Rated Good or Strong on the Buffett Score.", "pos")
+    with k[4]: B.kpi("Score 60+", f"{int((m.buffett_score >= 60).sum())}", f"Of {len(m)} companies.", "pos")
 
 # ---------------- growth of ₹1 lakh ----------------
 st.markdown("### Growth of ₹1 lakh")
 fig = go.Figure()
-for name, col, dash in [("Nifty IT", C["blue"], None), ("Nifty 50", C["ice"], None), ("Sensex", C["muted"], "dot")]:
+for name, col, dash in [("Sensex", C["dim"], "dot"), ("Nifty 50", C["violet"], None), ("Nifty IT", C["blue"], None)]:
     s = idx[name]; s = s[s.index >= start]; v = 1e5 * s / s.iloc[0]
-    fig.add_trace(go.Scatter(x=v.index, y=v, name=f"{name}  {B.lakh(v.iloc[-1])}", line=dict(color=col, width=2 if name == "Nifty IT" else 1.5, dash=dash),
-                             fill="tozeroy" if name == "Nifty IT" else None, fillcolor="rgba(31,143,255,0.07)"))
+    fig.add_trace(go.Scatter(x=v.index, y=v, name=f"{name}  {B.lakh(v.iloc[-1])}", line=dict(color=col, width=1.8 if name == "Nifty IT" else 1.3, dash=dash),
+                             hovertemplate="%{y:,.0f}", **(B.soft(C["blue"]) if name == "Nifty IT" else {})))
+fig.update_layout(legend_traceorder="reversed")
 B.log_axis(fig, 4e4, float(max((1e5 * idx[n][idx[n].index >= start] / idx[n][idx[n].index >= start].iloc[0]).max() for n in idx)))
 fig.update_layout(height=400)
 st.plotly_chart(fig, width="stretch")
@@ -48,15 +49,20 @@ if not m.empty:
     c1, c2 = st.columns([1.05, 1])
     with c1:
         fig = go.Figure(go.Bar(y=list(g.index), x=g.score, orientation="h",
-                               marker_color=[B.score_color(v) for v in g.score], text=[f"{v:.0f}" for v in g.score], textposition="outside"))
-        fig.update_layout(height=340, title="Median Buffett Score", hovermode=False, yaxis=dict(autorange="reversed", showgrid=False), xaxis=dict(range=[0, 100], showgrid=True, gridcolor=C["grid"]))
+                               marker_color=[B.sub_color(s_) for s_ in g.index], marker_opacity=.88, text=[f"{v:.0f}" for v in g.score], textposition="outside",
+                               textfont=dict(color=C["text"], size=12)))
+        fig.update_layout(height=340, title="Median Buffett Score", hovermode=False, bargap=.42, yaxis=dict(autorange="reversed", showgrid=False, showspikes=False),
+                          xaxis=dict(range=[0, 105], showgrid=True, gridcolor=C["grid"], griddash="dot", showline=False, showspikes=False))
         st.plotly_chart(fig, width="stretch")
     with c2:
         t = pd.DataFrame({"Sub-sector": list(g.index), "Cos.": g.companies, "Profitable": (g.profitable * 100).round(0),
                           "Median ROE %": (g.roe * 100).round(1), "Median P/E": g.pe.round(1), "1y return %": (g.r1 * 100).round(1), "3y CAGR %": (g.r3 * 100).round(1)})
-        st.dataframe(t, hide_index=True, width="stretch", column_config={"Profitable": st.column_config.ProgressColumn("Profitable", min_value=0, max_value=100, format="%d%%")})
+        ts = (t.style.map(lambda v: f"color:{B.sub_color(v)};font-weight:650", subset=["Sub-sector"])
+              .map(lambda v: B.heat(v, signed=True, cap=.5), subset=["1y return %", "3y CAGR %"])
+              .format("{:.1f}", subset=["Median ROE %", "Median P/E", "1y return %", "3y CAGR %"], na_rep="–"))
+        st.dataframe(ts, hide_index=True, width="stretch", row_height=38, column_config={"Profitable": st.column_config.ProgressColumn("Profitable", min_value=0, max_value=100, format="%d%%")})
         best, worst = g.index[0], g.index[-1]
-        B.callout(f"<b>{best}</b> leads at {g.score.iloc[0]:.0f}. <b>{worst}</b> trails at {g.score.iloc[-1]:.0f}: young, often loss-making.")
+        B.callout(f"{B.sub_dot(best)}<b>{best}</b> leads at {g.score.iloc[0]:.0f}. {B.sub_dot(worst)}<b>{worst}</b> trails at {g.score.iloc[-1]:.0f}: young, often loss-making.")
     B.caption("Median company per sub-sector. Profitable: share with positive 12-month profit.")
 
     # ---------------- new-age listings ----------------
@@ -67,12 +73,12 @@ if not m.empty:
         y["since_list"] = [p0[s_]["adj_close"].iloc[-1] / p0[s_]["adj_close"].iloc[0] - 1 for s_ in y.symbol]
         y = y.sort_values("since_list")
         fig = go.Figure(go.Bar(x=y.since_list * 100, y=y.name.str.replace(r" \(.*\)", "", regex=True) + "  " + y.listing_year.astype(str),
-                               orientation="h", marker_color=[C["green"] if p else C["ember"] for p in y.profitable_ttm],
+                               orientation="h", marker_color=[C["green"] if p else C["ember"] for p in y.profitable_ttm], marker_opacity=.9,
                                customdata=np.stack([y.first_date, y.subsector], axis=1),
                                hovertemplate="%{y}<br>First trade %{customdata[0]} · %{customdata[1]}<br>Since first close: %{x:.0f}%<extra></extra>"))
         fig.add_vline(x=0, line_color=C["muted"], line_dash="dot")
-        fig.update_layout(height=max(380, 22 * len(y)), title="Return since first close. Green: profitable. Red: loss-making.", hovermode="closest",
-                          yaxis=dict(showgrid=False), xaxis=dict(ticksuffix="%", showgrid=True, gridcolor=C["grid"]))
+        fig.update_layout(height=max(380, 22 * len(y)), title="Return since first close · green profitable, rose loss-making", hovermode="closest", bargap=.38,
+                          yaxis=dict(showgrid=False, showspikes=False), xaxis=dict(ticksuffix="%", showgrid=True, gridcolor=C["grid"], griddash="dot", showline=False, showspikes=False))
         st.plotly_chart(fig, width="stretch")
         up = (y.since_list > 0).mean(); pu = y[y.profitable_ttm].since_list.median(); lu = y[~y.profitable_ttm].since_list.median()
         B.callout(f"<b>{len(y)}</b> listings since 2019. <b>{up*100:.0f}%</b> trade above their first close. "
@@ -86,8 +92,8 @@ s_m = it.resample("ME").last()
 for yrs in [1, 3, 5, 10]:
     roll[yrs] = ((s_m / s_m.shift(12 * yrs)) ** (1 / yrs) - 1).dropna()
 fig = go.Figure()
-for yrs, col, w in [(1, C["ember"], 1.2), (5, C["ice"], 1.5), (10, C["blue"], 2.4)]:
-    fig.add_trace(go.Scatter(x=roll[yrs].index, y=roll[yrs] * 100, name=f"{yrs}-year holding", line=dict(color=col, width=w)))
+for yrs, col, w in [(1, C["dim"], 1.1), (5, C["violet"], 1.4), (10, C["blue"], 2)]:
+    fig.add_trace(go.Scatter(x=roll[yrs].index, y=roll[yrs] * 100, name=f"{yrs}-year holding", line=dict(color=col, width=w), hovertemplate="%{y:.1f}%"))
 fig.add_hline(y=0, line_color=C["muted"], line_dash="dot")
 fig.update_yaxes(ticksuffix="%"); fig.update_layout(height=360, title="Nifty IT · annualised return by holding period")
 st.plotly_chart(fig, width="stretch")
@@ -105,7 +111,7 @@ st.markdown("### Drawdowns")
 ddi = A.drawdowns(it); ep = A.crash_episodes(it, -0.2)
 c1, c2 = st.columns([1.3, 1])
 with c1:
-    fig = go.Figure(go.Scatter(x=ddi.index, y=ddi * 100, fill="tozeroy", line=dict(color=C["ember"], width=1), fillcolor="rgba(255,77,94,0.22)", name="Below peak"))
+    fig = go.Figure(go.Scatter(x=ddi.index, y=ddi * 100, line=dict(color=C["ember"], width=1.1), name="Below peak", hovertemplate="%{y:.1f}%", **B.area(C["ember"], .28, down=True)))
     fig.update_yaxes(ticksuffix="%"); fig.update_layout(height=330, title="Nifty IT · below previous high")
     st.plotly_chart(fig, width="stretch")
 with c2:
@@ -116,7 +122,6 @@ with c2:
         st.dataframe(show, hide_index=True, width="stretch")
         w = ep.loc[ep.fall_pct.idxmin()]
         B.callout(f"<b>{len(ep)}</b> falls of 20%+ since {it.index[0].year}. Deepest: <b>{w.fall_pct:.0f}%</b>, {w.peak_date:%b %Y} to {w.trough_date:%b %Y}.")
-B.caption("Zero marks a new all-time high.")
 
 # ---------------- SIP simulator ----------------
 st.markdown("### SIP simulator")
@@ -137,9 +142,8 @@ with k[3]: B.kpi("Lump sum instead", B.lakh(lump_val), f"Invested on day one. {B
 buys = sub.groupby([sub.index.year, sub.index.month]).head(1)
 path = pd.DataFrame({"inv": amt * np.arange(1, len(buys) + 1), "val": (amt / buys).cumsum() * buys.values}, index=buys.index) / 1e5
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=path.index, y=path.inv, name="Invested", line=dict(color=C["muted"], dash="dot")))
-fig.add_trace(go.Scatter(x=path.index, y=path.val, name="Value", line=dict(color=C["blue"], width=2), fill="tonexty", fillcolor="rgba(31,143,255,0.10)"))
+fig.add_trace(go.Scatter(x=path.index, y=path.val, name="Value", line=dict(color=C["blue"], width=1.8), hovertemplate="₹%{y:.2f} L", **B.area(C["blue"], .16)))
+fig.add_trace(go.Scatter(x=path.index, y=path.inv, name="Invested", line=dict(color=C["dim"], width=1.2, dash="dot"), hovertemplate="₹%{y:.2f} L"))
 fig.update_yaxes(tickprefix="₹", ticksuffix=" L"); fig.update_layout(height=340)
 st.plotly_chart(fig, width="stretch")
-B.caption("₹ lakh. Dips below the dotted line add the most units.")
 B.footer()
