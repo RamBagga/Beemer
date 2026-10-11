@@ -11,8 +11,42 @@ import bootstrap  # noqa: E402
 
 DB = os.path.join(ROOT, "data", "market.db")
 METRICS = os.path.join(ROOT, "data", "metrics.parquet")
-C = dict(bg="#07090D", surface="#0E121A", raised="#141A24", line="#1F2733", grid="#1A212C", text="#E8ECF3", muted="#8B95A7", dim="#5B6577",
-         blue="#1F8FFF", ice="#6CC4FF", cobalt="#2A4BD7", red="#F0303F", green="#34D399", amber="#F5B83D", ember="#FF4D5E", violet="#8B7CF6")
+# ---------------- design tokens (see design/beemer-design-board.md) ----------------
+# Light ("Studio") is the default; dark ("Night drive") is selectable via ⋮ → Settings → Theme.
+# Brand tri-stripe colours never change: Ice #6CC4FF · Cobalt #2A4BD7 · Signal Red #F0303F.
+PALETTES = {
+    "light": dict(bg="#F4F6F9", surface="#FFFFFF", raised="#EEF2F7", line="#DDE3EB", grid="#E9EDF2", text="#0B1220", body="#2B3444",
+                  muted="#5B6577", dim="#8A94A6", chart_text="#4A5466", blue="#1F8FFF", ice="#0A72D1", cobalt="#2A4BD7", red="#E0283A",
+                  green="#0E9F6E", amber="#B7791F", ember="#E0364A", violet="#6D5AE6", bar="#BFD3EE", sidebar="#EDF0F4",
+                  shadow="0 1px 2px rgba(15,23,42,.04), 0 12px 28px -16px rgba(15,23,42,.22)",
+                  hero="linear-gradient(120deg,#FFFFFF 0%,#F3F6FA 55%,#E8EDF4 100%)", sheen="rgba(255,255,255,.9)"),
+    "dark": dict(bg="#07090D", surface="#0E121A", raised="#141A24", line="#1F2733", grid="#1A212C", text="#E8ECF3", body="#C9D1DE",
+                 muted="#8B95A7", dim="#5B6577", chart_text="#AEB7C6", blue="#1F8FFF", ice="#6CC4FF", cobalt="#2A4BD7", red="#F0303F",
+                 green="#34D399", amber="#F5B83D", ember="#FF4D5E", violet="#8B7CF6", bar="#1E3A63", sidebar="#0B0E14",
+                 shadow="none", hero="linear-gradient(120deg,#0E121A,#07090D 70%)", sheen="rgba(255,255,255,.04)"),
+}
+BRAND = dict(ice="#6CC4FF", cobalt="#2A4BD7", red="#F0303F")
+
+
+def theme_type():
+    """'light' (default) or 'dark' for the current viewer session."""
+    try:
+        t = st.context.theme.type
+    except Exception:
+        t = None
+    return t if t in PALETTES else "light"
+
+
+class _Tokens(dict):
+    """`C['text']` resolves against the active session's palette, so every view stays theme-aware."""
+    def __getitem__(self, k):
+        return PALETTES[theme_type()][k]
+
+    def get(self, k, default=None):
+        return PALETTES[theme_type()].get(k, default)
+
+
+C = _Tokens()
 SUB_ICON = {"IT services": "🖥️", "Engineering & design R&D": "🛰️", "SaaS & software products": "☁️", "AI & data": "🤖",
             "Internet & consumer tech": "📱", "Fintech": "💳", "Electronics & semicon design": "🔌"}
 LOGO = open(os.path.join(os.path.dirname(__file__), "static", "beemer-logo.svg")).read()
@@ -22,52 +56,61 @@ DISCLAIMER = ("BEEMER is an educational tool, not investment advice, and is not 
               "Past returns don't promise future ones. Do your own research or consult a SEBI-registered adviser before investing.")
 
 # ---------------- Plotly template ----------------
-pio.templates["beemer"] = go.layout.Template(layout=go.Layout(
-    font=dict(family="Inter, system-ui, sans-serif", size=12, color="#AEB7C6"),
-    title=dict(font=dict(family="'Inter Tight', Inter, sans-serif", size=15, color=C["text"]), x=0, xanchor="left"),
+def _template(P):
+    return go.layout.Template(layout=go.Layout(
+    font=dict(family="Inter, system-ui, sans-serif", size=12, color=P["chart_text"]),
+    title=dict(font=dict(family="'Inter Tight', Inter, sans-serif", size=15, color=P["text"]), x=0, xanchor="left"),
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-    colorway=[C["blue"], C["ice"], C["amber"], C["green"], C["violet"], C["ember"]],
-    xaxis=dict(showgrid=False, linecolor=C["line"], ticks="", zeroline=False, tickfont=dict(color=C["muted"])),
-    yaxis=dict(showgrid=True, gridcolor=C["grid"], zeroline=False, linecolor="rgba(0,0,0,0)", tickfont=dict(color=C["muted"])),
-    hoverlabel=dict(bgcolor=C["surface"], bordercolor=C["line"], font=dict(family="Inter", color=C["text"])),
-    legend=dict(orientation="h", yanchor="top", y=-0.12, xanchor="left", x=0, bgcolor="rgba(0,0,0,0)", font=dict(color=C["muted"])),
+    colorway=[P["blue"], P["ice"], P["amber"], P["green"], P["violet"], P["ember"]],
+    xaxis=dict(showgrid=False, linecolor=P["line"], ticks="", zeroline=False, tickfont=dict(color=P["muted"])),
+    yaxis=dict(showgrid=True, gridcolor=P["grid"], zeroline=False, linecolor="rgba(0,0,0,0)", tickfont=dict(color=P["muted"])),
+    hoverlabel=dict(bgcolor=P["surface"], bordercolor=P["line"], font=dict(family="Inter", color=P["text"])),
+    legend=dict(orientation="h", yanchor="top", y=-0.12, xanchor="left", x=0, bgcolor="rgba(0,0,0,0)", font=dict(color=P["muted"])),
     polar=dict(bgcolor="rgba(0,0,0,0)"),
     margin=dict(l=10, r=10, t=46, b=40), hovermode="x unified"))
-pio.templates.default = "beemer"
 
-STRIPE = f"linear-gradient(90deg,{C['ice']} 0 33.3%,{C['cobalt']} 33.3% 66.6%,{C['red']} 66.6%)"
-CSS = f"""
+
+for _k, _P in PALETTES.items():
+    pio.templates[f"beemer_{_k}"] = _template(_P)
+pio.templates["beemer"] = pio.templates["beemer_light"]
+pio.templates.default = "beemer_light"
+
+STRIPE = f"linear-gradient(90deg,{BRAND['ice']} 0 33.3%,{BRAND['cobalt']} 33.3% 66.6%,{BRAND['red']} 66.6%)"
+
+
+def css():
+    return f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
 h1, h2, h3, h4 {{ font-family:'Inter Tight', Inter, sans-serif !important; color:{C['text']} !important; letter-spacing:-0.015em; font-weight:600 !important; }}
 h3 {{ font-size:1.25rem !important; margin-top:1.4rem !important; }}
 .block-container {{ padding-top:2.2rem; max-width:1320px; }}
 .bm-k {{ font:500 .72rem 'JetBrains Mono', monospace; letter-spacing:.16em; text-transform:uppercase; color:{C['muted']}; }}
-.bm-hero {{ background:linear-gradient(120deg,{C['surface']},{C['bg']} 70%); border:1px solid {C['line']}; border-radius:14px; padding:30px 200px 28px 34px; margin-bottom:18px; position:relative; overflow:hidden; }}
+.bm-hero {{ background:{C['hero']}; box-shadow:{C['shadow']}; border:1px solid {C['line']}; border-radius:14px; padding:30px 200px 28px 34px; margin-bottom:18px; position:relative; overflow:hidden; }}
 .bm-hero:before {{ content:""; position:absolute; top:0; left:0; right:0; height:3px; background:{STRIPE}; }}
 .bm-hero h1 {{ font-size:2.35rem; margin:10px 0 8px 0; line-height:1.08; padding:0; }}
 .bm-hero p {{ color:{C['muted']}; font-size:1.02rem; margin:0; max-width:860px; line-height:1.55; }}
 .bm-hero svg.bg {{ position:absolute; right:34px; top:50%; transform:translateY(-50%); width:118px; height:118px; }}
-.bm-card {{ background:{C['surface']}; border:1px solid {C['line']}; border-radius:12px; padding:16px 18px; height:100%; }}
+.bm-card {{ background:{C['surface']}; box-shadow:{C['shadow']}; border:1px solid {C['line']}; border-radius:12px; padding:16px 18px; height:100%; }}
 .bm-kpi .l {{ font:500 .68rem 'JetBrains Mono', monospace; letter-spacing:.14em; text-transform:uppercase; color:{C['muted']}; }}
 .bm-kpi .v {{ font-family:'Inter Tight', Inter, sans-serif; font-weight:600; font-size:1.7rem; color:{C['text']}; font-variant-numeric:tabular-nums; line-height:1.25; margin:4px 0 3px; }}
 .bm-kpi .e {{ font-size:.82rem; color:{C['muted']}; line-height:1.4; }}
 .bm-kpi .v.pos {{ color:{C['green']}; }} .bm-kpi .v.neg {{ color:{C['ember']}; }} .bm-kpi .v.acc {{ color:{C['ice']}; }}
-.bm-callout {{ background:{C['raised']}; border-left:2px solid {C['blue']}; border-radius:8px; padding:13px 17px; margin:8px 0 14px 0; color:#C9D1DE; font-size:.95rem; line-height:1.55; }}
+.bm-callout {{ background:{C['raised']}; border-left:2px solid {C['blue']}; border-radius:8px; padding:13px 17px; margin:8px 0 14px 0; color:{C['body']}; font-size:.95rem; line-height:1.55; }}
 .bm-badge {{ display:inline-block; padding:4px 12px; border-radius:999px; font:600 .78rem 'Inter Tight', sans-serif; letter-spacing:.08em; text-transform:uppercase; vertical-align:middle; }}
 .bm-check {{ display:flex; gap:12px; padding:13px 0; border-bottom:1px solid {C['line']}; }}
 .bm-check:last-child {{ border-bottom:none; }}
 .bm-check .ic {{ font-size:1.1rem; line-height:1.5; }}
 .bm-check .t {{ font-family:'Inter Tight', sans-serif; font-weight:600; color:{C['text']}; }}
-.bm-check .d {{ font-size:.9rem; color:#C9D1DE; margin:3px 0; }}
+.bm-check .d {{ font-size:.9rem; color:{C['body']}; margin:3px 0; }}
 .bm-check .w {{ font-size:.82rem; color:{C['muted']}; }}
 .bm-bar {{ height:4px; background:{C['line']}; border-radius:4px; margin:7px 0; max-width:380px; }}
 .bm-bar i {{ display:block; height:4px; border-radius:4px; }}
 .bm-caption {{ font-size:.83rem; color:{C['muted']}; margin:-4px 0 18px 0; line-height:1.5; }}
-.bm-caption b {{ color:#C9D1DE; }}
+.bm-caption b {{ color:{C['body']}; }}
 .bm-foot {{ font-size:.75rem; color:{C['dim']}; border-top:1px solid {C['line']}; margin-top:40px; padding-top:14px; line-height:1.5; }}
 .bm-made {{ text-align:center; font:500 .68rem 'JetBrains Mono', monospace; letter-spacing:.14em; color:{C['dim']}; margin:14px 0 4px; opacity:.85; }}
-.bm-lesson {{ background:{C['surface']}; border:1px solid {C['line']}; border-radius:12px; padding:18px 22px; margin-bottom:14px; }}
+.bm-lesson {{ background:{C['surface']}; box-shadow:{C['shadow']}; border:1px solid {C['line']}; border-radius:12px; padding:18px 22px; margin-bottom:14px; }}
 .bm-lesson h4 {{ margin:0 0 6px 0; font-size:1.05rem; }}
 .bm-quote {{ font-family:'Inter Tight', sans-serif; font-size:1.1rem; color:{C['text']}; border-left:2px solid {C['blue']}; padding:4px 14px; margin:6px 0 10px; line-height:1.45; }}
 .bm-mono {{ font-family:'JetBrains Mono', monospace; color:{C['ice']}; font-size:.85em; }}
@@ -97,11 +140,63 @@ def setup(title):
         if _DATA_VERSION["v"] is not None:
             st.cache_data.clear()
         _DATA_VERSION["v"] = status.get("version")
-    st.markdown(CSS, unsafe_allow_html=True)
-    st.logo(os.path.join(os.path.dirname(__file__), "static", "beemer-wordmark.svg"), size="large",
+    pio.templates.default = f"beemer_{theme_type()}"
+    st.markdown(css(), unsafe_allow_html=True)
+    wm = "beemer-wordmark.svg" if theme_type() == "dark" else "beemer-wordmark-light.svg"
+    st.logo(os.path.join(os.path.dirname(__file__), "static", wm), size="large",
             icon_image=os.path.join(os.path.dirname(__file__), "static", "beemer-logo.svg"))
     with st.sidebar:
         st.markdown('<div class="bm-stripe"></div><div class="bm-side-tag">Precision research for India\'s tech stocks.</div>', unsafe_allow_html=True)
+        theme_switch()
+
+
+# Theme switch. Streamlit (pinned 1.65) remembers each viewer's theme choice in localStorage under
+# `stActiveTheme-<path>-v2` = "Light" | "Dark" | "System". We default everyone to "Light" (instead of following the
+# OS) and let the sidebar pills flip it. If Streamlit ever changes that key, this degrades to the ⋮ → Settings menu.
+_THEME_JS = """
+<script>
+(function(){
+  const pages = ['', 'screener', 'company', 'learn'];
+  const path = window.location.pathname;
+  const seg = path.replace(/\\/+$/, '').split('/').pop();
+  const root = pages.includes(seg) && seg ? path.slice(0, path.lastIndexOf(seg)) : (path.endsWith('/') ? path : path + '/');
+  const keys = Array.from(new Set([path].concat(pages.map(p => root + p)))).map(p => 'stActiveTheme-' + p + '-v2');
+  const setAll = v => keys.forEach(k => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} });
+  const dark = () => { const app = document.querySelector('[data-testid="stApp"]'); if (!app) return '__CUR__' === 'dark';
+    const rgb = (getComputedStyle(app).backgroundColor.match(/\\d+/g) || [255, 255, 255]).map(Number);
+    return (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) < 128; };
+  // Streamlit writes "System" on load, so the viewer's own choice lives in our key (default: Studio / light)
+  let chosen = null; try { chosen = localStorage.getItem('beemer-theme'); } catch(e) {}
+  if (!chosen) { chosen = 'Light'; try { localStorage.setItem('beemer-theme', chosen); } catch(e) {} }
+  const ensure = () => {
+    let cur = null; try { cur = JSON.parse(localStorage.getItem('stActiveTheme-' + path + '-v2') || 'null'); } catch(e) {}
+    if (cur !== chosen) setAll(chosen);
+    if ((chosen === 'Dark') !== dark() && !sessionStorage.getItem('bm-theme-reloaded')) {
+      sessionStorage.setItem('bm-theme-reloaded', '1'); window.location.reload(); return true; }
+    return false;
+  };
+  if (ensure()) return;
+  sessionStorage.removeItem('bm-theme-reloaded');
+  document.querySelectorAll('.bm-theme button').forEach(b => {
+    if (b.dataset.bound) return; b.dataset.bound = '1';
+    b.addEventListener('click', () => { try { localStorage.setItem('beemer-theme', b.dataset.v); } catch(e) {} setAll(b.dataset.v); window.location.reload(); });
+  });
+})();
+</script>
+"""
+
+
+def theme_switch():
+    cur = theme_type()
+    pill = lambda v, label, on: (f'<button data-v="{v}" class="{"on" if on else ""}" title="Switch to {label}">{label}</button>')
+    st.html(f"""<style>
+.bm-theme {{ display:flex; gap:4px; padding:3px; border:1px solid {C['line']}; border-radius:999px; background:{C['surface']}; width:max-content; margin:2px 0 6px; }}
+.bm-theme button {{ font:500 .7rem 'JetBrains Mono', monospace; letter-spacing:.08em; border:0; border-radius:999px; padding:5px 11px; cursor:pointer;
+  background:transparent; color:{C['muted']}; }}
+.bm-theme button.on {{ background:{C['text']}; color:{C['surface']}; }}
+.bm-theme button:not(.on):hover {{ color:{C['text']}; }}
+</style><div class="bm-theme">{pill("Light", "☀ Studio", cur == "light")}{pill("Dark", "☾ Night", cur == "dark")}</div>"""
+            + _THEME_JS.replace("__CUR__", cur), unsafe_allow_javascript=True)
 
 
 def sidebar_footer():
@@ -111,6 +206,7 @@ def sidebar_footer():
         if not m.empty:
             st.caption(f"📅 Prices up to **{m['last_date'].max()}** · {len(m)} Indian tech companies")
         st.caption("Educational only — not investment advice.")
+
 
 
 def footer():
