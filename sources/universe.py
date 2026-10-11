@@ -54,6 +54,29 @@ CURATED_EXTRAS = {
                                  "EASEMYTRIP", "IXIGO", "MEESHO", "FIRSTCRY", "URBANCO", "LENSKART", "TBOTEK",
                                  "MATRIMONY", "NAZARA", "IRCTC", "ZAGGLE", "AFFLE", "ROUTE", "YATRA"],
 }
+# hand-checked sub-sectors for small names NSE leaves untagged
+NAME_SUBSECTOR = {"QUICKHEAL": "SaaS & software products", "INTENTECH": "SaaS & software products",
+                  "TRACXN": "AI & data", "NPST": "Fintech", "63MOONS": "Fintech", "STYL": "Fintech",
+                  "IDEAFORGE": "Electronics & semicon design", "MICEL": "Electronics & semicon design",
+                  "ONIDA": "Electronics & semicon design", "KAVDEFENCE": "Telecom & networks",
+                  "STLNETWORK": "Telecom & networks", "UNIINFO": "Telecom & networks", "DIGISPICE": "Fintech",
+                  "PROSTARM": "Electronics & semicon design"}
+NAME_WORD_SUBSECTOR = [(re.compile(r"telecom|teleservices", re.I), "Telecom & networks"),
+                       (re.compile(r"electronic|semiconductor", re.I), "Electronics & semicon design"),
+                       (re.compile(r"digital|internet|online", re.I), "Internet & consumer tech"),
+                       (re.compile(r"infotech|infosys|info ?systems|software|softech|computer|cyber|infoway|e-?gov|tech", re.I),
+                        "IT services")]
+
+
+def _name_subsector(sym, name):
+    if sym in NAME_SUBSECTOR:
+        return NAME_SUBSECTOR[sym]
+    for rx, sub in NAME_WORD_SUBSECTOR:
+        if rx.search(name or ""):
+            return sub
+    return "Other tech"
+
+
 # tagged by NSE as electronics but really pumps / fans / printing presses
 NOT_TECH = {"SHAKTIPUMP", "VGUARD", "MANUGRAPH"}
 # name matching is only used for small names NSE has not tagged at all; generic words such as "tech" or
@@ -139,7 +162,7 @@ def build(con, core_csv):
             elif li in TECH_LEGACY:
                 sub, src = TECH_LEGACY[li], "nse_legacy_industry"
             elif not mi and not li and (sym in NAME_TECH_OK or NAME_RX.search(name or "")):
-                sub, src = "Other tech", "name_match"
+                sub, src = _name_subsector(sym, name), "name_match"
         if not sub or (tier == "ext" and sym in NOT_TECH):
             continue
         rows.append(dict(symbol=sym, name=name, isin=r[6], series=series, listing_date=store.iso(r[3]),
