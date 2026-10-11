@@ -97,10 +97,11 @@ Same hue everywhere: sub-sector bars, coloured names in tables, the dot on belt 
 Accent discipline: colour carries meaning (gain, loss, score, sub-sector). Everything else is ink, surface and hairline.
 
 ### 3f. Menu drawer
-- Collapsed by default. A 38px burger (top left, on the page body so it never re-mounts) morphs to an X in 300ms.
-- The 300px drawer overlays content; it animates `transform` only, `cubic-bezier(0.22,1,0.36,1)`, 300ms, GPU-composited.
-- A fading backdrop (ink at 30% Studio, 55% Night, 2px blur). Closes on backdrop click, Escape, or after picking a page.
-- `prefers-reduced-motion`: no transitions.
+- Collapsed by default. A 38px burger, top left, morphs to an X.
+- Pure client-side: the burger toggles `html.bm-open`. No Streamlit rerun, no network request; click to class change is about 2–3ms.
+- The 300px drawer overlays content and animates `transform` only: 200ms, `cubic-bezier(0.22,1,0.36,1)`, GPU-composited.
+- Backdrop: a body-level scrim fading on `opacity` only (ink at 32% Studio, 60% Night). No blur, no animated shadows.
+- Closes on backdrop click, Escape, or after picking a page. `prefers-reduced-motion`: no transitions.
 
 ## 4. Typography
 - **Display / headings:** Inter Tight 600 — tight, engineered, high-precision. H1 40/44 (−0.02em), H2 26/32, H3 18/24.
@@ -116,7 +117,7 @@ Captions only when they add a fact the chart cannot show (period, exclusions, da
 
 ## 6. Components
 - **Cards:** `surface`, 1px `line`, 12px radius, 16–20px padding; Studio adds the soft elevation shadow.
-- **Top bar:** translucent `bg` at 82% with 14px backdrop blur and a hairline; burger left, wordmark, menu right.
+- **Top bar:** `bg` at 96% with a hairline, no blur; burger left, wordmark, menu right.
 - **Hero:** see 3e; kicker in caps mono with the sub-sector dot on Company.
 - **KPI tiles (instrument cluster):** caps label → big tabular numeral (coloured only when it carries meaning) → one-line explanation.
 - **Score gauge:** 270° thin-arc gauge (iDrive-style) with numeric read-out in the centre; also compact pill badges (`82 · STRONG`) with 1px coloured outline + 12% tint.
