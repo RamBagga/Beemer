@@ -28,85 +28,99 @@ shown honestly, with how long they've been listed and how far they are from Buff
 - **Wordmark** (`beemer-wordmark.svg`): BEEMER in Inter Tight SemiBold, all caps, wide tracking (+0.28em), led by the tri-bar mark.
 - Clear space = height of the tallest bar. Min size 20px (mark) / 110px (wordmark). Never recolour the bars, never add gradients/glows to the mark.
 
-## 3. Colour palettes — Studio (light, default) and Night drive (dark)
+## 3. Colour palettes — Studio (light, default) and Night (dark)
 
-Beemer opens in **Studio**: a bright, precise light theme that feels like a car-configurator showroom, with porcelain floors,
-brushed-silver surfaces, crisp ink type and one electric-blue accent. **Night drive** is the original dark cockpit; viewers switch
-with the Studio / Night switch in the sidebar, and the choice is remembered per browser. Tokens live in `app/beemer.py` (`PALETTES`)
-and `.streamlit/config.toml`; never hard-code a hex in a view.
+Deep ink, one electric blue, cool gradients, and colour that means something at a glance. Studio opens by default; Night is one tap
+away in the menu drawer and remembered per browser. Tokens live in `app/beemer.py` (`PALETTES`, `SUBSECTOR_COLORS`) and
+`.streamlit/config.toml`; never hard-code a hex in a view.
 
-### 3a. Studio (light, default)
-| Role | Name | Hex |
+### 3a. Core tokens
+| Role | Token | Studio | Night |
+|---|---|---|---|
+| App background | `bg` | `#F5F7FB` | `#06080E` |
+| Cards / surfaces | `surface` | `#FFFFFF` | `#0C111B` |
+| Raised / inputs | `raised` | `#F0F3F8` | `#121926` |
+| Drawer | `sidebar` | `#FBFCFE` | `#0A0E17` |
+| Hairlines | `line` | `#E2E7EF` | `#1C2433` |
+| Gridlines (dotted) | `grid` | `#ECEFF5` | `#151C29` |
+| Headings, prices | `text` (deep ink) | `#0A1022` | `#EAEFF7` |
+| Body copy | `body` | `#283145` | `#C3CBD9` |
+| Secondary text (AA on cards) | `muted` | `#556073` | `#97A1B4` |
+| Decorative only, never body text | `dim` | `#828CA0` | `#6E788E` |
+| Primary accent, main series | `blue` (electric) | `#2D6BFF` | `#5B8CFF` |
+| Accent text, links | `ice` | `#2563C9` | `#7DB8FF` |
+| Second series | `violet` | `#7466E8` | `#A08FFF` |
+| Third series, Compounders belt | `teal` | `#14B8A6` | `#2DD4BF` |
+| Neutral bars (sales, P/E history) | `bar` | `#D3DDF1` | `#22355C` |
+
+### 3b. Semantic colour (gain, loss, watch)
+| Meaning | Fill / line | Text on cards (WCAG AA) |
 |---|---|---|
-| App background | Porcelain | `#F4F6F9` |
-| Cards / surfaces | Paper | `#FFFFFF` |
-| Raised surface / inputs / table header | Mist | `#EEF2F7` |
-| Sidebar | Brushed Silver | `#EDF0F4` |
-| Hairlines / borders | Silver | `#DDE3EB` |
-| Chart gridlines | Frost Line | `#E9EDF2` |
-| Primary text / headings | Ink | `#0B1220` |
-| Body copy | Graphite | `#2B3444` |
-| Secondary text | Steel | `#5B6577` |
-| Tertiary / disclaimers | Pewter | `#8A94A6` |
-| Primary accent, focus, main series | Electric Blue | `#1F8FFF` (same as dark) |
-| Accent text, tickers, links | Deep Ice | `#0A72D1` (Ice darkened for AA contrast on white) |
-| Positive | Volt Green (deep) | `#0E9F6E` |
-| Caution / neutral score | Amber (deep) | `#B7791F` |
-| Negative | Ember (deep) | `#E0364A` |
-| Tertiary series | Violet (deep) | `#6D5AE6` |
-| Neutral bars (e.g. sales) | Steel Blue Tint | `#BFD3EE` |
+| Gain, pass | Emerald `#10B981` / `#34D399` | `#047857` / `#6EE7B7` |
+| Loss, fail | Rose `#F43F5E` / `#FB7185` | `#BE123C` / `#FDA4AF` |
+| Watch, mixed | Amber `#F59E0B` / `#FBBF24` | `ink(amber)` |
 
-- **Elevation:** light needs depth, so cards, hero and lessons get one soft two-layer shadow:
-  `0 1px 2px rgba(15,23,42,.04), 0 12px 28px -16px rgba(15,23,42,.22)`. No other shadows.
-- **Hero:** Paper → Mist diagonal gradient (`#FFFFFF → #F3F6FA → #E8EDF4`), with the tri-stripe hairline along the top edge.
-- **Picks belts:** the conveyor is a brushed-aluminium belt (slats `#AEB8C6` / `#D9DFE7`) with polished-silver rollers under a soft
-  studio spotlight. Cards are white; outside the spotlight they fade and desaturate rather than darken.
-- **Wordmark:** `beemer-wordmark-light.svg` uses Ink text. The tri-bar mark and its graphite tile are unchanged.
+- **Change chips:** `▲ 3.62%` / `▼ 2.95%` in a 6px-radius chip, 13% tint of the fill, AA text tone, tabular numerals.
+- **`ink(colour)`:** badge and pill text is the accent mixed toward the text colour (58% in Studio, 70% in Night), so it clears 4.5:1.
+- **Score scale (Buffett Score, Signal, test cells):** `0–39` Rose · `40–59` Amber · `60–74` Teal · `75–100` Emerald.
+  Badges use 12% tint + 55% border + `ink()` text. Screener test cells are heat cells: 16% tint, `ink()` text.
+- **Heat for signed numbers** (returns, margin of safety): emerald or rose, tint 6–28% scaled by size, bold AA text.
+
+### 3c. Sub-sector identity (categorical; never gain or loss)
+| Sub-sector | Hex |
+|---|---|
+| IT services | `#3B82F6` |
+| SaaS & software products | `#8B5CF6` |
+| AI & data | `#06B6D4` |
+| Engineering & design R&D | `#6366F1` |
+| Electronics & semicon design | `#0EA5A4` |
+| Fintech | `#D946EF` |
+| Internet & consumer tech | `#F97316` |
+
+Same hue everywhere: sub-sector bars, coloured names in tables, the dot on belt cards and in the Company kicker.
+
+### 3d. Charts
+- No default Plotly colours: templates `beemer_light` / `beemer_dark`, colourway blue → violet → teal → amber → rose → ice.
+- Lines 1.1–2px; the main series is blue and heaviest, benchmarks are `dim` dotted.
+- Area fills: vertical gradient from 0% to 16–28% of the line colour (`B.area`); on log axes a flat 7% wash (`B.soft`).
+- Gridlines: horizontal only, dotted, `grid`. No zero lines, no tick marks, a single hairline x-axis.
+- Bars: 4px corner radius, 30–40% gap, no outlines.
+- Hover: unified x, a dotted spike line, surface-coloured label with a hairline border, values formatted (₹, %, cr).
+
+### 3e. Surfaces and hardware
+- **Elevation (Studio):** `0 1px 2px rgba(10,16,34,.04), 0 12px 28px -16px rgba(10,16,34,.20)`. Night uses borders, not shadows.
+- **Hero:** `#FFFFFF → #F4F7FC → #E9EEF8` (Studio), `#0E1424 → #06080E` (Night), tri-stripe along the top edge.
+- **Picks belts:** brushed-aluminium (Studio) or graphite (Night) conveyor. Belt accents: Momentum blue, Compounders teal,
+  Movers violet. Cards outside the spotlight stay at 90%+ opacity; the spotlight adds glow, not legibility.
 - **Brand tri-stripe is theme-independent:** Ice `#6CC4FF` · Cobalt `#2A4BD7` · Signal Red `#F0303F`.
 
-### 3b. Night drive (dark)
-| Role | Name | Hex |
-|---|---|---|
-| App background | Carbon | `#07090D` |
-| Surface / cards | Graphite | `#0E121A` |
-| Raised surface / inputs | Gunmetal | `#141A24` |
-| Hairlines / borders | Hairline | `#1F2733` |
-| Primary text | Frost | `#E8ECF3` |
-| Secondary text | Titanium | `#8B95A7` |
-| Tertiary / disabled | Slate Dim | `#5B6577` |
-| Primary accent, links, focus, main series | Electric Blue | `#1F8FFF` |
-| Tri-stripe 1 / series 2 | Ice | `#6CC4FF` |
-| Tri-stripe 2 | Cobalt | `#2A4BD7` |
-| Tri-stripe 3 / alerts (sparingly) | Signal Red | `#F0303F` |
-| Positive | Volt Green | `#34D399` |
-| Caution / neutral score | Amber | `#F5B83D` |
-| Negative | Ember | `#FF4D5E` |
-| Tertiary series | Violet | `#8B7CF6` |
+Accent discipline: colour carries meaning (gain, loss, score, sub-sector). Everything else is ink, surface and hairline.
 
-Score scale (Buffett Score): `0–39` Ember · `40–59` Amber · `60–74` Electric Blue · `75–100` Volt Green.
-Accent discipline: ≤10% of any screen is coloured; colour = meaning.
+### 3f. Menu drawer
+- Collapsed by default. A 38px burger (top left, on the page body so it never re-mounts) morphs to an X in 300ms.
+- The 300px drawer overlays content; it animates `transform` only, `cubic-bezier(0.22,1,0.36,1)`, 300ms, GPU-composited.
+- A fading backdrop (ink at 30% Studio, 55% Night, 2px blur). Closes on backdrop click, Escape, or after picking a page.
+- `prefers-reduced-motion`: no transitions.
 
 ## 4. Typography
 - **Display / headings:** Inter Tight 600 — tight, engineered, high-precision. H1 40/44 (−0.02em), H2 26/32, H3 18/24.
 - **Kickers / labels:** Inter Tight 600, ALL CAPS, 11–12px, +0.14em tracking, Titanium colour (instrument-panel labels).
 - **Body:** Inter 400/500, 15/24.
-- **Data & tickers:** JetBrains Mono 500 for symbols, timestamps and small numeric labels (cockpit read-out feel).
-- **KPI numerals:** Inter Tight 600, 30px, tabular figures.
+- **Data:** JetBrains Mono 500 only for kickers and timestamps. Tickers on cards are Inter Tight 700; numbers use tabular figures.
+- **Card hierarchy:** ticker (16px, 700) > price (23px, 650) > change chip (13px, 600) > stat line (12px) > reason (12.5px, 1.45 line-height).
+- **KPI tiles:** label Inter Tight 600 12px caps; numeral 29px 650 tabular; note 14px, 1.5 line-height.
 
-## 5. Chart styling (Plotly template `beemer`)
-- Transparent background (Porcelain in Studio, Carbon in Night drive); horizontal gridlines only (`#E9EDF2` light / `#1A212C` dark); no axis lines; ticks in Steel / Titanium 12px. Two Plotly templates: `beemer_light` (default) and `beemer_dark`.
-- Colorway: Electric Blue, Ice, Amber, Volt Green, Violet, Ember.
-- 1.6–2px lines; area fills ≤12% opacity; drawdown (underwater) charts in Ember at 22%.
-- Benchmark lines dotted Titanium. Log scale for long price histories with 1-2-5 ₹ ticks (₹1k, ₹1 L, ₹1 Cr).
-- Legends below the plot; titles left-aligned in Inter Tight; unified hover with Graphite tooltip and hairline border.
-- Every chart has a **"What you're looking at"** caption.
+## 5. Chart styling (Plotly templates `beemer_light` / `beemer_dark`)
+See 3d. Legends below the plot, titles left-aligned in Inter Tight 14px, log scale for long price histories with 1-2-5 ₹ ticks.
+Captions only when they add a fact the chart cannot show (period, exclusions, data limits).
 
 ## 6. Components
-- **Cards:** Graphite, 1px Hairline, 12px radius, 18–20px padding, no drop shadows; optional 2px top tri-stripe for hero/feature cards.
-- **Hero / header bar:** Paper→Mist gradient with a soft shadow in Studio (Graphite→Carbon in Night drive), tri-stripe hairline along the top edge, kicker in caps mono.
+- **Cards:** `surface`, 1px `line`, 12px radius, 16–20px padding; Studio adds the soft elevation shadow.
+- **Top bar:** translucent `bg` at 82% with 14px backdrop blur and a hairline; burger left, wordmark, menu right.
+- **Hero:** see 3e; kicker in caps mono with the sub-sector dot on Company.
 - **KPI tiles (instrument cluster):** caps label → big tabular numeral (coloured only when it carries meaning) → one-line explanation.
 - **Score gauge:** 270° thin-arc gauge (iDrive-style) with numeric read-out in the centre; also compact pill badges (`82 · STRONG`) with 1px coloured outline + 12% tint.
-- **Checklist rows:** status tag (`PASS` green · `WATCH` amber · `FAIL` ember, mono caps, 1px outline) · test name · 4px progress rail · finding · one-line reason.
+- **Checklist rows:** status tag (`PASS` emerald · `WATCH` amber · `FAIL` rose; 10% tint, 50% outline, `ink()` text) · test name · 4px progress rail · finding · one-line reason.
 - **Tables:** Graphite rows, Hairline separators, mono tickers, progress-rail score columns in Electric Blue.
 - **Callouts:** raised panel, 2px Electric Blue left rule. One or two sentences, key figures in bold. No label, no icon.
 - **Disclaimer bar:** one compact disclaimer in the footer of every page, then "Made with ❤️ by baggak8s" (the only emoji in the product).
